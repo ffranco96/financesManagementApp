@@ -58,7 +58,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             FinancesManagementAppTheme {
-//            AppNavigation() // Conoce la primera pantalla
+                AppNavigation() // Conoce la primera pantalla
                 RegistersList(registersListInstance)
             }
         }

@@ -10,9 +10,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 
 @Composable
-fun AddRegisterAmountScreen(/*navController: NavController*/){
+fun AddRegisterAmountScreen(navController: NavController){
     Scaffold() {
         val a = it // Para evitar error
 //        SecondBodyContent(navController)
@@ -20,7 +21,7 @@ fun AddRegisterAmountScreen(/*navController: NavController*/){
 }
 
 @Composable
-fun SecondBodyContent(/*navController: NavController*/){
+fun SecondBodyContent(navController: NavController){
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,

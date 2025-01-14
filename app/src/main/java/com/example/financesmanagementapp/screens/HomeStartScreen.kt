@@ -10,17 +10,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 
 @Composable
-fun HomeStartScreen(/*navControler : NavController*/){
+fun HomeStartScreen(navControler : NavController){
     Scaffold() {
         val a = it // Para evitar error
-        BodyContent(/*navControler*/)
+        BodyContent(navControler)
     }
 }
 
 @Composable
-fun BodyContent(/*navControler : NavController*/){
+fun BodyContent(navControler : NavController){
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
