@@ -12,11 +12,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import com.example.financesmanagementapp.navigation.AppScreens
 
 @Composable
 fun HomeStartScreen(navControler : NavController){
     Scaffold() {
-        val a = it // Para evitar error
+        val a = it // To avoid error
         BodyContent(navControler)
     }
 }
@@ -32,6 +33,7 @@ fun BodyContent(navControler : NavController){
         Button(onClick =
             {
                 /*TODO*/
+                navControler.navigate(route = AppScreens.AddRegisterAmountScreen.route)
                 Log.d("franco", "Button")
             }
         ){

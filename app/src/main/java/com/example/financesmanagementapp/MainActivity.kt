@@ -58,8 +58,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             FinancesManagementAppTheme {
-                AppNavigation() // Conoce la primera pantalla
-                RegistersList(registersListInstance)
+                AppNavigation() // To know first screen (entry point)
+                //RegistersList(registersListInstance) TODO move to HomeStartScreen
             }
         }
     }

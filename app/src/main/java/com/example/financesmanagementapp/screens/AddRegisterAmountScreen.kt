@@ -15,8 +15,8 @@ import androidx.navigation.NavController
 @Composable
 fun AddRegisterAmountScreen(navController: NavController){
     Scaffold() {
-        val a = it // Para evitar error
-//        SecondBodyContent(navController)
+        val a = it // To avoid error
+        SecondBodyContent(navController)
     }
 }
 
@@ -27,9 +27,9 @@ fun SecondBodyContent(navController: NavController){
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Monto 0 ARS", style = MaterialTheme.typography.labelLarge)
-        Button(onClick = {/*TODO*/}){
+        Text("Agregar un nuevo registro", style = MaterialTheme.typography.labelLarge)
+        /*Button(onClick = {/*TODO*/}){
             Text("+")
-        }
+        }*/
     }
 }

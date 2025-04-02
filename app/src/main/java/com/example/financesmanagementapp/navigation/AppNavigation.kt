@@ -7,9 +7,10 @@ import androidx.navigation.compose.*
 import com.example.financesmanagementapp.screens.AddRegisterAmountScreen
 import com.example.financesmanagementapp.screens.HomeStartScreen
 
+// Composable element that will orchestrate navigation
 @Composable
 fun AppNavigation(){
-    val navController = rememberNavController()
+    val navController = rememberNavController() // Manages navigation status among screens
     NavHost(navController = navController, startDestination = AppScreens.HomeStartScreen.route){
         composable(route = AppScreens.HomeStartScreen.route){
             HomeStartScreen(navController)
