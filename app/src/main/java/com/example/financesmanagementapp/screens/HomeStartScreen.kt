@@ -1,5 +1,6 @@
 package com.example.financesmanagementapp.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,7 +29,12 @@ fun BodyContent(navControler : NavController){
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text("Monto 0 ARS", style = MaterialTheme.typography.labelLarge)
-        Button(onClick = {/*TODO*/}){
+        Button(onClick =
+            {
+                /*TODO*/
+                Log.d("franco", "Button")
+            }
+        ){
             Text("+")
         }
     }

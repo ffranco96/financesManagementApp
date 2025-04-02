@@ -80,9 +80,11 @@ fun RegistersList(registersDetailList: List<RegisterEntity>) {
 
 @Composable
 fun Register(regEntityData: RegisterEntity) {
-    val regTextData = listOf(regEntityData.title, regEntityData.description) // TODO Temporal
-    Row(modifier = Modifier.background(MaterialTheme.colorScheme.background)
-        .padding(8.dp)) {
+    val regTextData = listOf(regEntityData.title, regEntityData.description) // TODO Temporal, agregar mas caracteristicas
+    Row(modifier = Modifier.
+        background(MaterialTheme.colorScheme.background)
+        .padding(8.dp))
+    {
         MyImage()
         RegisterContent(regTextData)
     }
@@ -91,8 +93,7 @@ fun Register(regEntityData: RegisterEntity) {
 @Composable
 fun RegisterContent(regTextData: List<String>) {
     var expanded by remember { mutableStateOf(false) } // Necesitamos que la variable mute en tiempo de ejecucion.
-    // Ademas necesitamos que la variable mute a nivel de estado, y que
-    // esto produzca que se repinte la interfaz
+    // Ademas necesitamos que la variable mute a nivel de estado, y que esto haga que se repiten la interfaz
     Column(modifier = Modifier.padding(start = 8.dp).clickable {
         expanded = !expanded
     }) {
@@ -100,7 +101,6 @@ fun RegisterContent(regTextData: List<String>) {
         RegisterDescription(
             regTextData[1],
             MaterialTheme.typography.labelMedium,
-
             if(expanded) Int.MAX_VALUE else 1
         )
     }
