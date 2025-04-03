@@ -5,26 +5,23 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -39,12 +36,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.financesmanagementapp.R
 import com.example.financesmanagementapp.model.database.RegisterEntity
-import com.example.financesmanagementapp.navigation.AppNavigation
 import com.example.financesmanagementapp.navigation.AppScreens
 
 private val registersListInstance = listOf(
@@ -79,9 +74,9 @@ fun HomeStartScreen(navControler : NavController){
             }
         }
     ) { paddingValues ->
-        Box(
+        Column (
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .padding(paddingValues)
         ){
             BodyContent(navControler, registersListInstance)
@@ -92,8 +87,50 @@ fun HomeStartScreen(navControler : NavController){
 
 @Composable
 fun BodyContent(navControler : NavController, registersDetailList: List<RegisterEntity>){
+    Column (
+        modifier = Modifier
+            .fillMaxWidth()
+    ){
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start
+        ) {
+            Text(text = "ARS", style = MaterialTheme.typography.titleLarge)
+            Spacer(modifier = Modifier.width(22.dp))
+            Text(text = "0.0", style = MaterialTheme.typography.titleLarge)
+        }
+    }
+    Column (
+        modifier = Modifier
+            .fillMaxWidth()
+    ){
+        Button(
+            onClick = {/*
+                navControler.navigate(route = AppScreens.AddRegisterAmountScreen.route + "/Mi parametro") // Donde se displayara??
+                Log.d("franco", "Boton que te lleva a los graficos")
+            */}
+        ){
+            Text("Graficos")
+        }
+    }
+    Column (
+        modifier = Modifier
+            .fillMaxWidth()
+    ){
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text = "Ultimos movimientos", style = MaterialTheme.typography.titleMedium)
+            Button(
+                onClick = {/*TODO borra todos los registros*/}
+            ){
+                Icon(Icons.Rounded.Delete, contentDescription = "Borrar todos los regs")
+            }
+        }
+    }
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -142,7 +179,7 @@ fun RegisterContent(regTextData: List<String>) {
     Column(modifier = Modifier.padding(start = 8.dp).clickable {
         expanded = !expanded
     }) {
-        RegisterTitle(regTextData[0], MaterialTheme.typography.labelLarge) /*TODO pasar title por parametro*/
+        RegisterTitle(regTextData[0], MaterialTheme.typography.labelLarge)
         RegisterDescription(
             regTextData[1],
             MaterialTheme.typography.labelMedium,
