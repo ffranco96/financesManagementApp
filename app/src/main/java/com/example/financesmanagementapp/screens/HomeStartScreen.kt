@@ -42,30 +42,16 @@ import com.example.financesmanagementapp.R
 import com.example.financesmanagementapp.model.database.RegisterEntity
 import com.example.financesmanagementapp.navigation.AppScreens
 
-private val registersListInstance = listOf(
-    RegisterEntity(-1000.00,"Club de la milanesa", "Lorem ipsum dolor sit amet, consectetur adipiscing elit", "Restaurant y comida rapida", "2024-05-25", "ARS") ,
-    RegisterEntity(-2000.00,"Club de la milanesa", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.", "Restaurant y comida rapida", "2024-05-25", "ARS") ,
-    RegisterEntity(-3000.00,"Club de la milanesa", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.", "Restaurant y comida rapida", "2024-05-25", "ARS") ,
-    RegisterEntity(-4000.00,"Club de la milanesa", "", "Restaurant y comida rapida", "2024-05-25", "ARS") ,
-    RegisterEntity(-5000.00,"Club de la milanesa", "Lorem ipsum", "Restaurant y comida rapida", "2024-05-25", "ARS") ,
-    RegisterEntity(-6000.00,"Club de la milanesa", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.", "Restaurant y comida rapida", "2024-05-25", "ARS") ,
-    RegisterEntity(-7000.00,"Club de la milanesa", "Pagamos a medias con mis amigos", "Restaurant y comida rapida", "2024-05-25", "ARS") ,
-    RegisterEntity(-8000.00,"Club de la milanesa", "Pagamos a medias con mis amigos", "Restaurant y comida rapida", "2024-05-25", "ARS") ,
-    RegisterEntity(-9000.00,"Club de la milanesa", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum", "Restaurant y comida rapida", "2024-05-25", "ARS") ,
-    RegisterEntity(-10000.00,"Club de la milanesa", "Pagamos a medias con mis amigos", "Restaurant y comida rapida", "2024-05-25", "ARS") ,
-    RegisterEntity(-11000.00,"Club de la milanesa", "Pagamos a medias con mis amigos", "Restaurant y comida rapida", "2024-05-25", "ARS") ,
-    RegisterEntity(-12000.00,"Club de la milanesa", "Pagamos a medias con mis amigos", "Restaurant y comida rapida", "2024-05-25", "ARS") ,
-    RegisterEntity(-13000.00,"Club de la milanesa", "Pagamos a medias con mis amigos", "Restaurant y comida rapida", "2024-05-25", "ARS") )
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeStartScreen(navControler : NavController){
+fun HomeStartScreen(navController : NavController, registersDetailList: List<RegisterEntity>, currentBalance: Double){
     Scaffold(
         topBar = { TopAppBar(title = {Text("Inicio") })},
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    navControler.navigate(route = AppScreens.AddRegisterAmountScreen.route + "/Mi parametro") // Donde se displayara??
+                    navController.navigate(route = AppScreens.AddRegisterAmountScreen.route + "/Mi parametro") // Donde se displayara??
+                    //registersDetailList
                     Log.d("franco", "Clciked floating action button")
                 },
                 modifier = Modifier.padding(16.dp)
@@ -79,14 +65,14 @@ fun HomeStartScreen(navControler : NavController){
                 .fillMaxWidth()
                 .padding(paddingValues)
         ){
-            BodyContent(navControler, registersListInstance)
+            BodyContent(navController, registersDetailList, currentBalance)
         }
         val a = paddingValues // To avoid error
     }
 }
 
 @Composable
-fun BodyContent(navControler : NavController, registersDetailList: List<RegisterEntity>){
+fun BodyContent(navControler : NavController, registersDetailList: List<RegisterEntity>, currentBalance: Double){
     Column (
         modifier = Modifier
             .fillMaxWidth()
@@ -97,9 +83,22 @@ fun BodyContent(navControler : NavController, registersDetailList: List<Register
         ) {
             Text(text = "ARS", style = MaterialTheme.typography.titleLarge)
             Spacer(modifier = Modifier.width(22.dp))
-            Text(text = "0.0", style = MaterialTheme.typography.titleLarge)
+            Text(text = currentBalance.toString(), style = MaterialTheme.typography.titleLarge)
         }
     }
+    /*Column (
+        modifier = Modifier
+            .fillMaxWidth()
+    ){
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start
+        ) {
+            //Text(text = "BTC", style = MaterialTheme.typography.titleLarge) // TODO esto va a estar en otra pantalla de Mercados o algo asi
+            //Spacer(modifier = Modifier.width(22.dp))
+            //Text(text = "83000.0", style = MaterialTheme.typography.titleLarge)
+        }
+    }*/
     Column (
         modifier = Modifier
             .fillMaxWidth()

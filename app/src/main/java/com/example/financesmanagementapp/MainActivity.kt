@@ -17,7 +17,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             FinancesManagementAppTheme {
                 AppNavigation() // To know first screen (entry point)
-                //RegistersList(registersListInstance) TODO move to HomeStartScreen
             }
         }
     }
