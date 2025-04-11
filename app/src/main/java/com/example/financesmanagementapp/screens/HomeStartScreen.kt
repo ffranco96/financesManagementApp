@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.*
 import androidx.compose.material3.Button
@@ -86,7 +87,7 @@ fun BodyContent(navControler : NavController, registersDetailList: List<Register
             Text(text = currentBalance.toString(), style = MaterialTheme.typography.titleLarge)
         }
     }
-    /*Column (
+    Column (
         modifier = Modifier
             .fillMaxWidth()
     ){
@@ -94,11 +95,19 @@ fun BodyContent(navControler : NavController, registersDetailList: List<Register
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Start
         ) {
-            //Text(text = "BTC", style = MaterialTheme.typography.titleLarge) // TODO esto va a estar en otra pantalla de Mercados o algo asi
-            //Spacer(modifier = Modifier.width(22.dp))
-            //Text(text = "83000.0", style = MaterialTheme.typography.titleLarge)
+            var btc_value = 0
+            Text(text = "BTC: ${btc_value}", style = MaterialTheme.typography.titleLarge) // TODO esto va a estar en otra pantalla de Mercados o algo asi
+            Button(
+                onClick = {
+                    Log.d("franco","Sync btc value")
+
+                    btc_value = 81000 //no anda porque esto en realidad deberia estar en el viewmodel
+                }
+            ){
+                Icon(Icons.Default.Refresh,"Sync btc value")
+            }
         }
-    }*/
+    }
     Column (
         modifier = Modifier
             .fillMaxWidth()
