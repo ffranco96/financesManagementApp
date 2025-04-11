@@ -45,7 +45,13 @@ import com.example.financesmanagementapp.navigation.AppScreens
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeStartScreen(navController : NavController, registersDetailList: List<RegisterEntity>, currentBalance: Double){
+fun HomeStartScreen(
+    navController : NavController,
+    registersDetailList: List<RegisterEntity>,
+    currentBalance: Double,
+    onBtcButtonClick: () -> Unit,
+    currentBtcValueDouble : Double
+){
     Scaffold(
         topBar = { TopAppBar(title = {Text("Inicio") })},
         floatingActionButton = {
@@ -66,14 +72,20 @@ fun HomeStartScreen(navController : NavController, registersDetailList: List<Reg
                 .fillMaxWidth()
                 .padding(paddingValues)
         ){
-            BodyContent(navController, registersDetailList, currentBalance)
+            BodyContent(navController, registersDetailList, currentBalance, onBtcButtonClick, currentBtcValueDouble)
         }
         val a = paddingValues // To avoid error
     }
 }
 
 @Composable
-fun BodyContent(navControler : NavController, registersDetailList: List<RegisterEntity>, currentBalance: Double){
+fun BodyContent(
+    navControler : NavController,
+    registersDetailList: List<RegisterEntity>,
+    currentBalance: Double,
+    onBtcButtonClick: () -> Unit,
+    currentBtcValueDouble: Double
+){
     Column (
         modifier = Modifier
             .fillMaxWidth()
@@ -95,15 +107,8 @@ fun BodyContent(navControler : NavController, registersDetailList: List<Register
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Start
         ) {
-            var btc_value = 0
-            Text(text = "BTC: ${btc_value}", style = MaterialTheme.typography.titleLarge) // TODO esto va a estar en otra pantalla de Mercados o algo asi
-            Button(
-                onClick = {
-                    Log.d("franco","Sync btc value")
-
-                    btc_value = 81000 //no anda porque esto en realidad deberia estar en el viewmodel
-                }
-            ){
+            Text(text = "BTC: ${currentBtcValueDouble}", style = MaterialTheme.typography.titleLarge) // TODO esto va a estar en otra pantalla de Mercados o algo asi
+            Button(onClick = onBtcButtonClick){
                 Icon(Icons.Default.Refresh,"Sync btc value")
             }
         }
