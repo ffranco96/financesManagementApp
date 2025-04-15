@@ -18,8 +18,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 
 class MainActivity : ComponentActivity() {
-    //var _btc_price:Double? = 0.0 // Mover a view model
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -34,9 +32,3 @@ class MainActivity : ComponentActivity() {
         Toast.makeText(this, "Hubo un error", Toast.LENGTH_SHORT).show()
     }
 }
-/*
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    AppNavigation()
-}*/

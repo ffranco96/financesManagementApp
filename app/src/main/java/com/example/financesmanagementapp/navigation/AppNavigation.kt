@@ -15,6 +15,7 @@ import androidx.navigation.navArgument
 import com.example.financesmanagementapp.model.database.RegisterEntity
 import com.example.financesmanagementapp.screens.AddRegisterAmountScreen
 import com.example.financesmanagementapp.screens.HomeStartScreen
+import com.example.financesmanagementapp.ui.login.ui.LoginScreen
 import com.example.financesmanagementapp.viewmodel.HomeViewModel
 
 private val registersListInstance = mutableListOf(
@@ -33,6 +34,8 @@ private val registersListInstance = mutableListOf(
     RegisterEntity(-13000.00,"Club de la milanesa", "Pagamos a medias con mis amigos", "Restaurant y comida rapida", "2024-05-25", "ARS")
 )
 
+const val btcUsdtTicker = "BTCUSDT"
+
 // Composable element that will orchestrate navigation
 @Composable
 fun AppNavigation() {
@@ -44,17 +47,18 @@ fun AppNavigation() {
     val currentBalance = remember { mutableDoubleStateOf(0.0) }
     val currentBtcValue = homeViewModel.currentBtcValue.collectAsState()
 
-    NavHost(navController = navController, startDestination = AppScreens.HomeStartScreen.route) {
-        composable(route = AppScreens.HomeStartScreen.route) {
-            HomeStartScreen(
+    NavHost(navController = navController, startDestination = AppScreens./*HomeStartScreen*/LoginScreen.route) {
+        composable(route = AppScreens./*HomeStartScreen*/LoginScreen.route) {
+            LoginScreen()
+            /*HomeStartScreen(
                 navController = navController,
                 registersDetailList = registersList.value,
                 currentBalance = currentBalance.doubleValue,
                 currentBtcValueDouble = currentBtcValue.value.valueDouble,
                 onBtcButtonClick = {
-                    homeViewModel.getCryptoPrice("BTCUSDT")
+                    homeViewModel.getCryptoPrice(btcUsdtTicker)
                 }
-            )
+            )*/
         }
         composable(
             route = AppScreens.AddRegisterAmountScreen.route + "/{text}",
