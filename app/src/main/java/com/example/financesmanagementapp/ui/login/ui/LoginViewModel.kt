@@ -2,6 +2,7 @@ package com.example.financesmanagementapp.ui.login.ui
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -15,6 +16,9 @@ class LoginViewModel : ViewModel(){
     private val _loginEnabled = MutableStateFlow(false)
     val loginEnabled: StateFlow<Boolean> = _loginEnabled
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
     fun onLoginDataChanged(user: String, password: String) {
         _user.value = user
         _password.value = password
@@ -23,9 +27,12 @@ class LoginViewModel : ViewModel(){
 
     private fun isValidUser(user: String): Boolean = user.length > 6
     private fun isValidPassword(password: String): Boolean = password.length > 6
-    fun onLoginButtonClicked() {
+    suspend fun onLoginButtonClicked() {
         Log.d("franco", "Hola")
-        // TODO Acciones a tomar cuando inicie sesion
+        // Actions to be done when the user presses to perform login
+        _isLoading.value = true
+        delay(4000) // It's a coroutine
+        _isLoading.value = false
     }
 
 }

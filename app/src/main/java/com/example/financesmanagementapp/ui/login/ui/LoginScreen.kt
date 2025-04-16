@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -29,6 +31,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.financesmanagementapp.R
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(viewModel: LoginViewModel) {
@@ -47,21 +50,33 @@ fun Login(modifier: Modifier, viewModel: LoginViewModel) {
     val user by viewModel.user.collectAsState(initial = "")
     val password by viewModel.password.collectAsState(initial = "")
     val loginEnabled by viewModel.loginEnabled.collectAsState(initial = false)
+    val isLoading by viewModel.isLoading.collectAsState(initial = false)
+    val coroutineScope = rememberCoroutineScope() // Creates a coroutine scope to launch async tasks without blocking the main thread
 
-    Column(modifier = modifier) { // Para poder tener un modifier que alinee es necesario estar dentro de un Box
-        HeaderImage(Modifier.align(Alignment.CenterHorizontally)) // Se usa Modifier que es el modificador de la columna, no el modifier recibido desde fuera
-        Spacer(modifier = Modifier.padding(16.dp))
-        UserField(user) {
-            viewModel.onLoginDataChanged(
-                it,
-                password
-            )
-        } // Se recibe tanto el ultimo estado del user como de la password
-        PasswordField(password) { viewModel.onLoginDataChanged(user, it) }
-        Spacer(modifier = Modifier.padding(8.dp))
-        ForgotPassword(modifier = Modifier.align(Alignment.End))
-        Spacer(modifier = Modifier.padding(16.dp))
-        LoginButton(loginEnabled) { viewModel.onLoginButtonClicked() }
+    if(isLoading){
+        Box(Modifier.fillMaxSize()){
+            CircularProgressIndicator(Modifier.align(Alignment.Center))
+        }
+    } else {
+        Column(modifier = modifier) { // Para poder tener un modifier que alinee es necesario estar dentro de un Box
+            HeaderImage(Modifier.align(Alignment.CenterHorizontally)) // Se usa Modifier que es el modificador de la columna, no el modifier recibido desde fuera
+            Spacer(modifier = Modifier.padding(16.dp))
+            UserField(user) {
+                viewModel.onLoginDataChanged(
+                    it,
+                    password
+                )
+            } // Se recibe tanto el ultimo estado del user como de la password
+            PasswordField(password) { viewModel.onLoginDataChanged(user, it) }
+            Spacer(modifier = Modifier.padding(8.dp))
+            ForgotPassword(modifier = Modifier.align(Alignment.End))
+            Spacer(modifier = Modifier.padding(16.dp))
+            LoginButton(loginEnabled) {
+                coroutineScope.launch {
+                    viewModel.onLoginButtonClicked()
+                }
+            }
+        }
     }
 }
 
