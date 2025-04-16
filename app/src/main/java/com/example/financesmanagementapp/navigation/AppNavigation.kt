@@ -16,6 +16,7 @@ import com.example.financesmanagementapp.model.database.RegisterEntity
 import com.example.financesmanagementapp.screens.AddRegisterAmountScreen
 import com.example.financesmanagementapp.screens.HomeStartScreen
 import com.example.financesmanagementapp.ui.login.ui.LoginScreen
+import com.example.financesmanagementapp.ui.login.ui.LoginViewModel
 import com.example.financesmanagementapp.viewmodel.HomeViewModel
 
 private val registersListInstance = mutableListOf(
@@ -49,12 +50,12 @@ fun AppNavigation() {
 
     NavHost(navController = navController, startDestination = AppScreens./*HomeStartScreen*/LoginScreen.route) {
         composable(route = AppScreens./*HomeStartScreen*/LoginScreen.route) {
-            LoginScreen()
+            LoginScreen(LoginViewModel())
             /*HomeStartScreen(
                 navController = navController,
                 registersDetailList = registersList.value,
                 currentBalance = currentBalance.doubleValue,
-                currentBtcValueDouble = currentBtcValue.value.valueDouble,
+                currentBtcValueDouble = currentBtcValue.value.valueDouble, //TODO pasarle la instancia del viewmodel
                 onBtcButtonClick = {
                     homeViewModel.getCryptoPrice(btcUsdtTicker)
                 }

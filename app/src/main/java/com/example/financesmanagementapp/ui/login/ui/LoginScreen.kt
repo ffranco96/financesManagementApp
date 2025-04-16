@@ -1,5 +1,6 @@
 package com.example.financesmanagementapp.ui.login.ui
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -18,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,41 +31,58 @@ import androidx.compose.ui.unit.sp
 import com.example.financesmanagementapp.R
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(viewModel: LoginViewModel) {
     Box(
         Modifier
             .fillMaxSize()
             .imePadding()
             .padding(16.dp)
     ) {
-        Login(Modifier.align(Alignment.Center))
+        Login(Modifier.align(Alignment.Center), viewModel)
     }
 }
 
-//@Preview(showBackground = true)
 @Composable
-fun Login(modifier: Modifier) {
+fun Login(modifier: Modifier, viewModel: LoginViewModel) {
+    val user by viewModel.user.collectAsState(initial = "")
+    val password by viewModel.password.collectAsState(initial = "")
+    val loginEnabled by viewModel.loginEnabled.collectAsState(initial = false)
+
     Column(modifier = modifier) { // Para poder tener un modifier que alinee es necesario estar dentro de un Box
         HeaderImage(Modifier.align(Alignment.CenterHorizontally)) // Se usa Modifier que es el modificador de la columna, no el modifier recibido desde fuera
         Spacer(modifier = Modifier.padding(16.dp))
-        UserField()
-        PasswordField()
+        UserField(user) {
+            viewModel.onLoginDataChanged(
+                it,
+                password
+            )
+        } // Se recibe tanto el ultimo estado del user como de la password
+        PasswordField(password) { viewModel.onLoginDataChanged(user, it) }
         Spacer(modifier = Modifier.padding(8.dp))
         ForgotPassword(modifier = Modifier.align(Alignment.End))
         Spacer(modifier = Modifier.padding(16.dp))
-        LoginButton()
+        LoginButton(loginEnabled) { viewModel.onLoginButtonClicked() }
     }
 }
 
 @Composable
-fun LoginButton() {
-    Button(onClick = {},
+fun LoginButton(
+    loginEnabled: Boolean,
+    onLoginButtonClicked: () -> Unit
+) { // Principle: single source of truth
+    Button(
+        onClick = {
+            onLoginButtonClicked()
+        },
         Modifier
             .fillMaxWidth()
             .height(48.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFF005FD4)
-        )) {
+            containerColor = Color(0xFF005FD4),
+            disabledContainerColor = Color.LightGray
+        ),
+        enabled = loginEnabled
+    ) {
         Text("Ingresar", color = Color.White)
     }
 }
@@ -90,9 +109,11 @@ fun HeaderImage(modifier: Modifier) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UserField() {
+fun UserField(user: String, onTextFieldChanged: (String) -> Unit) {
+
     TextField(
-        value = "", onValueChange = {},
+        value = user,
+        onValueChange = { newText -> onTextFieldChanged(newText) }, // Podria haber sido it
         modifier = Modifier.fillMaxWidth(),
         placeholder = { Text("Ingrese usuario") },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Ascii),
@@ -107,9 +128,10 @@ fun UserField() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PasswordField() {
+fun PasswordField(password: String, onTextFieldChanged: (String) -> Unit) {
     TextField(
-        value = "", onValueChange = {},
+        value = password,
+        onValueChange = onTextFieldChanged, // Es posible asignarle directamente onTextFieldChanged, los tipos coinciden
         modifier = Modifier.fillMaxWidth(),
         placeholder = { Text("Ingrese contraseña") },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
