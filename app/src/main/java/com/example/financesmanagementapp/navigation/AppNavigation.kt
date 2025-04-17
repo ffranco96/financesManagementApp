@@ -1,10 +1,14 @@
 package com.example.financesmanagementapp.navigation
 
+import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.produceState
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavArgument
 import androidx.navigation.NavHost
@@ -49,7 +53,20 @@ fun AppNavigation() {
     val currentBalance = remember { mutableDoubleStateOf(0.0) }
     val currentBtcValue = homeViewModel.currentBtcValue.collectAsState()
 
-    NavHost(navController = navController, startDestination = AppScreens.LoginScreen.route) {
+    val context: Context = LocalContext.current
+
+    val startDestinationState = produceState(initialValue = AppScreens.LoginScreen.route) {
+        val prefs = context.getSharedPreferences("financesMgmtAppPrefs", Context.MODE_PRIVATE)
+        value = if (prefs.getBoolean("isLoggedIn", false)) {
+            AppScreens.HomeStartScreen.route
+        } else {
+            AppScreens.LoginScreen.route
+        }
+    }
+
+    Log.d("franco", "startDestinationState: $startDestinationState")
+
+    NavHost(navController = navController, startDestination = startDestinationState.value) {
         composable(route = AppScreens.LoginScreen.route) {
             LoginScreen(
                 navController = navController,

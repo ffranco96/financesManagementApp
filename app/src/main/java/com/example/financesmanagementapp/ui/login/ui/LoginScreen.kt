@@ -1,6 +1,5 @@
 package com.example.financesmanagementapp.ui.login.ui
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -16,7 +15,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -25,6 +23,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -57,6 +56,7 @@ fun Login(modifier: Modifier, viewModel: LoginViewModel, navController: NavContr
     val loginEnabled by viewModel.loginEnabled.collectAsState(initial = false)
     val isLoading by viewModel.isLoading.collectAsState(initial = false)
     val coroutineScope = rememberCoroutineScope() // Creates a coroutine scope to launch async tasks without blocking the main thread
+    val context = LocalContext.current
 
     if(isLoading){
         Box(Modifier.fillMaxSize()){
@@ -78,7 +78,7 @@ fun Login(modifier: Modifier, viewModel: LoginViewModel, navController: NavContr
             Spacer(modifier = Modifier.padding(16.dp))
             LoginButton(loginEnabled) {
                 coroutineScope.launch {
-                    viewModel.onLoginButtonClicked()
+                    viewModel.onLoginButtonClicked(context)
                     navController.navigate(route = AppScreens.HomeStartScreen.route)
                 }
             }
