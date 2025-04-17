@@ -43,15 +43,21 @@ fun AppNavigation() {
     val navController = rememberNavController()
 
     val homeViewModel: HomeViewModel = viewModel()
+    val loginViewModel: LoginViewModel = viewModel()
 
     val registersList = remember { mutableStateOf(registersListInstance) }
     val currentBalance = remember { mutableDoubleStateOf(0.0) }
     val currentBtcValue = homeViewModel.currentBtcValue.collectAsState()
 
-    NavHost(navController = navController, startDestination = AppScreens./*HomeStartScreen*/LoginScreen.route) {
-        composable(route = AppScreens./*HomeStartScreen*/LoginScreen.route) {
-            LoginScreen(LoginViewModel())
-            /*HomeStartScreen(
+    NavHost(navController = navController, startDestination = AppScreens.LoginScreen.route) {
+        composable(route = AppScreens.LoginScreen.route) {
+            LoginScreen(
+                navController = navController,
+                viewModel = loginViewModel
+            )
+        }
+        composable(route = AppScreens.HomeStartScreen.route) {
+            HomeStartScreen(
                 navController = navController,
                 registersDetailList = registersList.value,
                 currentBalance = currentBalance.doubleValue,
@@ -59,13 +65,11 @@ fun AppNavigation() {
                 onBtcButtonClick = {
                     homeViewModel.getCryptoPrice(btcUsdtTicker)
                 }
-            )*/
+            )
         }
         composable(
             route = AppScreens.AddRegisterAmountScreen.route + "/{text}",
-            arguments = listOf(navArgument(name = "text") {
-                type = NavType.StringType
-            })
+            arguments = listOf(navArgument(name = "text") { type = NavType.StringType })
         ) {
             AddRegisterAmountScreen(navController, it.arguments?.getString("text"))
         }

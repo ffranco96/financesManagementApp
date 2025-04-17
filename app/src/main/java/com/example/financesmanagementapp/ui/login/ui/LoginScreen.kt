@@ -30,23 +30,28 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.financesmanagementapp.R
+import com.example.financesmanagementapp.navigation.AppScreens
 import kotlinx.coroutines.launch
 
 @Composable
-fun LoginScreen(viewModel: LoginViewModel) {
+fun LoginScreen(
+    navController : NavController,
+    viewModel: LoginViewModel
+) {
     Box(
         Modifier
             .fillMaxSize()
             .imePadding()
             .padding(16.dp)
     ) {
-        Login(Modifier.align(Alignment.Center), viewModel)
+        Login(Modifier.align(Alignment.Center), viewModel, navController)
     }
 }
 
 @Composable
-fun Login(modifier: Modifier, viewModel: LoginViewModel) {
+fun Login(modifier: Modifier, viewModel: LoginViewModel, navController: NavController) {
     val user by viewModel.user.collectAsState(initial = "")
     val password by viewModel.password.collectAsState(initial = "")
     val loginEnabled by viewModel.loginEnabled.collectAsState(initial = false)
@@ -74,6 +79,7 @@ fun Login(modifier: Modifier, viewModel: LoginViewModel) {
             LoginButton(loginEnabled) {
                 coroutineScope.launch {
                     viewModel.onLoginButtonClicked()
+                    navController.navigate(route = AppScreens.HomeStartScreen.route)
                 }
             }
         }
