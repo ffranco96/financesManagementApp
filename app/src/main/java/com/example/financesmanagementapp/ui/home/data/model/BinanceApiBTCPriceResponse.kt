@@ -1,4 +1,4 @@
-package com.example.financesmanagementapp.model.database
+package com.example.financesmanagementapp.ui.home.data.model
 
 import com.google.gson.annotations.SerializedName
 

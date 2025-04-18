@@ -10,18 +10,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavArgument
-import androidx.navigation.NavHost
 import androidx.navigation.NavType
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.*
 import androidx.navigation.navArgument
-import com.example.financesmanagementapp.model.database.RegisterEntity
-import com.example.financesmanagementapp.screens.AddRegisterAmountScreen
-import com.example.financesmanagementapp.screens.HomeStartScreen
+import com.example.financesmanagementapp.ui.home.data.model.RegisterEntity
+import com.example.financesmanagementapp.ui.addregisteramount.ui.AddRegisterAmountScreen
+import com.example.financesmanagementapp.ui.home.ui.HomeStartScreen
 import com.example.financesmanagementapp.ui.login.ui.LoginScreen
 import com.example.financesmanagementapp.ui.login.ui.LoginViewModel
-import com.example.financesmanagementapp.viewmodel.HomeViewModel
+import com.example.financesmanagementapp.ui.home.ui.HomeViewModel
 
 private val registersListInstance = mutableListOf(
     RegisterEntity(-1000.00,"Club de la milanesa", "Lorem ipsum dolor sit amet, consectetur adipiscing elit", "Restaurant y comida rapida", "2024-05-25", "ARS") ,

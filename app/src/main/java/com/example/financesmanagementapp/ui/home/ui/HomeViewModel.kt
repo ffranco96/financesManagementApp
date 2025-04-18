@@ -1,16 +1,13 @@
-package com.example.financesmanagementapp.viewmodel
+package com.example.financesmanagementapp.ui.home.ui
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.financesmanagementapp.api.BinanceAPIService
-import com.example.financesmanagementapp.api.RetrofitInstance
-import kotlinx.coroutines.CoroutineScope
+import com.example.financesmanagementapp.ui.home.core.RetrofitInstance
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 data class BtcValueState(val valueDouble: Double = 0.0)
 

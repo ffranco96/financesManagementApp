@@ -1,4 +1,4 @@
-package com.example.financesmanagementapp.screens
+package com.example.financesmanagementapp.ui.home.ui
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -40,7 +40,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.financesmanagementapp.R
-import com.example.financesmanagementapp.model.database.RegisterEntity
+import com.example.financesmanagementapp.ui.home.data.model.RegisterEntity
 import com.example.financesmanagementapp.navigation.AppScreens
 
 @OptIn(ExperimentalMaterial3Api::class)

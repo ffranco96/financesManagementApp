@@ -1,10 +1,9 @@
-package com.example.financesmanagementapp.api
+package com.example.financesmanagementapp.ui.home.data.network
 
-import com.example.financesmanagementapp.model.database.BinanceApiBTCPriceResponse
+import com.example.financesmanagementapp.ui.home.data.model.BinanceApiBTCPriceResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
-import retrofit2.http.Url
 
 interface BinanceAPIService {
     @GET("avgPrice")

@@ -1,4 +1,4 @@
-package com.example.financesmanagementapp.model.database
+package com.example.financesmanagementapp.ui.home.data.model
 
 data class RegisterEntity (
     var amount: Double = 0.0,

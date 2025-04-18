@@ -1,20 +1,12 @@
 package com.example.financesmanagementapp
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.example.financesmanagementapp.api.BinanceAPIService
 import com.example.financesmanagementapp.ui.theme.FinancesManagementAppTheme
 import com.example.financesmanagementapp.navigation.AppNavigation
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 
 class MainActivity : ComponentActivity() {

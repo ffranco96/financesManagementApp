@@ -1,4 +1,5 @@
-package com.example.financesmanagementapp.api
+package com.example.financesmanagementapp.ui.home.core
+import com.example.financesmanagementapp.ui.home.data.network.BinanceAPIService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
