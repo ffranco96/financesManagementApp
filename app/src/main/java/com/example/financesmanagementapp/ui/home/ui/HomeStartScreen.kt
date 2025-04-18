@@ -28,6 +28,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,15 +43,14 @@ import androidx.navigation.NavController
 import com.example.financesmanagementapp.R
 import com.example.financesmanagementapp.ui.home.data.model.RegisterEntity
 import com.example.financesmanagementapp.navigation.AppScreens
+import com.example.financesmanagementapp.utils.Constants
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeStartScreen(
     navController : NavController,
     registersDetailList: List<RegisterEntity>,
-    currentBalance: Double,
-    onBtcButtonClick: () -> Unit,
-    currentBtcValueDouble : Double
+    viewModel: HomeViewModel
 ){
     Scaffold(
         topBar = { TopAppBar(title = {Text("Inicio") })},
@@ -72,7 +72,7 @@ fun HomeStartScreen(
                 .fillMaxWidth()
                 .padding(paddingValues)
         ){
-            BodyContent(navController, registersDetailList, currentBalance, onBtcButtonClick, currentBtcValueDouble)
+            BodyContent(navController, registersDetailList, viewModel)
         }
         val a = paddingValues // To avoid error
     }
@@ -82,10 +82,11 @@ fun HomeStartScreen(
 fun BodyContent(
     navControler : NavController,
     registersDetailList: List<RegisterEntity>,
-    currentBalance: Double,
-    onBtcButtonClick: () -> Unit,
-    currentBtcValueDouble: Double
+    viewModel: HomeViewModel
 ){
+    val currentBalance by viewModel.currentBalance.collectAsState(initial = 0.0)
+    val currentBtcValueDouble by viewModel.currentBtcValue.collectAsState(initial = 0.0)
+
     Column (
         modifier = Modifier
             .fillMaxWidth()
@@ -108,7 +109,7 @@ fun BodyContent(
             horizontalArrangement = Arrangement.Start
         ) {
             Text(text = "BTC: ${currentBtcValueDouble}", style = MaterialTheme.typography.titleLarge) // TODO esto va a estar en otra pantalla de Mercados o algo asi
-            Button(onClick = onBtcButtonClick){
+            Button(onClick = {viewModel.getCryptoPrice(Constants.BTC_USDT_TICKER)}){
                 Icon(Icons.Default.Refresh,"Sync btc value")
             }
         }
@@ -148,15 +149,6 @@ fun BodyContent(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
        RegistersList(registersDetailList)
-        /*Text("Monto 0 ARS", style = MaterialTheme.typography.labelLarge)
-        Button(onClick =
-        {
-            navControler.navigate(route = AppScreens.AddRegisterAmountScreen.route + "/Mi parametro") // Donde se displayara??
-            Log.d("franco", "Button")
-        }
-        ){
-            Text("+")
-        }*/
     }
 }
 

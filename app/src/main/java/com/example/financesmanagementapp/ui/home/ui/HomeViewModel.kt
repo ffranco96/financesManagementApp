@@ -9,12 +9,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-data class BtcValueState(val valueDouble: Double = 0.0)
-
 class HomeViewModel : ViewModel() {
-    private val _currentBtcValue = MutableStateFlow(BtcValueState())
-    val currentBtcValue: StateFlow<BtcValueState> = _currentBtcValue
+    private val _currentBtcValue = MutableStateFlow(0.0)
+    val currentBtcValue: StateFlow<Double> = _currentBtcValue
     val getBtcPriceUseCase = GetCryptoPriceUseCase()
+
+    private val _currentBalance = MutableStateFlow(0.0)
+    val currentBalance: StateFlow<Double> = _currentBalance
 
     fun getCryptoPrice(ticker: String) {
 
@@ -23,7 +24,7 @@ class HomeViewModel : ViewModel() {
             val btcPrice = getBtcPriceUseCase(ticker)
             Log.d("franco", "btc price nuevo: $btcPrice")
             btcPrice?.let {
-                _currentBtcValue.value = BtcValueState(valueDouble = btcPrice)
+                _currentBtcValue.value = btcPrice
             }
         }
     }

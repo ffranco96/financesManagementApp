@@ -48,8 +48,6 @@ fun AppNavigation() {
     val loginViewModel: LoginViewModel = viewModel()
 
     val registersList = remember { mutableStateOf(registersListInstance) }
-    val currentBalance = remember { mutableDoubleStateOf(0.0) }
-    val currentBtcValue = homeViewModel.currentBtcValue.collectAsState()
 
     val context: Context = LocalContext.current
 
@@ -75,11 +73,7 @@ fun AppNavigation() {
             HomeStartScreen(
                 navController = navController,
                 registersDetailList = registersList.value,
-                currentBalance = currentBalance.doubleValue,
-                currentBtcValueDouble = currentBtcValue.value.valueDouble, //TODO pasarle la instancia del viewmodel
-                onBtcButtonClick = {
-                    homeViewModel.getCryptoPrice(btcUsdtTicker)
-                }
+                viewModel = homeViewModel
             )
         }
         composable(
