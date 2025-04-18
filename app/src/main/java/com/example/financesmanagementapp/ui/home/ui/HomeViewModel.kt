@@ -3,9 +3,8 @@ package com.example.financesmanagementapp.ui.home.ui
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.financesmanagementapp.ui.home.core.RetrofitHelper
-import com.example.financesmanagementapp.ui.home.data.network.BinanceAPIService
-import kotlinx.coroutines.Dispatchers
+import com.example.financesmanagementapp.ui.home.data.BinanceRepository
+import com.example.financesmanagementapp.ui.home.data.network.BinanceService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -15,23 +14,17 @@ import java.math.RoundingMode
 data class BtcValueState(val valueDouble: Double = 0.0)
 
 class HomeViewModel : ViewModel() {
-    private val binanceService = BinanceAPIService()
+    private val binanceRepository = BinanceRepository()
     private val _currentBtcValue = MutableStateFlow(BtcValueState())
     val currentBtcValue: StateFlow<BtcValueState> = _currentBtcValue
 
     fun getCryptoPrice(ticker: String) {
         Log.d("franco", "ticker: $ticker")
         viewModelScope.launch {
-            val btcPrice = binanceService.getCryptoByTicker(ticker)
-            Log.d("franco", "btc price nuevo: ${BigDecimal(btcPrice?:0.0).setScale(2, RoundingMode.HALF_UP).toDouble()}")
+            val btcPrice = binanceRepository.getBtcPrice(ticker)
+            Log.d("franco", "btc price nuevo: $btcPrice")
             btcPrice?.let {
-                _currentBtcValue.value =
-                    BtcValueState(
-                        valueDouble = BigDecimal(btcPrice).setScale(
-                            2,
-                            RoundingMode.HALF_UP
-                        ).toDouble()
-                    )
+                _currentBtcValue.value = BtcValueState(valueDouble = btcPrice)
             }
         }
     }
