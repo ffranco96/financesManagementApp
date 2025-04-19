@@ -49,7 +49,6 @@ import com.example.financesmanagementapp.utils.Constants
 @Composable
 fun HomeStartScreen(
     navController : NavController,
-    registersDetailList: List<RegisterEntity>,
     viewModel: HomeViewModel
 ){
     Scaffold(
@@ -72,7 +71,7 @@ fun HomeStartScreen(
                 .fillMaxWidth()
                 .padding(paddingValues)
         ){
-            BodyContent(navController, registersDetailList, viewModel)
+            BodyContent(navController, viewModel)
         }
         val a = paddingValues // To avoid error
     }
@@ -81,11 +80,11 @@ fun HomeStartScreen(
 @Composable
 fun BodyContent(
     navControler : NavController,
-    registersDetailList: List<RegisterEntity>,
     viewModel: HomeViewModel
 ){
     val currentBalance by viewModel.currentBalance.collectAsState(initial = 0.0)
     val currentBtcValueDouble by viewModel.currentBtcValue.collectAsState(initial = 0.0)
+    val registersList by viewModel.registersList.collectAsState(initial = emptyList<RegisterEntity>())
 
     Column (
         modifier = Modifier
@@ -137,7 +136,7 @@ fun BodyContent(
         ) {
             Text(text = "Ultimos movimientos", style = MaterialTheme.typography.titleMedium)
             Button(
-                onClick = {/*TODO borra todos los registros*/}
+                onClick = {viewModel.clearRegistersList()}
             ){
                 Icon(Icons.Rounded.Delete, contentDescription = "Borrar todos los regs")
             }
@@ -148,7 +147,7 @@ fun BodyContent(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-       RegistersList(registersDetailList)
+       RegistersList(registersList)
     }
 }
 
