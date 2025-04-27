@@ -6,9 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.example.financesmanagementapp.ui.home.data.BinanceRepository
 import com.example.financesmanagementapp.ui.home.data.model.RegisterEntity
 import com.example.financesmanagementapp.ui.home.domain.GetCryptoPriceUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 private val registersListExample = mutableListOf(
     RegisterEntity(-1000.00,"Club de la milanesa", "Lorem ipsum dolor sit amet, consectetur adipiscing elit", "Restaurant y comida rapida", "2024-05-25", "ARS") ,
@@ -26,10 +28,12 @@ private val registersListExample = mutableListOf(
     RegisterEntity(-13000.00,"Club de la milanesa", "Pagamos a medias con mis amigos", "Restaurant y comida rapida", "2024-05-25", "ARS")
 )
 
-class HomeViewModel : ViewModel() {
+@HiltViewModel
+class HomeViewModel @Inject constructor(
+    private val getBtcPriceUseCase : GetCryptoPriceUseCase
+) : ViewModel(){
     private val _currentBtcValue = MutableStateFlow(0.0)
     val currentBtcValue: StateFlow<Double> = _currentBtcValue
-    val getBtcPriceUseCase = GetCryptoPriceUseCase()
 
     private val _currentBalance = MutableStateFlow(0.0)
     val currentBalance: StateFlow<Double> = _currentBalance

@@ -27,7 +27,7 @@ import com.example.financesmanagementapp.ui.home.ui.HomeViewModel
 fun AppNavigation() {
     val navController = rememberNavController()
 
-    val homeViewModel: HomeViewModel = viewModel()
+    val homeViewModel: HomeViewModel =  viewModel()
     val loginViewModel: LoginViewModel = viewModel()
 
     val context: Context = LocalContext.current
