@@ -3,9 +3,8 @@ package com.example.financesmanagementapp.ui.home.ui
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.financesmanagementapp.ui.home.data.BinanceRepository
 import com.example.financesmanagementapp.ui.home.data.model.RegisterEntity
-import com.example.financesmanagementapp.ui.home.domain.GetCryptoPriceUseCase
+import com.example.financesmanagementapp.ui.home.domain.GetCryptoPriceByTickerUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,7 +29,7 @@ private val registersListExample = mutableListOf(
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getBtcPriceUseCase : GetCryptoPriceUseCase
+    private val getBtcPriceUseCase : GetCryptoPriceByTickerUseCase
 ) : ViewModel(){
     private val _currentBtcValue = MutableStateFlow(0.0)
     val currentBtcValue: StateFlow<Double> = _currentBtcValue

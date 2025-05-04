@@ -15,8 +15,7 @@ class BinanceService @Inject constructor(private val api: BinanceAPIClient) { //
     suspend fun getCryptoByTicker(token: String): Double? {
         return withContext(Dispatchers.IO) {
             try {
-                val response =
-                    api.getCryptoByTicker(token)
+                val response = api.getCryptoByTicker(token)
                 val originalDouble = response.body()?.btcCurrentPrice?.toDoubleOrNull()
                 BigDecimal(originalDouble?:0.0).setScale(2, RoundingMode.HALF_UP).toDouble()
             }catch(e: Exception){
