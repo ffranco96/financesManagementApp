@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.financesmanagementapp.ui.home.data.model.RegisterEntity
+import com.example.financesmanagementapp.ui.home.domain.GetAllCryptoPricesUseCase
 import com.example.financesmanagementapp.ui.home.domain.GetCryptoPriceByTickerUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,7 +30,8 @@ private val registersListExample = mutableListOf(
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getBtcPriceUseCase : GetCryptoPriceByTickerUseCase
+    private val getBtcPriceUseCase : GetCryptoPriceByTickerUseCase,
+    private val getAllCryptoPricesUseCase: GetAllCryptoPricesUseCase
 ) : ViewModel(){
     private val _currentBtcValue = MutableStateFlow(0.0)
     val currentBtcValue: StateFlow<Double> = _currentBtcValue
@@ -49,6 +51,8 @@ class HomeViewModel @Inject constructor(
 
         Log.d("franco", "ticker: $ticker")
         viewModelScope.launch {
+            //val listOfPrices = getAllCryptoPricesUseCase()
+            //Log.d("franco", "listOfPrices: $listOfPrices")
             val btcPrice = getBtcPriceUseCase(ticker)
             Log.d("franco", "btc price nuevo: $btcPrice")
             btcPrice?.let {

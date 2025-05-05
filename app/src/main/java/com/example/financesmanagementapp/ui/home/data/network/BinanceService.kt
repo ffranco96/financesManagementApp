@@ -1,7 +1,6 @@
 package com.example.financesmanagementapp.ui.home.data.network
 
 import android.util.Log
-import com.example.financesmanagementapp.ui.home.core.RetrofitHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.math.BigDecimal
@@ -15,7 +14,7 @@ class BinanceService @Inject constructor(private val api: BinanceAPIClient) { //
     suspend fun getCryptoByTicker(token: String): Double? {
         return withContext(Dispatchers.IO) {
             try {
-                val response = api.getCryptoByTicker(token)
+                val response = api.getCryptoPriceByTicker(token)
                 val originalDouble = response.body()?.btcCurrentPrice?.toDoubleOrNull()
                 BigDecimal(originalDouble?:0.0).setScale(2, RoundingMode.HALF_UP).toDouble()
             }catch(e: Exception){

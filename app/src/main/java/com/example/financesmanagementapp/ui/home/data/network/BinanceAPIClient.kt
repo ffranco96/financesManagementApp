@@ -7,5 +7,5 @@ import retrofit2.http.Query
 
 interface BinanceAPIClient {
     @GET("avgPrice")
-    suspend fun getCryptoByTicker(@Query("symbol") token:String):Response<BinanceApiBTCPriceResponse>
+    suspend fun getCryptoPriceByTicker(@Query("symbol") token:String):Response<BinanceApiBTCPriceResponse>
 }
