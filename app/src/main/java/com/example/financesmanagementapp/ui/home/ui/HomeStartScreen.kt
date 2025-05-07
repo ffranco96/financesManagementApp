@@ -53,7 +53,7 @@ import com.example.financesmanagementapp.utils.Constants
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeStartScreen(
-    navController : NavController,
+    navController: NavController,
     viewModel: HomeViewModel
 ){
     val record = navController.currentBackStackEntry?.savedStateHandle?.
@@ -71,11 +71,15 @@ fun HomeStartScreen(
         observeWorker(context)
     }
     Scaffold(
-        topBar = { TopAppBar(title = {Text("Inicio") })},
+        topBar = {
+            TopAppBar(
+                title = { Text("Inicio") }
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    navController.navigate(route = AppScreens.AddRegisterAmountScreen.route + "/Mi parametro") // Donde se displayara??
+                    navController.navigate(route = AppScreens.AddRecordAmountScreen.route + "/Mi parametro") // Donde se displayara??
                     //registersDetailList
                     Log.d("franco", "Clciked floating action button")
                 },
@@ -85,11 +89,11 @@ fun HomeStartScreen(
             }
         }
     ) { paddingValues ->
-        Column (
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(paddingValues)
-        ){
+        ) {
             BodyContent(navController, viewModel)
         }
         val a = paddingValues // To avoid error
@@ -98,17 +102,17 @@ fun HomeStartScreen(
 
 @Composable
 fun BodyContent(
-    navControler : NavController,
+    navControler: NavController,
     viewModel: HomeViewModel
-){
+) {
     val currentBalance by viewModel.currentBalance.collectAsState(initial = 0.0)
     val currentBtcValueDouble by viewModel.btcPrice.collectAsState(initial = 0.0)
     val registersList by viewModel.registersList.collectAsState(initial = emptyList<RegisterEntity>())
 
-    Column (
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-    ){
+    ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Start
@@ -118,45 +122,49 @@ fun BodyContent(
             Text(text = currentBalance.toString(), style = MaterialTheme.typography.titleLarge)
         }
     }
-    Column (
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-    ){
+    ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Start
         ) {
-            Text(text = "BTC: $currentBtcValueDouble", style = MaterialTheme.typography.titleLarge) // TODO esto va a estar en otra pantalla de Mercados o algo asi
-            Button(onClick = {viewModel.getCryptoPrice(Constants.BTC_USDT_TICKER)}){
-                Icon(Icons.Default.Refresh,"Sync btc value")
+            Text(
+                text = "BTC: ${currentBtcValueDouble}",
+                style = MaterialTheme.typography.titleLarge
+            ) // TODO esto va a estar en otra pantalla de Mercados o algo asi
+            Button(onClick = { viewModel.getCryptoPrice(Constants.BTC_USDT_TICKER) }) {
+                Icon(Icons.Default.Refresh, "Sync btc value")
             }
         }
     }
-    Column (
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-    ){
+    ) {
         Button(
             onClick = {/*
                 navControler.navigate(route = AppScreens.AddRegisterAmountScreen.route + "/Mi parametro") // Donde se displayara??
                 Log.d("franco", "Boton que te lleva a los graficos")
-            */}
-        ){
+            */
+            }
+        ) {
             Text("Graficos")
         }
     }
-    Column (
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-    ){
+    ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(text = "Ultimos movimientos", style = MaterialTheme.typography.titleMedium)
             Button(
-                onClick = {viewModel.clearRegistersList()}
-            ){
+                onClick = { viewModel.clearRegistersList() }
+            ) {
                 Icon(Icons.Rounded.Delete, contentDescription = "Borrar todos los regs")
             }
         }
@@ -166,7 +174,7 @@ fun BodyContent(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-       RegistersList(registersList)
+        RegistersList(registersList)
     }
 }
 
@@ -201,11 +209,12 @@ fun observeWorker(context: Context){
 
 @Composable
 fun RegistersList(registersDetailList: List<RegisterEntity>) {
-    LazyColumn(modifier = Modifier
-        .fillMaxWidth(),
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxWidth(),
         horizontalAlignment = Alignment.Start
-    ){
-        items(registersDetailList){ registerDetail ->
+    ) {
+        items(registersDetailList) { registerDetail ->
             Spacer(modifier = Modifier.height(8.dp))
             Register(registerDetail)
         }
@@ -214,10 +223,15 @@ fun RegistersList(registersDetailList: List<RegisterEntity>) {
 
 @Composable
 fun Register(regEntityData: RegisterEntity) {
-    val regTextData = listOf(regEntityData.title, regEntityData.description) // TODO Temporal, agregar mas caracteristicas
-    Row(modifier = Modifier.
-    background(MaterialTheme.colorScheme.background)
-        .padding(8.dp))
+    val regTextData = listOf(
+        regEntityData.title,
+        regEntityData.description
+    ) // TODO Temporal, agregar mas caracteristicas
+    Row(
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.background)
+            .padding(8.dp)
+    )
     {
         MyImage()
         RegisterContent(regTextData)
@@ -228,14 +242,16 @@ fun Register(regEntityData: RegisterEntity) {
 fun RegisterContent(regTextData: List<String>) {
     var expanded by remember { mutableStateOf(false) } // Necesitamos que la variable mute en tiempo de ejecucion.
     // Ademas necesitamos que la variable mute a nivel de estado, y que esto haga que se repiten la interfaz
-    Column(modifier = Modifier.padding(start = 8.dp).clickable {
-        expanded = !expanded
-    }) {
+    Column(modifier = Modifier
+        .padding(start = 8.dp)
+        .clickable {
+            expanded = !expanded
+        }) {
         RegisterTitle(regTextData[0], MaterialTheme.typography.labelLarge)
         RegisterDescription(
             regTextData[1],
             MaterialTheme.typography.labelMedium,
-            if(expanded) Int.MAX_VALUE else 1
+            if (expanded) Int.MAX_VALUE else 1
         )
     }
 }
@@ -258,12 +274,13 @@ fun RegisterDescription(desc: String, style: TextStyle, lines: Int = Int.MAX_VAL
 }
 
 @Composable
-fun MyImage(){
+fun MyImage() {
     Image(
         painterResource(R.drawable.ic_launcher_foreground),
         "Mi imagen",
         modifier = Modifier
             .size(50.dp)
             .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.onBackground))
+            .background(MaterialTheme.colorScheme.onBackground)
+    )
 }
