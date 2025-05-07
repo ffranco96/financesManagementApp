@@ -56,6 +56,12 @@ fun HomeStartScreen(
     navController : NavController,
     viewModel: HomeViewModel
 ){
+    val record = navController.currentBackStackEntry?.savedStateHandle?.
+    getStateFlow<Record?>("record", null)
+    record?.let{
+        Log.d("franco","Valor actual del Record: ${record.value}")
+    }
+
     val context = LocalContext.current
 
     observeValuesUpdatedByWorker(context, viewModel)

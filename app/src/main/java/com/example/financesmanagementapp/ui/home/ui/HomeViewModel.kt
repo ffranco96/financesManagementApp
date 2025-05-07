@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.financesmanagementapp.ui.Record
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -48,6 +49,9 @@ class HomeViewModel @Inject constructor(
 
     private val _registersList = MutableStateFlow(registersListExample)
     val registersList: StateFlow<MutableList<RegisterEntity>> = _registersList
+
+    private val _recordTest = MutableStateFlow(Record())
+    val recordTest: StateFlow<Record> = _recordTest
 
     private val _btcPrice = MutableStateFlow("0.0")
     val btcPrice: StateFlow<String> = _btcPrice
