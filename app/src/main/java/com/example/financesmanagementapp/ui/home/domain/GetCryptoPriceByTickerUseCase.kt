@@ -6,7 +6,7 @@ import javax.inject.Inject
 class GetCryptoPriceByTickerUseCase @Inject constructor(
     private val repository : BinanceRepository
 ) {
-    suspend operator fun invoke(ticker: String): Double? {
+    suspend operator fun invoke(ticker: String): Double {
         return repository.getCryptoPrice(ticker)
     }
 }
