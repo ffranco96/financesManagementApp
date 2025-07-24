@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.financesmanagementapp.ui.home.data.model.RegisterEntity
+import com.example.financesmanagementapp.ui.home.di.ServiceLocator
 import com.example.financesmanagementapp.ui.home.domain.GetAllCryptoPricesUseCase
 import com.example.financesmanagementapp.ui.home.domain.GetCryptoPriceByTickerUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -41,6 +42,12 @@ class HomeViewModel @Inject constructor(
 
     private val _registersList = MutableStateFlow(registersListExample)
     val registersList: StateFlow<MutableList<RegisterEntity>> = _registersList
+
+    init {
+        if (ServiceLocator.getBtcPriceUseCase == null) {
+            ServiceLocator.getBtcPriceUseCase = getBtcPriceUseCase
+        }
+    }
 
     fun clearRegistersList() {
         Log.d("franco", "clearRegistersList")
