@@ -20,9 +20,10 @@ class UpdateCryptoactivesWorker (
         // ver que valor trae, por que el useCase null es por
         return if (useCase != null) {
             val price = useCase.invoke(Constants.BTC_USDT_TICKER)
-            Log.d("PriceWorker", "Precio BTC: $price")
-            val output = workDataOf("btc_price" to price.toString())
-            Result.success(output)
+            Log.d("doWork", "Precio BTC: $price")
+            val prefs = applicationContext.getSharedPreferences("btc_price_pref", Context.MODE_PRIVATE)
+            prefs.edit().putString("btc_price", price.toString()).apply()
+            Result.success()
         } else {
             Log.e("PriceWorker", "UseCase no inicializado")
             Result.retry()

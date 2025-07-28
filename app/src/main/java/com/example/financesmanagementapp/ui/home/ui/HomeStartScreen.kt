@@ -58,7 +58,7 @@ fun HomeStartScreen(
 ){
     val context = LocalContext.current
 
-    observeWorkerResult(context, viewModel)
+    observeValuesUpdatedByWorker(context, viewModel)
 
     LaunchedEffect(Unit) {
         viewModel.setupWorkers(context)
@@ -164,29 +164,30 @@ fun BodyContent(
     }
 }
 
-fun observeWorkerResult(context: Context, viewModel: HomeViewModel) {
+fun observeValuesUpdatedByWorker(context: Context, viewModel: HomeViewModel) {
     Log.d("franco", "Paso por el observer")
     WorkManager.getInstance(context)
         .getWorkInfosForUniqueWorkLiveData("btc_price_worker")
         .observeForever { workInfos ->
             val workInfo = workInfos?.firstOrNull()
-            if (workInfo?.state == WorkInfo.State.RUNNING) {
-                val precio = workInfo.outputData.getString("btc_price")
-                Log.d("franco", "observWorkerResult, precio: $precio")
-                viewModel.updateBtcPrice(precio.toString())
+            if (workInfo?.state != WorkInfo.State.RUNNING) {
+                val prefs = context.getSharedPreferences("btc_price_pref", Context.MODE_PRIVATE)
+                val price = prefs.getString("btc_price","0.0")
+                Log.d("franco", "observWorkerResult, price: $price")
+                viewModel.updateBtcPrice(price.toString())
             }
         }
 }
 
 fun observeWorker(context: Context){
+    //Just for logs
     WorkManager.getInstance(context)
         .getWorkInfosForUniqueWorkLiveData("btc_price_worker")
         .observeForever{ workInfos ->
             val workInfo = workInfos?.firstOrNull()
             Log.d("franco", "workinfo state: ${workInfo?.state}")
-            val date = java.util.Date(workInfo?.nextScheduleTimeMillis?:0L)
             val format = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-            format.timeZone = java.util.TimeZone.getTimeZone("UTC-3")
+            format.timeZone = java.util.TimeZone.getTimeZone("UTC")
             val formatted = format.format(workInfo?.nextScheduleTimeMillis)
             Log.d("franco", "workinfo time: ${formatted}")
         }
