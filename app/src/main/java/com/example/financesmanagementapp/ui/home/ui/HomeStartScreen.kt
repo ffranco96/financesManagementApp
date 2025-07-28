@@ -1,5 +1,6 @@
 package com.example.financesmanagementapp.ui.home.ui
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -42,6 +43,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
 import com.example.financesmanagementapp.R
 import com.example.financesmanagementapp.ui.home.data.model.RegisterEntity
 import com.example.financesmanagementapp.navigation.AppScreens
@@ -55,8 +58,11 @@ fun HomeStartScreen(
 ){
     val context = LocalContext.current
 
+    observeWorkerResult(context, viewModel)
+
     LaunchedEffect(Unit) {
         viewModel.setupWorkers(context)
+        observeWorker(context)
     }
     Scaffold(
         topBar = { TopAppBar(title = {Text("Inicio") })},
@@ -90,7 +96,7 @@ fun BodyContent(
     viewModel: HomeViewModel
 ){
     val currentBalance by viewModel.currentBalance.collectAsState(initial = 0.0)
-    val currentBtcValueDouble by viewModel.currentBtcValue.collectAsState(initial = 0.0)
+    val currentBtcValueDouble by viewModel.btcPrice.collectAsState(initial = 0.0)
     val registersList by viewModel.registersList.collectAsState(initial = emptyList<RegisterEntity>())
 
     Column (
@@ -114,7 +120,7 @@ fun BodyContent(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Start
         ) {
-            Text(text = "BTC: ${currentBtcValueDouble}", style = MaterialTheme.typography.titleLarge) // TODO esto va a estar en otra pantalla de Mercados o algo asi
+            Text(text = "BTC: $currentBtcValueDouble", style = MaterialTheme.typography.titleLarge) // TODO esto va a estar en otra pantalla de Mercados o algo asi
             Button(onClick = {viewModel.getCryptoPrice(Constants.BTC_USDT_TICKER)}){
                 Icon(Icons.Default.Refresh,"Sync btc value")
             }
@@ -156,6 +162,34 @@ fun BodyContent(
     ) {
        RegistersList(registersList)
     }
+}
+
+fun observeWorkerResult(context: Context, viewModel: HomeViewModel) {
+    Log.d("franco", "Paso por el observer")
+    WorkManager.getInstance(context)
+        .getWorkInfosForUniqueWorkLiveData("btc_price_worker")
+        .observeForever { workInfos ->
+            val workInfo = workInfos?.firstOrNull()
+            if (workInfo?.state == WorkInfo.State.RUNNING) {
+                val precio = workInfo.outputData.getString("btc_price")
+                Log.d("franco", "observWorkerResult, precio: $precio")
+                viewModel.updateBtcPrice(precio.toString())
+            }
+        }
+}
+
+fun observeWorker(context: Context){
+    WorkManager.getInstance(context)
+        .getWorkInfosForUniqueWorkLiveData("btc_price_worker")
+        .observeForever{ workInfos ->
+            val workInfo = workInfos?.firstOrNull()
+            Log.d("franco", "workinfo state: ${workInfo?.state}")
+            val date = java.util.Date(workInfo?.nextScheduleTimeMillis?:0L)
+            val format = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+            format.timeZone = java.util.TimeZone.getTimeZone("UTC-3")
+            val formatted = format.format(workInfo?.nextScheduleTimeMillis)
+            Log.d("franco", "workinfo time: ${formatted}")
+        }
 }
 
 @Composable

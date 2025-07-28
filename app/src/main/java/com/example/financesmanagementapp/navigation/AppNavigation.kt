@@ -14,7 +14,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.*
 import androidx.navigation.navArgument
-import com.example.financesmanagementapp.ui.home.data.model.RegisterEntity
 import com.example.financesmanagementapp.ui.addregisteramount.ui.AddRegisterAmountScreen
 import com.example.financesmanagementapp.ui.home.ui.HomeStartScreen
 import com.example.financesmanagementapp.ui.login.ui.LoginScreen
@@ -40,8 +39,6 @@ fun AppNavigation() {
             AppScreens.LoginScreen.route
         }
     }
-
-    Log.d("franco", "startDestinationState: $startDestinationState")
 
     NavHost(navController = navController, startDestination = startDestinationState.value) {
         composable(route = AppScreens.LoginScreen.route) {

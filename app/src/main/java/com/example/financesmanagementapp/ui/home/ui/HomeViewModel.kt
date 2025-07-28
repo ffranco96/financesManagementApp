@@ -50,6 +50,9 @@ class HomeViewModel @Inject constructor(
     private val _registersList = MutableStateFlow(registersListExample)
     val registersList: StateFlow<MutableList<RegisterEntity>> = _registersList
 
+    private val _btcPrice = MutableStateFlow("0.0")
+    val btcPrice: StateFlow<String> = _btcPrice
+
     init {
         if (ServiceLocator.getBtcPriceUseCase == null) {
             ServiceLocator.getBtcPriceUseCase = getBtcPriceUseCase
@@ -62,9 +65,13 @@ class HomeViewModel @Inject constructor(
     }
 
     fun setupWorkers(context: Context){
-        val btcPriceWorkRequest = PeriodicWorkRequestBuilder<UpdateCryptoactivesWorker>(15, TimeUnit.MINUTES).build()
+        val btcPriceWorkRequest = PeriodicWorkRequestBuilder<UpdateCryptoactivesWorker>(1, TimeUnit.MINUTES).build()
         WorkManager.getInstance(context).enqueueUniquePeriodicWork("btc_price_worker",
             ExistingPeriodicWorkPolicy.KEEP,btcPriceWorkRequest)
+    }
+
+    fun updateBtcPrice(newPrice: String){
+        _btcPrice.value = newPrice
     }
 
     fun getCryptoPrice(ticker: String) {
@@ -75,8 +82,8 @@ class HomeViewModel @Inject constructor(
             //Log.d("franco", "listOfPrices: $listOfPrices")
             val btcPrice = getBtcPriceUseCase(ticker)
             Log.d("franco", "btc price nuevo: $btcPrice")
-            btcPrice?.let {
-                _currentBtcValue.value = btcPrice
+            btcPrice.let {
+                _btcPrice.value = btcPrice.toString()
             }
         }
     }
