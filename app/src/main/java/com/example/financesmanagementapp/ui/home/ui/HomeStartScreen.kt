@@ -2,6 +2,10 @@ package com.example.financesmanagementapp.ui.home.ui
 
 import android.content.Context
 import android.util.Log
+import com.example.financesmanagementapp.R
+import com.example.financesmanagementapp.navigation.AppScreens
+import com.example.financesmanagementapp.ui.home.data.model.RegisterEntity
+import com.example.financesmanagementapp.utils.Constants
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -41,14 +45,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.navigation.NavController
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import com.example.financesmanagementapp.R
-import com.example.financesmanagementapp.ui.home.data.model.RegisterEntity
-import com.example.financesmanagementapp.navigation.AppScreens
-import com.example.financesmanagementapp.utils.Constants
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,13 +69,24 @@ fun HomeStartScreen(
         observeWorker(context)
     }
     Scaffold(
-        topBar = { TopAppBar(title = {Text("Inicio") })},
+        topBar = {
+            CenterAlignedTopAppBar(title = {
+                Text(
+                    "Inicio",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 30.sp,
+                    color = Color(0xFF058CC4),
+                    fontFamily = FontFamily.Serif
+                )
+            },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color(0xFF5ACBEA)
+                ))
+                 },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    navController.navigate(route = AppScreens.AddRegisterAmountScreen.route + "/Mi parametro") // Donde se displayara??
-                    //registersDetailList
-                    Log.d("franco", "Clciked floating action button")
+                    navController.navigate(route = AppScreens.AddRegisterAmountScreen.route + "/Mi parametro")
                 },
                 modifier = Modifier.padding(16.dp)
             ) {
