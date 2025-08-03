@@ -187,7 +187,7 @@ fun observeWorker(context: Context){
             val workInfo = workInfos?.firstOrNull()
             Log.d("franco", "workinfo state: ${workInfo?.state}")
             val format = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-            format.timeZone = java.util.TimeZone.getTimeZone("UTC")
+            format.timeZone = java.util.TimeZone.getTimeZone("America/Argentina/Buenos_Aires") // America/Argentina/Buenos_Aires
             val formatted = format.format(workInfo?.nextScheduleTimeMillis)
             Log.d("franco", "workinfo time: ${formatted}")
         }
