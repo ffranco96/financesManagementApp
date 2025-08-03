@@ -8,12 +8,12 @@ plugins {
 
 android {
     namespace = "com.example.financesmanagementapp"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.financesmanagementapp"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -67,6 +67,8 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.coroutines.android)
+    implementation(libs.work.runtime)
+    implementation(libs.work.test)
     implementation(libs.lifecycle)
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)

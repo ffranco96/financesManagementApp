@@ -1,5 +1,6 @@
 package com.example.financesmanagementapp.ui.home.ui
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -28,6 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,10 +38,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
 import com.example.financesmanagementapp.R
 import com.example.financesmanagementapp.ui.home.data.model.RegisterEntity
 import com.example.financesmanagementapp.navigation.AppScreens
@@ -51,6 +56,14 @@ fun HomeStartScreen(
     navController : NavController,
     viewModel: HomeViewModel
 ){
+    val context = LocalContext.current
+
+    observeValuesUpdatedByWorker(context, viewModel)
+
+    LaunchedEffect(Unit) {
+        viewModel.setupWorkers(context)
+        observeWorker(context)
+    }
     Scaffold(
         topBar = { TopAppBar(title = {Text("Inicio") })},
         floatingActionButton = {
@@ -83,7 +96,7 @@ fun BodyContent(
     viewModel: HomeViewModel
 ){
     val currentBalance by viewModel.currentBalance.collectAsState(initial = 0.0)
-    val currentBtcValueDouble by viewModel.currentBtcValue.collectAsState(initial = 0.0)
+    val currentBtcValueDouble by viewModel.btcPrice.collectAsState(initial = 0.0)
     val registersList by viewModel.registersList.collectAsState(initial = emptyList<RegisterEntity>())
 
     Column (
@@ -107,7 +120,7 @@ fun BodyContent(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Start
         ) {
-            Text(text = "BTC: ${currentBtcValueDouble}", style = MaterialTheme.typography.titleLarge) // TODO esto va a estar en otra pantalla de Mercados o algo asi
+            Text(text = "BTC: $currentBtcValueDouble", style = MaterialTheme.typography.titleLarge) // TODO esto va a estar en otra pantalla de Mercados o algo asi
             Button(onClick = {viewModel.getCryptoPrice(Constants.BTC_USDT_TICKER)}){
                 Icon(Icons.Default.Refresh,"Sync btc value")
             }
@@ -149,6 +162,35 @@ fun BodyContent(
     ) {
        RegistersList(registersList)
     }
+}
+
+fun observeValuesUpdatedByWorker(context: Context, viewModel: HomeViewModel) {
+    Log.d("franco", "Paso por el observer")
+    WorkManager.getInstance(context)
+        .getWorkInfosForUniqueWorkLiveData("btc_price_worker")
+        .observeForever { workInfos ->
+            val workInfo = workInfos?.firstOrNull()
+            if (workInfo?.state != WorkInfo.State.RUNNING) {
+                val prefs = context.getSharedPreferences("btc_price_pref", Context.MODE_PRIVATE)
+                val price = prefs.getString("btc_price","0.0")
+                Log.d("franco", "observWorkerResult, price: $price")
+                viewModel.updateBtcPrice(price.toString())
+            }
+        }
+}
+
+fun observeWorker(context: Context){
+    //Just for logs
+    WorkManager.getInstance(context)
+        .getWorkInfosForUniqueWorkLiveData("btc_price_worker")
+        .observeForever{ workInfos ->
+            val workInfo = workInfos?.firstOrNull()
+            Log.d("franco", "workinfo state: ${workInfo?.state}")
+            val format = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+            format.timeZone = java.util.TimeZone.getTimeZone("America/Argentina/Buenos_Aires") // America/Argentina/Buenos_Aires
+            val formatted = format.format(workInfo?.nextScheduleTimeMillis)
+            Log.d("franco", "workinfo time: ${formatted}")
+        }
 }
 
 @Composable

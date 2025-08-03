@@ -35,7 +35,6 @@ class LoginViewModel @Inject constructor(
     private fun isValidUser(user: String): Boolean = user.length > 6
     private fun isValidPassword(password: String): Boolean = password.length > 6
     suspend fun onLoginButtonClicked(context: Context) {
-        Log.d("franco", "Hola")
         // Actions to be done when the user presses to perform login
         _isLoading.value = true
         delay(2000) // It's a coroutine

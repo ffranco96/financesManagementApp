@@ -1,15 +1,22 @@
 package com.example.financesmanagementapp.ui.home.ui
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.financesmanagementapp.ui.home.data.model.RegisterEntity
+import com.example.financesmanagementapp.ui.home.data.worker.UpdateCryptoactivesWorker
+import com.example.financesmanagementapp.ui.home.di.ServiceLocator
 import com.example.financesmanagementapp.ui.home.domain.GetAllCryptoPricesUseCase
 import com.example.financesmanagementapp.ui.home.domain.GetCryptoPriceByTickerUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 private val registersListExample = mutableListOf(
@@ -42,9 +49,28 @@ class HomeViewModel @Inject constructor(
     private val _registersList = MutableStateFlow(registersListExample)
     val registersList: StateFlow<MutableList<RegisterEntity>> = _registersList
 
+    private val _btcPrice = MutableStateFlow("0.0")
+    val btcPrice: StateFlow<String> = _btcPrice
+
+    init {
+        if (ServiceLocator.getBtcPriceUseCase == null) {
+            ServiceLocator.getBtcPriceUseCase = getBtcPriceUseCase
+        }
+    }
+
     fun clearRegistersList() {
         Log.d("franco", "clearRegistersList")
         _registersList.value = mutableListOf()
+    }
+
+    fun setupWorkers(context: Context){
+        val btcPriceWorkRequest = PeriodicWorkRequestBuilder<UpdateCryptoactivesWorker>(1, TimeUnit.MINUTES).build()
+        WorkManager.getInstance(context).enqueueUniquePeriodicWork("btc_price_worker",
+            ExistingPeriodicWorkPolicy.KEEP,btcPriceWorkRequest)
+    }
+
+    fun updateBtcPrice(newPrice: String){
+        _btcPrice.value = newPrice
     }
 
     fun getCryptoPrice(ticker: String) {
@@ -55,8 +81,8 @@ class HomeViewModel @Inject constructor(
             //Log.d("franco", "listOfPrices: $listOfPrices")
             val btcPrice = getBtcPriceUseCase(ticker)
             Log.d("franco", "btc price nuevo: $btcPrice")
-            btcPrice?.let {
-                _currentBtcValue.value = btcPrice
+            btcPrice.let {
+                _btcPrice.value = btcPrice.toString()
             }
         }
     }
