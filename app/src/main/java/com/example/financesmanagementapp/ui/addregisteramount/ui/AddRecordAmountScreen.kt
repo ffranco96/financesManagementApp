@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -20,10 +19,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
@@ -36,8 +33,12 @@ import com.example.financesmanagementapp.ui.Record
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddRecordAmountScreen(navController: NavController, text: String?) {
-    var amountText by remember { mutableStateOf("") }
+fun AddRecordAmountScreen(
+    navController: NavController,
+    text: String?,
+    viewModel: AddRecordAmountViewModel
+) {
+    val amountText by viewModel.amountText.collectAsState()
 
     Scaffold(topBar = {
         TopAppBar(
@@ -71,9 +72,7 @@ fun AddRecordAmountScreen(navController: NavController, text: String?) {
         SecondBodyContent(
             valueAmountText = amountText,
             onValueAmountTextChange = { newValue ->
-                if (newValue.all { it.isDigit() || it == '.' }) {
-                    amountText = newValue
-                }
+                viewModel.onAmountTextChanged(newValue)
             }
         )
     }
@@ -91,7 +90,6 @@ fun SecondBodyContent(valueAmountText: String, onValueAmountTextChange: (String)
         TextField(
             value = valueAmountText,
             onValueChange = onValueAmountTextChange,
-            label = { Text("0.00", style = MaterialTheme.typography.bodyLarge) },
             placeholder = { Text("0.00", style = MaterialTheme.typography.bodyLarge) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             singleLine = true
@@ -101,10 +99,11 @@ fun SecondBodyContent(valueAmountText: String, onValueAmountTextChange: (String)
 
 @Preview(showBackground = true)
 @Composable
-fun AddRegisterAmountScreenPreview() {
+fun AddRecordAmountScreenPreview() {
     // Crea un NavController simulado para la preview
     val navController = rememberNavController()
+    val viewModel = AddRecordAmountViewModel()
 
     // Llama a tu composable con valores de prueba
-    AddRecordAmountScreen(navController = navController, text = "Texto de ejemplo")
+    AddRecordAmountScreen(navController = navController, text = "Texto de ejemplo", viewModel = viewModel )
 }

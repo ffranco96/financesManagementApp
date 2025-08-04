@@ -12,6 +12,7 @@ import androidx.navigation.compose.*
 import androidx.navigation.navArgument
 import com.example.financesmanagementapp.ui.addrecordetail.ui.AddRecordDetailScreen
 import com.example.financesmanagementapp.ui.addregisteramount.ui.AddRecordAmountScreen
+import com.example.financesmanagementapp.ui.addregisteramount.ui.AddRecordAmountViewModel
 import com.example.financesmanagementapp.ui.home.ui.HomeStartScreen
 import com.example.financesmanagementapp.ui.login.ui.LoginScreen
 import com.example.financesmanagementapp.ui.login.ui.LoginViewModel
@@ -25,6 +26,7 @@ fun AppNavigation() {
 
     val homeViewModel: HomeViewModel =  viewModel()
     val loginViewModel: LoginViewModel = viewModel()
+    val addRecordAmountViewModel: AddRecordAmountViewModel = viewModel()
 
     val context: Context = LocalContext.current
 
@@ -54,7 +56,11 @@ fun AppNavigation() {
             route = AppScreens.AddRecordAmountScreen.route + "/{text}",
             arguments = listOf(navArgument(name = "text") { type = NavType.StringType })
         ) {
-            AddRecordAmountScreen(navController, it.arguments?.getString("text"))
+            AddRecordAmountScreen(
+                navController,
+                it.arguments?.getString("text"),
+                addRecordAmountViewModel
+            )
         }
         composable(route = AppScreens.AddRecordDetailScreen.route){
             AddRecordDetailScreen(
