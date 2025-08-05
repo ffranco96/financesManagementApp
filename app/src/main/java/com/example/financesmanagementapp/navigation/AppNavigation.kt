@@ -11,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.*
 import androidx.navigation.navArgument
 import com.example.financesmanagementapp.ui.addrecordetail.ui.AddRecordDetailScreen
+import com.example.financesmanagementapp.ui.addrecordetail.ui.AddRecordDetailViewModel
 import com.example.financesmanagementapp.ui.addregisteramount.ui.AddRecordAmountScreen
 import com.example.financesmanagementapp.ui.addregisteramount.ui.AddRecordAmountViewModel
 import com.example.financesmanagementapp.ui.home.ui.HomeStartScreen
@@ -27,6 +28,7 @@ fun AppNavigation() {
     val homeViewModel: HomeViewModel =  viewModel()
     val loginViewModel: LoginViewModel = viewModel()
     val addRecordAmountViewModel: AddRecordAmountViewModel = viewModel()
+    val addRecordDetailViewModel: AddRecordDetailViewModel = viewModel()
 
     val context: Context = LocalContext.current
 
@@ -64,7 +66,8 @@ fun AppNavigation() {
         }
         composable(route = AppScreens.AddRecordDetailScreen.route){
             AddRecordDetailScreen(
-                navController = navController
+                navController = navController,
+                addRecordDetailViewModel
             )
         }
     }

@@ -71,15 +71,15 @@ fun AddRecordAmountScreen(
         val a = it // To avoid error
         SecondBodyContent(
             valueAmountText = amountText,
-            onValueAmountTextChange = { newValue ->
-                viewModel.onAmountTextChanged(newValue)
+            onAmountTextChange = { newValue ->
+                viewModel.onAmountTextChange(newValue)
             }
         )
     }
 }
 
 @Composable
-fun SecondBodyContent(valueAmountText: String, onValueAmountTextChange: (String) -> Unit) {
+fun SecondBodyContent(valueAmountText: String, onAmountTextChange: (String) -> Unit) {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -89,7 +89,7 @@ fun SecondBodyContent(valueAmountText: String, onValueAmountTextChange: (String)
 
         TextField(
             value = valueAmountText,
-            onValueChange = onValueAmountTextChange,
+            onValueChange = onAmountTextChange,
             placeholder = { Text("0.00", style = MaterialTheme.typography.bodyLarge) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             singleLine = true
