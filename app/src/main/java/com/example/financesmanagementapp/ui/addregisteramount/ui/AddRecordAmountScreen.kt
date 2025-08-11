@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.absolutePadding
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,6 +18,8 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -37,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.financesmanagementapp.navigation.AppScreens
@@ -51,6 +54,10 @@ fun AddRecordAmountScreen(
 ) {
     val amountText by viewModel.amountText.collectAsState()
     val checkedSwitch by viewModel.checkedSwitch.collectAsState()
+    val expandedCurrencyMenu by viewModel.expandedCurrencyMenu.collectAsState()
+    val selectedCurrency by viewModel.selectedCurrency.collectAsState()
+
+    val currencyList = listOf("ARS", "USD") // TODO: DI Hilt
 
     Scaffold(topBar = {
         TopAppBar(
@@ -87,7 +94,14 @@ fun AddRecordAmountScreen(
             },
             onCheckedSwitchChange = { newValue ->
                 viewModel.onCheckedSwitchChange(newValue) },
-            checkedSwitch = checkedSwitch
+            checkedSwitch = checkedSwitch,
+            expanded = expandedCurrencyMenu,
+            onDropdownClick = {viewModel.onDropDownClick()},
+            onDismissRequest = {viewModel.onDismissRequest()},
+            selectedCurrency = selectedCurrency,
+            onCurrencySelected = {  newValue ->
+                viewModel.onCurrencySelected(newValue) },
+            currencyList = currencyList
         )
     }
 }
@@ -97,30 +111,37 @@ fun SecondBodyContent(
     valueAmountText: String,
     onAmountTextChange: (String) -> Unit,
     onCheckedSwitchChange: (Boolean) -> Unit,
-    checkedSwitch: Boolean
+    checkedSwitch: Boolean,
+    expanded: Boolean,
+    onDropdownClick: () -> Unit,
+    onDismissRequest: () -> Unit,
+    selectedCurrency: String,
+    onCurrencySelected: (String) -> Unit,
+    currencyList: List<String>
 ) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().padding(horizontal = 40.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Ingrese monto", style = MaterialTheme.typography.titleLarge)
+        Text("Ingrese monto", style = MaterialTheme.typography.titleLarge, modifier = Modifier.align(Alignment.CenterHorizontally))
 
         TextField(
             value = valueAmountText,
             onValueChange = onAmountTextChange,
             placeholder = { Text("0.00", style = MaterialTheme.typography.bodyLarge) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            singleLine = true
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(Modifier.height(20.dp))
 
-        Row(modifier = Modifier.fillMaxWidth()){
+        Row(modifier = Modifier.fillMaxWidth().height(50.dp)){
             Switch(
                 checked = checkedSwitch,
                 onCheckedChange = onCheckedSwitchChange ,
-                modifier = Modifier.absolutePadding(40.dp),
+                modifier = Modifier.weight(1f),
                 thumbContent = if(checkedSwitch) {
                     {
                         Icon(
@@ -141,6 +162,29 @@ fun SecondBodyContent(
                     }
                 }
             )
+
+            Log.d("franco","selctedCurrency: $selectedCurrency")
+
+
+            Spacer(Modifier.weight(2f))
+
+            Text(
+                text = selectedCurrency,
+                fontSize = 20.sp,
+                modifier = Modifier.clickable(onClick = onDropdownClick ).weight(1f).fillMaxHeight()
+            )
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = onDismissRequest
+            ) {
+                currencyList.forEach { currency ->
+                    DropdownMenuItem(
+                        text = { Text(text = currency) },
+                        onClick = { onCurrencySelected (currency)}
+                    )
+                }
+            }
         }
     }
 }
