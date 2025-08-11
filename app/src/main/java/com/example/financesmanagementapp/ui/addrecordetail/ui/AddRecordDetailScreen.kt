@@ -49,7 +49,6 @@ fun AddRecordDetailScreen(
     viewModel: AddRecordDetailViewModel
 ){
     val detail by viewModel.detail.collectAsState()
-    val checkedSwitch by viewModel.checkedSwitch.collectAsState()
     val recordStateFlow = navController.previousBackStackEntry?.savedStateHandle?.getStateFlow<Record?>(
         "record", null
     )
@@ -70,7 +69,7 @@ fun AddRecordDetailScreen(
                     record?.let{
                         Log.d("franco","Valor actual del Record desde RecordDetailScreen: $record")
                     }
-                    val myRecord = recordStateFlow?.value?.copy(description = "blablaba", isIncome = checkedSwitch)
+                    val myRecord = recordStateFlow?.value?.copy(description = "blablaba")
                     Log.d("franco", "Ultimo estado del record: $myRecord")
                     navController.currentBackStackEntry?.savedStateHandle?.set("record", myRecord)
                     navController.navigate(AppScreens.HomeStartScreen.route)
@@ -86,10 +85,7 @@ fun AddRecordDetailScreen(
             valueDetail = detail,
             onDetailChange = { newValue ->
                 viewModel.onDetailChange(newValue)
-            },
-            onCheckedSwitchChange = { newValue ->
-                viewModel.onCheckedSwitchChange(newValue) },
-            checkedSwitch = checkedSwitch
+            }
         )
     }
 }
@@ -97,9 +93,7 @@ fun AddRecordDetailScreen(
 @Composable
 fun SecondBodyContent(
     valueDetail : String,
-    onDetailChange: (String) -> Unit,
-    onCheckedSwitchChange: (Boolean) -> Unit,
-    checkedSwitch: Boolean
+    onDetailChange: (String) -> Unit
 ){
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -114,35 +108,6 @@ fun SecondBodyContent(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
             singleLine = false
         )
-
-        Spacer(Modifier.height(20.dp))
-
-        Row(modifier = Modifier.fillMaxWidth()){
-            Switch(
-                checked = checkedSwitch,
-                onCheckedChange = onCheckedSwitchChange ,
-                modifier = Modifier.absolutePadding(40.dp),
-                thumbContent = if(checkedSwitch) {
-                    {
-                        Icon(
-                            imageVector = Icons.Filled.Add,
-                            contentDescription = null,
-                            modifier = Modifier.size(SwitchDefaults.IconSize),
-                            tint = Color.Green
-                        )
-                    }
-                }else {
-                    {
-                        Icon(
-                            imageVector = Icons.Filled.KeyboardArrowLeft, // TODO poner signo de resta
-                            contentDescription = null,
-                            modifier = Modifier.size(SwitchDefaults.IconSize),
-                            tint = Color.Red
-                        )
-                    }
-                }
-            )
-        }
     }
 }
 

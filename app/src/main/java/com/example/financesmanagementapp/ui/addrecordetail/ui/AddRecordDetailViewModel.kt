@@ -9,14 +9,7 @@ class AddRecordDetailViewModel: ViewModel() {
     private val _detail = MutableStateFlow("")
     val detail: StateFlow<String> = _detail
 
-    private val _checkedSwitch = MutableStateFlow(false)
-    val checkedSwitch: StateFlow<Boolean> = _checkedSwitch
-
     fun onDetailChange(newValue: String){
         _detail.value = newValue
-    }
-
-    fun onCheckedSwitchChange(newValue: Boolean){
-        _checkedSwitch.value = newValue
     }
 }
