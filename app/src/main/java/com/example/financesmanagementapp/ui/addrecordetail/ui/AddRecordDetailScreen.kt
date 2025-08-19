@@ -1,19 +1,24 @@
 package com.example.financesmanagementapp.ui.addrecordetail.ui
 
+import android.media.Image
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -129,13 +134,14 @@ fun BodyContent(
             placeholder = {Text("" )},
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
             singleLine = false,
-            modifier = Modifier.height(80.dp)
+            modifier = Modifier.height(80.dp).fillMaxWidth()
         )
         Spacer(Modifier.height(40.dp))
 
-        Box(
-            modifier = Modifier,
-            contentAlignment = Alignment.Center
+        Row(
+            modifier = Modifier.align(Alignment.Start).clickable(onClick = onDropdownClick).fillMaxWidth().height(50.dp).padding(5.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             val displayText = if (selectedCategory.isEmpty()) {
                 "Seleccione categoría"
@@ -146,7 +152,7 @@ fun BodyContent(
             Text(
                 text = displayText,
                 style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.clickable(onClick = onDropdownClick)
+                modifier = Modifier
                     .height(50.dp).padding(5.dp)
             )
 
@@ -161,6 +167,11 @@ fun BodyContent(
                     )
                 }
             }
+
+            Icon(
+                imageVector = Icons.Filled.KeyboardArrowDown,
+                contentDescription = "Desplegar menu de categorias",
+                modifier = Modifier.width(24.dp))
         }
         Spacer(Modifier.weight(1f))
     }
