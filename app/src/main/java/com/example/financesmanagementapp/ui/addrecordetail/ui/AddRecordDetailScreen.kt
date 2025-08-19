@@ -3,13 +3,19 @@ package com.example.financesmanagementapp.ui.addrecordetail.ui
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -23,6 +29,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -39,12 +46,16 @@ fun AddRecordDetailScreen(
     viewModel: AddRecordDetailViewModel
 ){
     val detail by viewModel.detail.collectAsState()
+    val expandedCategoryMenu by viewModel.expandedCategoryMenu.collectAsState()
+    val selectedCategory by viewModel.selectedCategory.collectAsState()
+
     val recordStateFlow = navController.previousBackStackEntry?.savedStateHandle?.getStateFlow<Record?>(
         "record", null
     )
     recordStateFlow?.let{
         Log.d("franco","Valor actual del Record desde RecordDetailScreen: ${recordStateFlow.value}")
     }
+    val categoryList = listOf("Comida y alimentos", "Ropa", "Gastos financieros")// TODO inyectar, armar en db
 
     Scaffold(
         topBar = {
@@ -77,24 +88,37 @@ fun AddRecordDetailScreen(
                 content = {Icon(Icons.Default.Check, contentDescription = "Aceptar")}
             )
         }
-    ) {
-        val a = it // To avoid error
-        SecondBodyContent(
+    ) { innerPadding ->
+        BodyContent(
             valueDetail = detail,
             onDetailChange = { newValue ->
                 viewModel.onDetailChange(newValue)
-            }
+            },
+            expanded = expandedCategoryMenu,
+            onDropdownClick = {viewModel.onDropdownMenuClick()},
+            onDismissRequest = {viewModel.onDismissRequest()},
+            selectedCategory = selectedCategory,
+            onCategorySelected = {newValue -> viewModel.onCategorySelected(newValue)},
+            categoryList = categoryList,
+            innerPadding = innerPadding
         )
     }
 }
 
 @Composable
-fun SecondBodyContent(
+fun BodyContent(
     valueDetail : String,
-    onDetailChange: (String) -> Unit
+    onDetailChange: (String) -> Unit,
+    expanded: Boolean,
+    onDropdownClick: () -> Unit,
+    onDismissRequest: () -> Unit,
+    selectedCategory: String,
+    onCategorySelected: (String) -> Unit,
+    categoryList: List<String>,
+    innerPadding: PaddingValues
 ){
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().padding(innerPadding).padding(40.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -104,8 +128,41 @@ fun SecondBodyContent(
             onValueChange = onDetailChange,
             placeholder = {Text("" )},
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-            singleLine = false
+            singleLine = false,
+            modifier = Modifier.height(80.dp)
         )
+        Spacer(Modifier.height(40.dp))
+
+        Box(
+            modifier = Modifier,
+            contentAlignment = Alignment.Center
+        ) {
+            val displayText = if (selectedCategory.isEmpty()) {
+                "Seleccione categoría"
+            } else {
+                selectedCategory
+            }
+
+            Text(
+                text = displayText,
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.clickable(onClick = onDropdownClick)
+                    .height(50.dp).padding(5.dp)
+            )
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = onDismissRequest
+            ) {
+                categoryList.forEach { currency ->
+                    DropdownMenuItem(
+                        text = { Text(text = currency) },
+                        onClick = { onCategorySelected(currency) }
+                    )
+                }
+            }
+        }
+        Spacer(Modifier.weight(1f))
     }
 }
 
