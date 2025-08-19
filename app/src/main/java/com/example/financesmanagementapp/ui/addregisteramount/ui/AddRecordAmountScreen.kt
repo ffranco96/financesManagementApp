@@ -190,8 +190,13 @@ fun BodyContent(
                     .fillMaxHeight(),
                 contentAlignment = Alignment.Center // También una buena práctica para centrar el Text
             ) {
+                val displayCurrency = if(selectedCurrency.isEmpty())
+                    "ARS"
+                else
+                    selectedCurrency
+
                 Text(
-                    text = selectedCurrency,
+                    text = displayCurrency,
                     fontSize = 20.sp,
                     modifier = Modifier.clickable(onClick = onDropdownClick).fillMaxHeight()
                 )
