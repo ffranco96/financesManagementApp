@@ -3,6 +3,7 @@ package com.example.financesmanagementapp.ui.addregisteramount.ui
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -140,7 +141,7 @@ fun SecondBodyContent(
         Row(modifier = Modifier.fillMaxWidth().height(50.dp)){
             Switch(
                 checked = checkedSwitch,
-                onCheckedChange = onCheckedSwitchChange ,
+                onCheckedChange = onCheckedSwitchChange,
                 modifier = Modifier.weight(1f),
                 thumbContent = if(checkedSwitch) {
                     {
@@ -151,7 +152,7 @@ fun SecondBodyContent(
                             tint = Color.Green
                         )
                     }
-                }else {
+                } else {
                     {
                         Icon(
                             imageVector = Icons.Filled.KeyboardArrowLeft, // TODO poner signo de resta
@@ -163,26 +164,32 @@ fun SecondBodyContent(
                 }
             )
 
-            Log.d("franco","selctedCurrency: $selectedCurrency")
-
+            Log.d("franco", "selctedCurrency: $selectedCurrency")
 
             Spacer(Modifier.weight(2f))
 
-            Text(
-                text = selectedCurrency,
-                fontSize = 20.sp,
-                modifier = Modifier.clickable(onClick = onDropdownClick ).weight(1f).fillMaxHeight()
-            )
-
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = onDismissRequest
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
+                contentAlignment = Alignment.Center // También una buena práctica para centrar el Text
             ) {
-                currencyList.forEach { currency ->
-                    DropdownMenuItem(
-                        text = { Text(text = currency) },
-                        onClick = { onCurrencySelected (currency)}
-                    )
+                Text(
+                    text = selectedCurrency,
+                    fontSize = 20.sp,
+                    modifier = Modifier.clickable(onClick = onDropdownClick).fillMaxHeight()
+                )
+
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = onDismissRequest
+                ) {
+                    currencyList.forEach { currency ->
+                        DropdownMenuItem(
+                            text = { Text(text = currency) },
+                            onClick = { onCurrencySelected(currency) }
+                        )
+                    }
                 }
             }
         }
