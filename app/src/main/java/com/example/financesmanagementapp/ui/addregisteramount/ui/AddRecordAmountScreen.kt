@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -24,7 +25,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -38,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -60,19 +62,20 @@ fun AddRecordAmountScreen(
 
     val currencyList = listOf("ARS", "USD") // TODO: DI Hilt
 
-    Scaffold(topBar = {
-        TopAppBar(
-            navigationIcon = {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Arrow back",
-                    modifier = Modifier.clickable {
-                        navController.popBackStack()
-                    })
-            },
-            title = { Text("Agregar registro") }
-        )
-    },
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                navigationIcon = {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Arrow back",
+                        modifier = Modifier.clickable {
+                            navController.popBackStack()
+                        })
+                },
+                title = { Text("Agregar registro") }
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
@@ -86,9 +89,8 @@ fun AddRecordAmountScreen(
                 Icon(Icons.Default.KeyboardArrowRight, contentDescription = "Siguiente pantalla")
             }
         }
-    ) {
-        val a = it // To avoid error
-        SecondBodyContent(
+    ) { innerPadding ->
+        BodyContent(
             valueAmountText = amountText,
             onAmountTextChange = { newValue ->
                 viewModel.onAmountTextChange(newValue)
@@ -102,13 +104,14 @@ fun AddRecordAmountScreen(
             selectedCurrency = selectedCurrency,
             onCurrencySelected = {  newValue ->
                 viewModel.onCurrencySelected(newValue) },
-            currencyList = currencyList
+            currencyList = currencyList,
+            innerPadding = innerPadding
         )
     }
 }
 
 @Composable
-fun SecondBodyContent(
+fun BodyContent(
     valueAmountText: String,
     onAmountTextChange: (String) -> Unit,
     onCheckedSwitchChange: (Boolean) -> Unit,
@@ -118,27 +121,39 @@ fun SecondBodyContent(
     onDismissRequest: () -> Unit,
     selectedCurrency: String,
     onCurrencySelected: (String) -> Unit,
-    currencyList: List<String>
+    currencyList: List<String>,
+    innerPadding: PaddingValues
 ) {
     Column(
-        modifier = Modifier.fillMaxSize().padding(horizontal = 40.dp),
-        verticalArrangement = Arrangement.Center,
+        modifier = Modifier.fillMaxSize().padding(innerPadding)
+            .padding(horizontal = 40.dp),
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Ingrese monto", style = MaterialTheme.typography.titleLarge, modifier = Modifier.align(Alignment.CenterHorizontally))
+        Text("Ingrese monto", fontSize = 42.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
 
         TextField(
             value = valueAmountText,
             onValueChange = onAmountTextChange,
-            placeholder = { Text("0.00", style = MaterialTheme.typography.bodyLarge) },
+            placeholder = {
+                Text(
+                    "0.00",
+                    fontSize = 55.sp,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.End) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             singleLine = true,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            textStyle = LocalTextStyle.current.copy(
+                textAlign = TextAlign.End,
+                fontSize = 55.sp
+            ),
         )
 
         Spacer(Modifier.height(20.dp))
 
         Row(modifier = Modifier.fillMaxWidth().height(50.dp)){
+            Text("Gasto", fontSize = 22.sp)
             Switch(
                 checked = checkedSwitch,
                 onCheckedChange = onCheckedSwitchChange,
@@ -163,10 +178,11 @@ fun SecondBodyContent(
                     }
                 }
             )
+            Text("Ingreso", fontSize = 22.sp)
 
             Log.d("franco", "selctedCurrency: $selectedCurrency")
 
-            Spacer(Modifier.weight(2f))
+            Spacer(Modifier.weight(1f))
 
             Box(
                 modifier = Modifier
