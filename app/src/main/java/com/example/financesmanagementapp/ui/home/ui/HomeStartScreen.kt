@@ -81,7 +81,6 @@ fun HomeStartScreen(
                 onClick = {
                     navController.navigate(route = AppScreens.AddRecordAmountScreen.route + "/Mi parametro") // Donde se displayara??
                     //registersDetailList
-                    Log.d("franco", "Clciked floating action button")
                 },
                 modifier = Modifier.padding(16.dp)
             ) {
@@ -203,7 +202,7 @@ fun observeWorker(context: Context){
             val format = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
             format.timeZone = java.util.TimeZone.getTimeZone("America/Argentina/Buenos_Aires") // America/Argentina/Buenos_Aires
             val formatted = format.format(workInfo?.nextScheduleTimeMillis)
-            Log.d("franco", "workinfo time: ${formatted}")
+            Log.d("franco", "workinfo time: $formatted")
         }
 }
 

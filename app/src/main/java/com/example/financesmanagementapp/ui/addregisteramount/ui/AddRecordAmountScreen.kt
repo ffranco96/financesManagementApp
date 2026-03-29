@@ -180,8 +180,6 @@ fun BodyContent(
             )
             Text("Ingreso", fontSize = 22.sp)
 
-            Log.d("franco", "selctedCurrency: $selectedCurrency")
-
             Spacer(Modifier.weight(1f))
 
             Box(

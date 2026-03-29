@@ -63,7 +63,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun clearRegistersList() {
-        Log.d("franco", "clearRegistersList")
+        Log.d(TAG, "clearRegistersList")
         _registersList.value = mutableListOf()
     }
 
@@ -79,15 +79,19 @@ class HomeViewModel @Inject constructor(
 
     fun getCryptoPrice(ticker: String) {
 
-        Log.d("franco", "ticker: $ticker")
+        Log.d(TAG, "ticker: $ticker")
         viewModelScope.launch {
             //val listOfPrices = getAllCryptoPricesUseCase()
             //Log.d("franco", "listOfPrices: $listOfPrices")
             val btcPrice = getBtcPriceUseCase(ticker)
-            Log.d("franco", "btc price nuevo: $btcPrice")
+            Log.d(TAG, "Btc new price: $btcPrice")
             btcPrice.let {
                 _btcPrice.value = btcPrice.toString()
             }
         }
+    }
+
+    companion object{
+        const val TAG = "HomeViewModel"
     }
 }
