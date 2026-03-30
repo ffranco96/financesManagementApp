@@ -1,33 +1,36 @@
 package com.example.financesmanagementapp.navigation
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableDoubleStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.compose.*
 import androidx.navigation.navArgument
-import com.example.financesmanagementapp.ui.addregisteramount.ui.AddRegisterAmountScreen
+import com.example.financesmanagementapp.ui.addrecordetail.ui.AddRecordDetailScreen
+import com.example.financesmanagementapp.ui.addrecordetail.ui.AddRecordDetailViewModel
+import com.example.financesmanagementapp.ui.addregisteramount.ui.AddRecordAmountScreen
+import com.example.financesmanagementapp.ui.addregisteramount.ui.AddRecordAmountViewModel
 import com.example.financesmanagementapp.ui.home.ui.HomeStartScreen
+import com.example.financesmanagementapp.ui.home.ui.HomeViewModel
 import com.example.financesmanagementapp.ui.login.ui.LoginScreen
 import com.example.financesmanagementapp.ui.login.ui.LoginViewModel
-import com.example.financesmanagementapp.ui.home.ui.HomeViewModel
 
 
-// Composable element that will orchestrate navigation
+/**
+ * Composable element that will orchestrate navigation.
+ */
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
 
     val homeViewModel: HomeViewModel =  viewModel()
     val loginViewModel: LoginViewModel = viewModel()
+    val addRecordAmountViewModel: AddRecordAmountViewModel = viewModel()
+    val addRecordDetailViewModel: AddRecordDetailViewModel = viewModel()
 
     val context: Context = LocalContext.current
 
@@ -54,10 +57,19 @@ fun AppNavigation() {
             )
         }
         composable(
-            route = AppScreens.AddRegisterAmountScreen.route + "/{text}",
-            arguments = listOf(navArgument(name = "text") { type = NavType.StringType })
+            route = AppScreens.AddRecordAmountScreen.route,
         ) {
-            AddRegisterAmountScreen(navController, it.arguments?.getString("text"))
+            AddRecordAmountScreen(
+                navController,
+                it.arguments?.getString("text"),
+                addRecordAmountViewModel
+            )
+        }
+        composable(route = AppScreens.AddRecordDetailScreen.route){
+            AddRecordDetailScreen(
+                navController = navController,
+                addRecordDetailViewModel
+            )
         }
     }
 }

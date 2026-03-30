@@ -1,6 +1,6 @@
 package com.example.financesmanagementapp.ui.home.data.model
 
-data class RegisterEntity ( // For now, it will be used as RegisterModel, too
+data class RecordEntity ( // For now, it will be used as RegisterModel, too
     var amount: Double = 0.0,
     var title: String = "",
     var description: String = "",

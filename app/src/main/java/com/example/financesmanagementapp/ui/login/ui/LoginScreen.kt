@@ -34,6 +34,12 @@ import com.example.financesmanagementapp.R
 import com.example.financesmanagementapp.navigation.AppScreens
 import kotlinx.coroutines.launch
 
+/**
+ * Main login screen for the application.
+ *
+ * @param navController Controller for navigation between screens.
+ * @param viewModel ViewModel that manages the login state and logic.
+ */
 @Composable
 fun LoginScreen(
     navController : NavController,
@@ -49,13 +55,16 @@ fun LoginScreen(
     }
 }
 
+/**
+ * Login form component.
+ */
 @Composable
 fun Login(modifier: Modifier, viewModel: LoginViewModel, navController: NavController) {
     val user by viewModel.user.collectAsState(initial = "")
     val password by viewModel.password.collectAsState(initial = "")
     val loginEnabled by viewModel.loginEnabled.collectAsState(initial = false)
     val isLoading by viewModel.isLoading.collectAsState(initial = false)
-    val coroutineScope = rememberCoroutineScope() // Creates a coroutine scope to launch async tasks without blocking the main thread
+    val coroutineScope = rememberCoroutineScope() // Creates a coroutine scope to launch async tasks // without blocking the main thread
     val context = LocalContext.current
 
     if(isLoading){
@@ -63,15 +72,16 @@ fun Login(modifier: Modifier, viewModel: LoginViewModel, navController: NavContr
             CircularProgressIndicator(Modifier.align(Alignment.Center))
         }
     } else {
-        Column(modifier = modifier) { // Para poder tener un modifier que alinee es necesario estar dentro de un Box
-            HeaderImage(Modifier.align(Alignment.CenterHorizontally)) // Se usa Modifier que es el modificador de la columna, no el modifier recibido desde fuera
+        Column(modifier = modifier) { // To have a modifier that aligns is required to be  inside a Box
+            HeaderImage(Modifier.align(Alignment.CenterHorizontally)) // A Modifier is used. This is the Column modifier, not the one received from outside
             Spacer(modifier = Modifier.padding(16.dp))
+            // The last states of user and password are received
             UserField(user) {
                 viewModel.onLoginDataChanged(
                     it,
                     password
                 )
-            } // Se recibe tanto el ultimo estado del user como de la password
+            }
             PasswordField(password) { viewModel.onLoginDataChanged(user, it) }
             Spacer(modifier = Modifier.padding(8.dp))
             ForgotPassword(modifier = Modifier.align(Alignment.End))
@@ -86,6 +96,9 @@ fun Login(modifier: Modifier, viewModel: LoginViewModel, navController: NavContr
     }
 }
 
+/**
+ * Button to trigger the login process.
+ */
 @Composable
 fun LoginButton(
     loginEnabled: Boolean,
@@ -134,7 +147,7 @@ fun UserField(user: String, onTextFieldChanged: (String) -> Unit) {
 
     TextField(
         value = user,
-        onValueChange = { newText -> onTextFieldChanged(newText) }, // Podria haber sido it
+        onValueChange = { newText -> onTextFieldChanged(newText) },
         modifier = Modifier.fillMaxWidth(),
         placeholder = { Text("Ingrese usuario") },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Ascii),
@@ -152,7 +165,7 @@ fun UserField(user: String, onTextFieldChanged: (String) -> Unit) {
 fun PasswordField(password: String, onTextFieldChanged: (String) -> Unit) {
     TextField(
         value = password,
-        onValueChange = onTextFieldChanged, // Es posible asignarle directamente onTextFieldChanged, los tipos coinciden
+        onValueChange = onTextFieldChanged,
         modifier = Modifier.fillMaxWidth(),
         placeholder = { Text("Ingrese contraseña") },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),

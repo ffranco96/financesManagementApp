@@ -1,0 +1,193 @@
+package com.example.financesmanagementapp.ui.addrecordetail.ui
+
+import android.util.Log
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.example.financesmanagementapp.navigation.AppScreens
+import com.example.financesmanagementapp.ui.Record
+
+/**
+ * Screen that allows adding more details to a financial record, such as description and category.
+ *
+ * @param navController Controller for navigation between screens.
+ * @param viewModel ViewModel that manages the state and logic for this screen.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AddRecordDetailScreen(
+    navController: NavController,
+    viewModel: AddRecordDetailViewModel
+){
+    val detailText by viewModel.detail.collectAsState()
+    val expandedCategoryMenu by viewModel.expandedCategoryMenu.collectAsState()
+    val selectedCategory by viewModel.selectedCategory.collectAsState()
+
+    val recordStateFlow = navController.previousBackStackEntry?.savedStateHandle?.getStateFlow<Record?>(
+        "record", null
+    )
+    recordStateFlow?.let{
+        Log.d("franco","Valor actual del Record desde RecordDetailScreen: ${recordStateFlow.value}")
+    }
+    val categoryList = listOf("Comida y alimentos", "Ropa", "Gastos financieros")// TODO inyectar, armar en db
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                navigationIcon = {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Arrow back",
+                        modifier = Modifier.clickable {
+                            navController.popBackStack()
+                        })
+                },
+                title = {Text("Detalle")}
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    val record: Record? = recordStateFlow?.value
+                    record?.let{
+                        Log.d("franco","Valor actual del Record desde RecordDetailScreen: $record")
+                    }
+                    val myRecord = record?.copy(description = detailText)
+                    Log.d("franco", "Ultimo estado del record: $myRecord")
+                    navController.currentBackStackEntry?.savedStateHandle?.set("record", myRecord)
+                    navController.navigate(AppScreens.HomeStartScreen.route)
+                    // TODO ADD record to DB
+                },
+                modifier = Modifier.padding(16.dp),
+                content = {Icon(Icons.Default.Check, contentDescription = "Aceptar")}
+            )
+        }
+    ) { innerPadding ->
+        BodyContent(
+            valueDetail = detailText,
+            onDetailChange = { newValue ->
+                viewModel.onDetailChange(newValue)
+            },
+            expanded = expandedCategoryMenu,
+            onDropdownClick = {viewModel.onDropdownMenuClick()},
+            onDismissRequest = {viewModel.onDismissRequest()},
+            selectedCategory = selectedCategory,
+            onCategorySelected = {newValue -> viewModel.onCategorySelected(newValue)},
+            categoryList = categoryList,
+            innerPadding = innerPadding
+        )
+    }
+}
+
+/**
+ * Main content of the AddRecordDetailScreen.
+ */
+@Composable
+fun BodyContent(
+    valueDetail : String,
+    onDetailChange: (String) -> Unit,
+    expanded: Boolean,
+    onDropdownClick: () -> Unit,
+    onDismissRequest: () -> Unit,
+    selectedCategory: String,
+    onCategorySelected: (String) -> Unit,
+    categoryList: List<String>,
+    innerPadding: PaddingValues
+){
+    Column(
+        modifier = Modifier.fillMaxSize().padding(innerPadding).padding(40.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("Ingrese detalle", style = MaterialTheme.typography.titleLarge)
+        TextField(
+            value = valueDetail,
+            onValueChange = onDetailChange,
+            placeholder = {Text("" )},
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+            singleLine = false,
+            modifier = Modifier.height(80.dp).fillMaxWidth()
+        )
+        Spacer(Modifier.height(40.dp))
+
+        Row(
+            modifier = Modifier.align(Alignment.Start).clickable(onClick = onDropdownClick).fillMaxWidth().height(50.dp).padding(5.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            val displayText = if (selectedCategory.isEmpty()) {
+                "Seleccione categoría"
+            } else {
+                selectedCategory
+            }
+
+            Text(
+                text = displayText,
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier
+                    .height(50.dp).padding(5.dp)
+            )
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = onDismissRequest
+            ) {
+                categoryList.forEach { currency ->
+                    DropdownMenuItem(
+                        text = { Text(text = currency) },
+                        onClick = { onCategorySelected(currency) }
+                    )
+                }
+            }
+
+            Icon(
+                imageVector = Icons.Filled.KeyboardArrowDown,
+                contentDescription = "Desplegar menu de categorias",
+                modifier = Modifier.width(24.dp))
+        }
+        Spacer(Modifier.weight(1f))
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun AddRecordDetailScreenWithPreview(){
+    val navController = rememberNavController()
+    AddRecordDetailScreen(
+        navController,
+        AddRecordDetailViewModel()
+    )
+}
