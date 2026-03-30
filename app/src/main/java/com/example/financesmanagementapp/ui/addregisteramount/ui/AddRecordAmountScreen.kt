@@ -1,6 +1,5 @@
 package com.example.financesmanagementapp.ui.addregisteramount.ui
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -48,6 +47,14 @@ import androidx.navigation.compose.rememberNavController
 import com.example.financesmanagementapp.navigation.AppScreens
 import com.example.financesmanagementapp.ui.Record
 
+/**
+ * Screen that allows the user to input the amount for a new financial record.
+ * It also handles the type of operation (Income/Expense) and currency selection.
+ *
+ * @param navController Controller for navigation between screens.
+ * @param text Optional text parameter (currently unused).
+ * @param viewModel ViewModel that manages the state and logic for this screen.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddRecordAmountScreen(
@@ -110,6 +117,9 @@ fun AddRecordAmountScreen(
     }
 }
 
+/**
+ * Main content of the AddRecordAmountScreen.
+ */
 @Composable
 fun BodyContent(
     valueAmountText: String,
@@ -186,7 +196,7 @@ fun BodyContent(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight(),
-                contentAlignment = Alignment.Center // También una buena práctica para centrar el Text
+                contentAlignment = Alignment.Center
             ) {
                 val displayCurrency = if(selectedCurrency.isEmpty())
                     "ARS"
@@ -218,10 +228,8 @@ fun BodyContent(
 @Preview(showBackground = true)
 @Composable
 fun AddRecordAmountScreenPreview() {
-    // Crea un NavController simulado para la preview
     val navController = rememberNavController()
     val viewModel = AddRecordAmountViewModel()
 
-    // Llama a tu composable con valores de prueba
     AddRecordAmountScreen(navController = navController, text = "Texto de ejemplo", viewModel = viewModel )
 }

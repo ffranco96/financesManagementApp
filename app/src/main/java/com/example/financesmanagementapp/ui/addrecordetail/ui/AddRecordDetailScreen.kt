@@ -40,7 +40,12 @@ import androidx.navigation.compose.rememberNavController
 import com.example.financesmanagementapp.navigation.AppScreens
 import com.example.financesmanagementapp.ui.Record
 
-
+/**
+ * Screen that allows adding more details to a financial record, such as description and category.
+ *
+ * @param navController Controller for navigation between screens.
+ * @param viewModel ViewModel that manages the state and logic for this screen.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddRecordDetailScreen(
@@ -107,6 +112,9 @@ fun AddRecordDetailScreen(
     }
 }
 
+/**
+ * Main content of the AddRecordDetailScreen.
+ */
 @Composable
 fun BodyContent(
     valueDetail : String,
