@@ -46,7 +46,7 @@ import androidx.navigation.NavController
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.example.financesmanagementapp.R
-import com.example.financesmanagementapp.ui.home.data.model.RegisterEntity
+import com.example.financesmanagementapp.ui.home.data.model.RecordEntity
 import com.example.financesmanagementapp.navigation.AppScreens
 import com.example.financesmanagementapp.utils.Constants
 
@@ -82,6 +82,7 @@ fun HomeStartScreen(
             FloatingActionButton(
                 onClick = {
                     navController.navigate(route = AppScreens.AddRecordAmountScreen.route)
+                    //recordsDetailList
                 },
                 modifier = Modifier.padding(16.dp)
             ) {
@@ -94,8 +95,9 @@ fun HomeStartScreen(
                 .fillMaxWidth()
                 .padding(paddingValues)
         ){
-            BodyContent(navController, viewModel)
+            BodyContent(viewModel)
         }
+        val a = paddingValues // To avoid error
     }
 }
 
@@ -104,17 +106,16 @@ fun HomeStartScreen(
  */
 @Composable
 fun BodyContent(
-    navControler : NavController,
     viewModel: HomeViewModel
-){
+) {
     val currentBalance by viewModel.currentBalance.collectAsState(initial = 0.0)
     val currentBtcValueDouble by viewModel.btcPrice.collectAsState(initial = 0.0)
-    val registersList by viewModel.registersList.collectAsState(initial = emptyList<RegisterEntity>())
+    val registersList by viewModel.recordsList.collectAsState(initial = emptyList<RecordEntity>())
 
     Column (
         modifier = Modifier
             .fillMaxWidth()
-    ){
+    ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Start
@@ -127,41 +128,46 @@ fun BodyContent(
     Column (
         modifier = Modifier
             .fillMaxWidth()
-    ){
+    ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Start
         ) {
-            Text(text = "BTC: $currentBtcValueDouble", style = MaterialTheme.typography.titleLarge)
-            Button(onClick = {viewModel.getCryptoPrice(Constants.BTC_USDT_TICKER)}){
-                Icon(Icons.Default.Refresh,"Sync btc value")
+            Text(
+                text = "BTC: $currentBtcValueDouble",
+                style = MaterialTheme.typography.titleLarge
+            ) // TODO esto va a estar en otra pantalla de Mercados o algo asi
+            Button(onClick = { viewModel.getCryptoPrice(Constants.BTC_USDT_TICKER) }) {
+                Icon(Icons.Default.Refresh, "Sync btc value")
             }
         }
     }
-    Column (
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-    ){
+    ) {
         Button(
-            onClick = {
-                // Future implementation for charts
+            onClick = {/*
+                navControler.navigate(route = AppScreens.AddRegisterAmountScreen.route + "/Mi parametro") // Donde se displayara??
+                Log.d("franco", "Boton que te lleva a los graficos")
+            */
             }
-        ){
+        ) {
             Text("Graficos")
         }
     }
     Column (
         modifier = Modifier
             .fillMaxWidth()
-    ){
+    ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(text = "Ultimos movimientos", style = MaterialTheme.typography.titleMedium)
             Button(
-                onClick = {viewModel.clearRegistersList()}
-            ){
+                onClick = { viewModel.clearRegistersList() }
+            ) {
                 Icon(Icons.Rounded.Delete, contentDescription = "Borrar todos los regs")
             }
         }
@@ -186,6 +192,7 @@ fun observeValuesUpdatedByWorker(context: Context, viewModel: HomeViewModel) {
             if (workInfo?.state != WorkInfo.State.RUNNING) {
                 val prefs = context.getSharedPreferences("btc_price_pref", Context.MODE_PRIVATE)
                 val price = prefs.getString("btc_price","0.0")
+                Log.d("franco", "observWorkerResult, price: $price")
                 viewModel.updateBtcPrice(price.toString())
             }
         }
@@ -211,12 +218,13 @@ fun observeWorker(context: Context){
  * Displays a list of financial registers.
  */
 @Composable
-fun RegistersList(registersDetailList: List<RegisterEntity>) {
-    LazyColumn(modifier = Modifier
-        .fillMaxWidth(),
+fun RegistersList(registersDetailList: List<RecordEntity>) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxWidth(),
         horizontalAlignment = Alignment.Start
-    ){
-        items(registersDetailList){ registerDetail ->
+    ) {
+        items(registersDetailList) { registerDetail ->
             Spacer(modifier = Modifier.height(8.dp))
             Register(registerDetail)
         }
@@ -227,11 +235,16 @@ fun RegistersList(registersDetailList: List<RegisterEntity>) {
  * Individual register item component.
  */
 @Composable
-fun Register(regEntityData: RegisterEntity) {
-    val regTextData = listOf(regEntityData.title, regEntityData.description)
-    Row(modifier = Modifier.
-    background(MaterialTheme.colorScheme.background)
-        .padding(8.dp))
+fun Register(regEntityData: RecordEntity) {
+    val regTextData = listOf(
+        regEntityData.title,
+        regEntityData.description
+    ) // TODO Temporal, agregar mas caracteristicas
+    Row(
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.background)
+            .padding(8.dp)
+    )
     {
         MyImage()
         RegisterContent(regTextData)
@@ -244,9 +257,11 @@ fun Register(regEntityData: RegisterEntity) {
 @Composable
 fun RegisterContent(regTextData: List<String>) {
     var expanded by remember { mutableStateOf(false) }
-    Column(modifier = Modifier.padding(start = 8.dp).clickable {
-        expanded = !expanded
-    }) {
+    Column(modifier = Modifier
+        .padding(start = 8.dp)
+        .clickable {
+            expanded = !expanded
+        }) {
         RegisterTitle(regTextData[0], MaterialTheme.typography.labelLarge)
         RegisterDescription(
             regTextData[1],
@@ -274,7 +289,7 @@ fun RegisterDescription(desc: String, style: TextStyle, lines: Int = Int.MAX_VAL
 }
 
 @Composable
-fun MyImage(){
+fun MyImage() {
     Image(
         painterResource(R.drawable.ic_launcher_foreground),
         "Mi imagen",
