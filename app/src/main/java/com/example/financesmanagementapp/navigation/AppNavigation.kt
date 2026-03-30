@@ -57,8 +57,7 @@ fun AppNavigation() {
             )
         }
         composable(
-            route = AppScreens.AddRecordAmountScreen.route + "/{text}",
-            arguments = listOf(navArgument(name = "text") { type = NavType.StringType })
+            route = AppScreens.AddRecordAmountScreen.route,
         ) {
             AddRecordAmountScreen(
                 navController,

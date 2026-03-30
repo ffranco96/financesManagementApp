@@ -52,7 +52,7 @@ fun AddRecordDetailScreen(
     navController: NavController,
     viewModel: AddRecordDetailViewModel
 ){
-    val detail by viewModel.detail.collectAsState()
+    val detailText by viewModel.detail.collectAsState()
     val expandedCategoryMenu by viewModel.expandedCategoryMenu.collectAsState()
     val selectedCategory by viewModel.selectedCategory.collectAsState()
 
@@ -85,7 +85,7 @@ fun AddRecordDetailScreen(
                     record?.let{
                         Log.d("franco","Valor actual del Record desde RecordDetailScreen: $record")
                     }
-                    val myRecord = record?.copy(description = "blablaba") // TODO tomar la descripcion del input
+                    val myRecord = record?.copy(description = detailText)
                     Log.d("franco", "Ultimo estado del record: $myRecord")
                     navController.currentBackStackEntry?.savedStateHandle?.set("record", myRecord)
                     navController.navigate(AppScreens.HomeStartScreen.route)
@@ -97,7 +97,7 @@ fun AddRecordDetailScreen(
         }
     ) { innerPadding ->
         BodyContent(
-            valueDetail = detail,
+            valueDetail = detailText,
             onDetailChange = { newValue ->
                 viewModel.onDetailChange(newValue)
             },
