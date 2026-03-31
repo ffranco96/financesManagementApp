@@ -1,5 +1,6 @@
 package com.example.financesmanagementapp.ui
 
+import com.example.financesmanagementapp.ui.addrecordetail.model.Category
 import java.io.Serializable
 
 data class Record (
@@ -7,7 +8,7 @@ data class Record (
     var title: String = "",
     var description: String = "",
     var isIncome: Boolean = false,
-    //var category: Category = Category(),
+    var category: Category = Category(),
     var date:String = "",
     var currency:String = ""
 ): Serializable
