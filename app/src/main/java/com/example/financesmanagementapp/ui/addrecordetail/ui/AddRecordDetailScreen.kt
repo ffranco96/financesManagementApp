@@ -39,6 +39,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.financesmanagementapp.navigation.AppScreens
 import com.example.financesmanagementapp.ui.Record
+import com.example.financesmanagementapp.ui.addrecordetail.model.Category
 
 /**
  * Screen that allows adding more details to a financial record, such as description and category.
@@ -55,6 +56,8 @@ fun AddRecordDetailScreen(
     val detailText by viewModel.detail.collectAsState()
     val expandedCategoryMenu by viewModel.expandedCategoryMenu.collectAsState()
     val selectedCategory by viewModel.selectedCategory.collectAsState()
+    val categoryList by viewModel.categories.collectAsState()
+
 
     val recordStateFlow = navController.previousBackStackEntry?.savedStateHandle?.getStateFlow<Record?>(
         "record", null
@@ -62,7 +65,6 @@ fun AddRecordDetailScreen(
     recordStateFlow?.let{
         Log.d("franco","Valor actual del Record desde RecordDetailScreen: ${recordStateFlow.value}")
     }
-    val categoryList = listOf("Comida y alimentos", "Ropa", "Gastos financieros")// TODO inyectar, armar en db
 
     Scaffold(
         topBar = {
@@ -85,7 +87,10 @@ fun AddRecordDetailScreen(
                     record?.let{
                         Log.d("franco","Valor actual del Record desde RecordDetailScreen: $record")
                     }
-                    val myRecord = record?.copy(description = detailText)
+                    val myRecord = record?.copy(
+                        description = detailText,
+                        category = categoryList.find { it.categoryName == selectedCategory } ?: Category()
+                    )
                     Log.d("franco", "Ultimo estado del record: $myRecord")
                     navController.currentBackStackEntry?.savedStateHandle?.set("record", myRecord)
                     navController.navigate(AppScreens.HomeStartScreen.route)
@@ -124,7 +129,7 @@ fun BodyContent(
     onDismissRequest: () -> Unit,
     selectedCategory: String,
     onCategorySelected: (String) -> Unit,
-    categoryList: List<String>,
+    categoryList: List<Category>,
     innerPadding: PaddingValues
 ){
     Column(
@@ -165,10 +170,10 @@ fun BodyContent(
                 expanded = expanded,
                 onDismissRequest = onDismissRequest
             ) {
-                categoryList.forEach { currency ->
+                categoryList.forEach { category ->
                     DropdownMenuItem(
-                        text = { Text(text = currency) },
-                        onClick = { onCategorySelected(currency) }
+                        text = { Text(text = category.categoryName) },
+                        onClick = { onCategorySelected(category.categoryName) }
                     )
                 }
             }
