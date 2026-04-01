@@ -3,6 +3,9 @@ package com.example.financesmanagementapp.ui
 import com.example.financesmanagementapp.ui.addrecordetail.model.Category
 import java.io.Serializable
 
+/**
+ * Data class representing a financial record, which is a movement that can be an income or an expense.
+ */
 data class Record (
     var amount: Double = 0.0,
     var title: String = "",
