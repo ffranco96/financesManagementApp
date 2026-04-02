@@ -90,7 +90,11 @@ fun AddRecordDetailScreen(
                         category = categoryList.find { it.categoryName == selectedCategory } ?: Category()
                     )
                     viewModel.saveRecord(record)
-                    navController.navigate(AppScreens.HomeStartScreen.route)
+                    navController.navigate(AppScreens.HomeStartScreen.route){
+                        popUpTo(AppScreens.HomeStartScreen.route){
+                            inclusive = true
+                        }
+                    }
                 },
                 modifier = Modifier.padding(16.dp),
                 content = {Icon(Icons.Default.Check, contentDescription = "Aceptar")}
