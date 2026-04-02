@@ -7,19 +7,22 @@ import androidx.lifecycle.viewModelScope
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import com.example.financesmanagementapp.ui.home.data.model.RecordEntity
+import com.example.financesmanagementapp.data.local.entities.RecordEntity
 import com.example.financesmanagementapp.ui.home.data.worker.UpdateCryptoactivesWorker
 import com.example.financesmanagementapp.ui.home.di.ServiceLocator
 import com.example.financesmanagementapp.ui.home.domain.GetAllCryptoPricesUseCase
+import com.example.financesmanagementapp.ui.home.domain.GetAllRecordsFlowUseCase
 import com.example.financesmanagementapp.ui.home.domain.GetCryptoPriceByTickerUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-private val recordsListExample = mutableListOf(
+/*private val recordsListExample = mutableListOf(
     RecordEntity(-1000.00,"Club de la milanesa", "Lorem ipsum dolor sit amet, consectetur adipiscing elit", "Restaurant y comida rapida", "2024-05-25", "ARS") ,
     RecordEntity(-2000.00,"Club de la milanesa", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.", "Restaurant y comida rapida", "2024-05-25", "ARS") ,
     RecordEntity(-3000.00,"Club de la milanesa", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.", "Restaurant y comida rapida", "2024-05-25", "ARS") ,
@@ -33,12 +36,13 @@ private val recordsListExample = mutableListOf(
     RecordEntity(-11000.00,"Club de la milanesa", "Pagamos a medias con mis amigos", "Restaurant y comida rapida", "2024-05-25", "ARS") ,
     RecordEntity(-12000.00,"Club de la milanesa", "Pagamos a medias con mis amigos", "Restaurant y comida rapida", "2024-05-25", "ARS") ,
     RecordEntity(-13000.00,"Club de la milanesa", "Pagamos a medias con mis amigos", "Restaurant y comida rapida", "2024-05-25", "ARS")
-)
+)*/
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getBtcPriceUseCase : GetCryptoPriceByTickerUseCase,
-    private val getAllCryptoPricesUseCase: GetAllCryptoPricesUseCase
+    private val getAllCryptoPricesUseCase: GetAllCryptoPricesUseCase,
+    private val getAllRecordsFlowUseCase: GetAllRecordsFlowUseCase,
 ) : ViewModel(){
     private val _currentBtcValue = MutableStateFlow(0.0)
     val currentBtcValue: StateFlow<Double> = _currentBtcValue
@@ -46,8 +50,12 @@ class HomeViewModel @Inject constructor(
     private val _currentBalance = MutableStateFlow(0.0)
     val currentBalance: StateFlow<Double> = _currentBalance
 
-    private val _registersList = MutableStateFlow(recordsListExample)
-    val recordsList: StateFlow<MutableList<RecordEntity>> = _registersList
+    val recordsList: StateFlow<List<RecordEntity>> = getAllRecordsFlowUseCase()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000), // Se mantiene activo si hay alguien escuchando
+            initialValue = emptyList() // Valor inicial mientras carga la DB
+        )
 
     private val _btcPrice = MutableStateFlow("0.0")
     val btcPrice: StateFlow<String> = _btcPrice
@@ -60,7 +68,7 @@ class HomeViewModel @Inject constructor(
 
     fun clearRegistersList() {
         Log.d(TAG, "clearRegistersList")
-        _registersList.value = mutableListOf()
+        //_registersList.value = mutableListOf() TODO crear use case
     }
 
     fun setupWorkers(context: Context){

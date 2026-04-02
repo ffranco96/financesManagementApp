@@ -46,7 +46,7 @@ import androidx.navigation.NavController
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.example.financesmanagementapp.R
-import com.example.financesmanagementapp.ui.home.data.model.RecordEntity
+import com.example.financesmanagementapp.data.local.entities.RecordEntity
 import com.example.financesmanagementapp.navigation.AppScreens
 import com.example.financesmanagementapp.utils.Constants
 
@@ -110,7 +110,7 @@ fun BodyContent(
 ) {
     val currentBalance by viewModel.currentBalance.collectAsState(initial = 0.0)
     val currentBtcValueDouble by viewModel.btcPrice.collectAsState(initial = 0.0)
-    val registersList by viewModel.recordsList.collectAsState(initial = emptyList<RecordEntity>())
+    val recordsList by viewModel.recordsList.collectAsState(initial = emptyList())
 
     Column (
         modifier = Modifier
@@ -177,7 +177,7 @@ fun BodyContent(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-       RegistersList(registersList)
+       RegistersList(recordsList)
     }
 }
 

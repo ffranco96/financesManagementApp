@@ -135,7 +135,9 @@ fun BodyContent(
     innerPadding: PaddingValues
 ) {
     Column(
-        modifier = Modifier.fillMaxSize().padding(innerPadding)
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(innerPadding)
             .padding(horizontal = 40.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -150,7 +152,9 @@ fun BodyContent(
                     "0.00",
                     fontSize = 55.sp,
                     modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.End) },
+                    textAlign = TextAlign.End,
+                )
+            },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
@@ -162,7 +166,9 @@ fun BodyContent(
 
         Spacer(Modifier.height(20.dp))
 
-        Row(modifier = Modifier.fillMaxWidth().height(50.dp)){
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp)){
             Text("Gasto", fontSize = 22.sp)
             Switch(
                 checked = checkedSwitch,
@@ -206,7 +212,9 @@ fun BodyContent(
                 Text(
                     text = displayCurrency,
                     fontSize = 20.sp,
-                    modifier = Modifier.clickable(onClick = onDropdownClick).fillMaxHeight()
+                    modifier = Modifier
+                        .clickable(onClick = onDropdownClick)
+                        .fillMaxHeight()
                 )
 
                 DropdownMenu(

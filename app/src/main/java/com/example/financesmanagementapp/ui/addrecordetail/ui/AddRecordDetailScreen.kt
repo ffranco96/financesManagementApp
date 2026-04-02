@@ -83,7 +83,7 @@ fun AddRecordDetailScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    val record: Record? = recordStateFlow?.value
+                    val record: Record? = recordStateFlow?.value //TODO verfiicar porque este inicai vacio
                     record?.let{
                         Log.d("franco","Valor actual del Record desde RecordDetailScreen: $record")
                     }

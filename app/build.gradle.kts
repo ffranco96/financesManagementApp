@@ -72,6 +72,12 @@ dependencies {
     implementation(libs.lifecycle)
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+
+    // Room
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    kapt(libs.room.compiler)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
