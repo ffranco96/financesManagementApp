@@ -71,6 +71,7 @@ dependencies {
     implementation(libs.work.test)
     implementation(libs.lifecycle)
     implementation(libs.hilt.android)
+    implementation(libs.hilt.navigation)
     kapt(libs.hilt.compiler)
 
     // Room

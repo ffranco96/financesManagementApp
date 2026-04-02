@@ -4,12 +4,11 @@ import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.example.financesmanagementapp.ui.addrecordetail.ui.AddRecordDetailScreen
 import com.example.financesmanagementapp.ui.addrecordetail.ui.AddRecordDetailViewModel
 import com.example.financesmanagementapp.ui.addregisteramount.ui.AddRecordAmountScreen
@@ -30,7 +29,7 @@ fun AppNavigation() {
     val homeViewModel: HomeViewModel =  viewModel()
     val loginViewModel: LoginViewModel = viewModel()
     val addRecordAmountViewModel: AddRecordAmountViewModel = viewModel()
-    val addRecordDetailViewModel: AddRecordDetailViewModel = viewModel()
+    val addRecordDetailViewModel: AddRecordDetailViewModel = hiltViewModel()
 
     val context: Context = LocalContext.current
 

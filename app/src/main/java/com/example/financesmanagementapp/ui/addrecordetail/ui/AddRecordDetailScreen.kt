@@ -83,18 +83,14 @@ fun AddRecordDetailScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    val record: Record? = recordStateFlow?.value //TODO verfiicar porque este inicai vacio
-                    record?.let{
-                        Log.d("franco","Valor actual del Record desde RecordDetailScreen: $record")
-                    }
-                    val myRecord = record?.copy(
+                    // In this situation, the user accepted the record creation and wants to save it
+                    val inCompleteRecord: Record? = recordStateFlow?.value
+                    val record = inCompleteRecord?.copy(
                         description = detailText,
                         category = categoryList.find { it.categoryName == selectedCategory } ?: Category()
                     )
-                    Log.d("franco", "Ultimo estado del record: $myRecord")
-                    navController.currentBackStackEntry?.savedStateHandle?.set("record", myRecord)
+                    viewModel.saveRecord(record)
                     navController.navigate(AppScreens.HomeStartScreen.route)
-                    // TODO ADD record to DB
                 },
                 modifier = Modifier.padding(16.dp),
                 content = {Icon(Icons.Default.Check, contentDescription = "Aceptar")}
@@ -187,12 +183,12 @@ fun BodyContent(
     }
 }
 
-@Preview(showBackground = true)
+/*@Preview(showBackground = true)
 @Composable
 fun AddRecordDetailScreenWithPreview(){
     val navController = rememberNavController()
     AddRecordDetailScreen(
         navController,
-        AddRecordDetailViewModel()
+        AddRecordDetailContent()
     )
-}
+}*/
