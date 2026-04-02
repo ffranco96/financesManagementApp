@@ -224,9 +224,9 @@ fun RegistersList(registersDetailList: List<RecordEntity>) {
             .fillMaxWidth(),
         horizontalAlignment = Alignment.Start
     ) {
-        items(registersDetailList) { registerDetail ->
+        items(registersDetailList) { recordDetail ->
             Spacer(modifier = Modifier.height(8.dp))
-            Register(registerDetail)
+            Record(recordDetail)
         }
     }
 }
@@ -235,10 +235,10 @@ fun RegistersList(registersDetailList: List<RecordEntity>) {
  * Individual register item component.
  */
 @Composable
-fun Register(regEntityData: RecordEntity) {
-    val regTextData = listOf(
-        regEntityData.title,
-        regEntityData.description
+fun Record(recEntityData: RecordEntity) {
+    val recTextData = listOf(
+        recEntityData.categoryName,
+        recEntityData.description
     ) // TODO Temporal, agregar mas caracteristicas
     Row(
         modifier = Modifier
@@ -247,7 +247,7 @@ fun Register(regEntityData: RecordEntity) {
     )
     {
         MyImage()
-        RegisterContent(regTextData)
+        RegisterContent(recTextData)
     }
 }
 

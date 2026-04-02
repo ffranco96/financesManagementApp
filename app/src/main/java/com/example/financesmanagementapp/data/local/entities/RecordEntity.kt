@@ -13,7 +13,6 @@ data class RecordEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val amount: Double,
-    val title: String,
     val description: String,
     val isIncome: Boolean,
     val categoryName: String, // Flattening Category for simplicity

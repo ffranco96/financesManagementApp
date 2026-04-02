@@ -9,7 +9,6 @@ import java.io.Serializable
  */
 data class Record (
     var amount: Double = 0.0,
-    var title: String = "",
     var description: String = "",
     var isIncome: Boolean = false,
     var category: Category = Category(),
@@ -22,7 +21,6 @@ data class Record (
 fun Record.toEntity(): RecordEntity{
     return RecordEntity(
         amount = amount,
-        title = title,
         description = description,
         isIncome = isIncome,
         categoryName = category.categoryName,

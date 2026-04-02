@@ -87,7 +87,7 @@ fun AddRecordAmountScreen(
             FloatingActionButton(
                 onClick = {
                     val amount = amountText.toDoubleOrNull() ?: 0.0
-                    val myRecord = Record(amount = amount, isIncome = checkedSwitch)
+                    val myRecord = Record(amount = amount, isIncome = checkedSwitch, currency = selectedCurrency)
                     navController.currentBackStackEntry?.savedStateHandle?.set("record", myRecord)
                     navController.navigate(AppScreens.AddRecordDetailScreen.route)
                 },
@@ -204,10 +204,7 @@ fun BodyContent(
                     .fillMaxHeight(),
                 contentAlignment = Alignment.Center
             ) {
-                val displayCurrency = if(selectedCurrency.isEmpty())
-                    "ARS"
-                else
-                    selectedCurrency
+                val displayCurrency = selectedCurrency.ifEmpty { "ARS" }
 
                 Text(
                     text = displayCurrency,
@@ -233,11 +230,11 @@ fun BodyContent(
     }
 }
 
-@Preview(showBackground = true)
+/*@Preview(showBackground = true)
 @Composable
 fun AddRecordAmountScreenPreview() {
     val navController = rememberNavController()
     val viewModel = AddRecordAmountViewModel()
 
     AddRecordAmountScreen(navController = navController, text = "Texto de ejemplo", viewModel = viewModel )
-}
+}*/
