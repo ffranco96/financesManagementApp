@@ -33,10 +33,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.financesmanagementapp.navigation.AppScreens
 import com.example.financesmanagementapp.ui.Record
 import com.example.financesmanagementapp.ui.addrecordetail.model.Category
@@ -83,18 +81,18 @@ fun AddRecordDetailScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    val record: Record? = recordStateFlow?.value
-                    record?.let{
-                        Log.d("franco","Valor actual del Record desde RecordDetailScreen: $record")
-                    }
-                    val myRecord = record?.copy(
+                    // In this situation, the user accepted the record creation and wants to save it
+                    val uncompleteRecord: Record? = recordStateFlow?.value
+                    val record = uncompleteRecord?.copy(
                         description = detailText,
                         category = categoryList.find { it.categoryName == selectedCategory } ?: Category()
                     )
-                    Log.d("franco", "Ultimo estado del record: $myRecord")
-                    navController.currentBackStackEntry?.savedStateHandle?.set("record", myRecord)
-                    navController.navigate(AppScreens.HomeStartScreen.route)
-                    // TODO ADD record to DB
+                    viewModel.saveRecord(record)
+                    navController.navigate(AppScreens.HomeStartScreen.route){
+                        popUpTo(AppScreens.HomeStartScreen.route){
+                            inclusive = true
+                        }
+                    }
                 },
                 modifier = Modifier.padding(16.dp),
                 content = {Icon(Icons.Default.Check, contentDescription = "Aceptar")}
@@ -187,12 +185,12 @@ fun BodyContent(
     }
 }
 
-@Preview(showBackground = true)
+/*@Preview(showBackground = true)
 @Composable
 fun AddRecordDetailScreenWithPreview(){
     val navController = rememberNavController()
     AddRecordDetailScreen(
         navController,
-        AddRecordDetailViewModel()
+        AddRecordDetailContent()
     )
-}
+}*/

@@ -87,7 +87,7 @@ fun AddRecordAmountScreen(
             FloatingActionButton(
                 onClick = {
                     val amount = amountText.toDoubleOrNull() ?: 0.0
-                    val myRecord = Record(amount = amount, isIncome = checkedSwitch)
+                    val myRecord = Record(amount = amount, isIncome = checkedSwitch, currency = selectedCurrency)
                     navController.currentBackStackEntry?.savedStateHandle?.set("record", myRecord)
                     navController.navigate(AppScreens.AddRecordDetailScreen.route)
                 },
@@ -135,7 +135,9 @@ fun BodyContent(
     innerPadding: PaddingValues
 ) {
     Column(
-        modifier = Modifier.fillMaxSize().padding(innerPadding)
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(innerPadding)
             .padding(horizontal = 40.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -150,7 +152,9 @@ fun BodyContent(
                     "0.00",
                     fontSize = 55.sp,
                     modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.End) },
+                    textAlign = TextAlign.End,
+                )
+            },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
@@ -162,7 +166,9 @@ fun BodyContent(
 
         Spacer(Modifier.height(20.dp))
 
-        Row(modifier = Modifier.fillMaxWidth().height(50.dp)){
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp)){
             Text("Gasto", fontSize = 22.sp)
             Switch(
                 checked = checkedSwitch,
@@ -198,15 +204,14 @@ fun BodyContent(
                     .fillMaxHeight(),
                 contentAlignment = Alignment.Center
             ) {
-                val displayCurrency = if(selectedCurrency.isEmpty())
-                    "ARS"
-                else
-                    selectedCurrency
+                val displayCurrency = selectedCurrency.ifEmpty { "ARS" }
 
                 Text(
                     text = displayCurrency,
                     fontSize = 20.sp,
-                    modifier = Modifier.clickable(onClick = onDropdownClick).fillMaxHeight()
+                    modifier = Modifier
+                        .clickable(onClick = onDropdownClick)
+                        .fillMaxHeight()
                 )
 
                 DropdownMenu(
@@ -225,11 +230,11 @@ fun BodyContent(
     }
 }
 
-@Preview(showBackground = true)
+/*@Preview(showBackground = true)
 @Composable
 fun AddRecordAmountScreenPreview() {
     val navController = rememberNavController()
     val viewModel = AddRecordAmountViewModel()
 
     AddRecordAmountScreen(navController = navController, text = "Texto de ejemplo", viewModel = viewModel )
-}
+}*/

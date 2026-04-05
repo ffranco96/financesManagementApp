@@ -1,15 +1,27 @@
 package com.example.financesmanagementapp.ui.addrecordetail.ui
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.financesmanagementapp.R
+import com.example.financesmanagementapp.ui.Record
+import com.example.financesmanagementapp.ui.addrecordetail.domain.SaveRecordUseCase
 import com.example.financesmanagementapp.ui.addrecordetail.model.Category
+import com.example.financesmanagementapp.ui.home.ui.HomeViewModel.Companion.TAG
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 /**
  * ViewModel corresponding to the AddRecordDetailScreen.
  */
-class AddRecordDetailViewModel: ViewModel() {
+@HiltViewModel
+class AddRecordDetailViewModel @Inject constructor(
+    private val saveRecordUseCase: SaveRecordUseCase,
+): ViewModel() {
     private val _detail = MutableStateFlow("")
     val detail: StateFlow<String> = _detail
 
@@ -52,5 +64,14 @@ class AddRecordDetailViewModel: ViewModel() {
     fun onCategorySelected(category: String) {
         _selectedCategory.value = category
         onDismissRequest()
+    }
+
+    fun saveRecord(record: Record?) {
+        viewModelScope.launch(Dispatchers.IO) {
+            record?.let{
+                Log.d(TAG, "Record to save: $record")
+                saveRecordUseCase(record)
+            }
+        }
     }
 }
