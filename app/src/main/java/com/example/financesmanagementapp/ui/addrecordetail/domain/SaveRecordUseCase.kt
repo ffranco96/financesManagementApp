@@ -5,6 +5,11 @@ import com.example.financesmanagementapp.ui.Record
 import com.example.financesmanagementapp.ui.toEntity
 import javax.inject.Inject
 
+/**
+ * Use case for saving a financial record.
+ *
+ * @property recordsRepository The repository for managing financial records.
+ */
 class SaveRecordUseCase @Inject constructor(
     private val recordsRepository: RecordsRepository,
 ) {

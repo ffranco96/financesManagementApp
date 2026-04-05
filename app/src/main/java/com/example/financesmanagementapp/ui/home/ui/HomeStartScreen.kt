@@ -148,7 +148,7 @@ fun BodyContent(
     ) {
         Button(
             onClick = {/*
-                navControler.navigate(route = AppScreens.AddRegisterAmountScreen.route + "/Mi parametro") // Donde se displayara??
+                navControler.navigate(route = AppScreens.AddRecordsAmountScreen.route + "/Mi parametro") // Donde se displayara??
                 Log.d("franco", "Boton que te lleva a los graficos")
             */
             }
@@ -166,7 +166,7 @@ fun BodyContent(
         ) {
             Text(text = "Ultimos movimientos", style = MaterialTheme.typography.titleMedium)
             Button(
-                onClick = { viewModel.clearRegistersList() }
+                onClick = { viewModel.clearRecordsList() }
             ) {
                 Icon(Icons.Rounded.Delete, contentDescription = "Borrar todos los regs")
             }
@@ -177,7 +177,7 @@ fun BodyContent(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-       RegistersList(recordsList)
+       RecordsList(recordsList)
     }
 }
 
@@ -218,7 +218,7 @@ fun observeWorker(context: Context){
  * Displays a list of financial registers.
  */
 @Composable
-fun RegistersList(registersDetailList: List<RecordEntity>) {
+fun RecordsList(registersDetailList: List<RecordEntity>) {
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth(),
@@ -247,7 +247,7 @@ fun Record(recEntityData: RecordEntity) {
     )
     {
         MyImage()
-        RegisterContent(recTextData)
+        RecordContent(recTextData)
     }
 }
 
@@ -255,15 +255,15 @@ fun Record(recEntityData: RecordEntity) {
  * Content for a register item, handles expansion.
  */
 @Composable
-fun RegisterContent(regTextData: List<String>) {
+fun RecordContent(regTextData: List<String>) {
     var expanded by remember { mutableStateOf(false) }
     Column(modifier = Modifier
         .padding(start = 8.dp)
         .clickable {
             expanded = !expanded
         }) {
-        RegisterTitle(regTextData[0], MaterialTheme.typography.labelLarge)
-        RegisterDescription(
+        RecordTitle(regTextData[0], MaterialTheme.typography.labelLarge)
+        RecordDescription(
             regTextData[1],
             MaterialTheme.typography.labelMedium,
             if(expanded) Int.MAX_VALUE else 1
@@ -272,7 +272,7 @@ fun RegisterContent(regTextData: List<String>) {
 }
 
 @Composable
-fun RegisterTitle(title: String, style: TextStyle) {
+fun RecordTitle(title: String, style: TextStyle) {
     Text(
         text = title,
         style = style
@@ -280,7 +280,7 @@ fun RegisterTitle(title: String, style: TextStyle) {
 }
 
 @Composable
-fun RegisterDescription(desc: String, style: TextStyle, lines: Int = Int.MAX_VALUE) {
+fun RecordDescription(desc: String, style: TextStyle, lines: Int = Int.MAX_VALUE) {
     Text(
         text = desc,
         style = style,

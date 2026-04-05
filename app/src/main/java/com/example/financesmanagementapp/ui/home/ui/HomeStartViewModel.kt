@@ -24,6 +24,14 @@ import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
+/**
+ * ViewModel for the Home screen.
+ *
+ * @property getBtcPriceUseCase Use case for getting the BTC price.
+ * @property getAllCryptoPricesUseCase Use case for getting all crypto prices.
+ * @property getAllRecordsFlowUseCase Use case for getting all records as a Flow.
+ * @property deleteAllRecordsUseCase Use case for deleting all records.
+ */
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getBtcPriceUseCase : GetCryptoPriceByTickerUseCase,
@@ -53,7 +61,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun clearRegistersList() {
+    fun clearRecordsList() {
         viewModelScope.launch(Dispatchers.IO) {
             deleteAllRecordsUseCase()
         }

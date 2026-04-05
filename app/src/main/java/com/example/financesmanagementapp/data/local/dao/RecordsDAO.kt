@@ -13,13 +13,13 @@ import kotlinx.coroutines.flow.Flow
  */
 @Dao
 interface RecordsDAO {
-    @Query("SELECT * FROM RECORDS")
+    @Query("SELECT * FROM records")
     fun getAll(): List<RecordEntity>
 
-    @Query("SELECT * FROM RECORDS")
+    @Query("SELECT * FROM records")
     fun getAllAsFlow(): Flow<List<RecordEntity>>
 
-    @Query("DELETE FROM RECORDS")
+    @Query("DELETE FROM records")
     fun deleteAll()
 
     @Insert
