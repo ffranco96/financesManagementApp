@@ -10,10 +10,12 @@ import androidx.work.WorkManager
 import com.example.financesmanagementapp.data.local.entities.RecordEntity
 import com.example.financesmanagementapp.ui.home.data.worker.UpdateCryptoactivesWorker
 import com.example.financesmanagementapp.ui.home.di.ServiceLocator
+import com.example.financesmanagementapp.ui.home.domain.DeleteAllRecordsUseCase
 import com.example.financesmanagementapp.ui.home.domain.GetAllCryptoPricesUseCase
 import com.example.financesmanagementapp.ui.home.domain.GetAllRecordsFlowUseCase
 import com.example.financesmanagementapp.ui.home.domain.GetCryptoPriceByTickerUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -27,6 +29,7 @@ class HomeViewModel @Inject constructor(
     private val getBtcPriceUseCase : GetCryptoPriceByTickerUseCase,
     private val getAllCryptoPricesUseCase: GetAllCryptoPricesUseCase,
     private val getAllRecordsFlowUseCase: GetAllRecordsFlowUseCase,
+    private val deleteAllRecordsUseCase: DeleteAllRecordsUseCase,
 ) : ViewModel(){
     private val _currentBtcValue = MutableStateFlow(0.0)
     val currentBtcValue: StateFlow<Double> = _currentBtcValue
@@ -51,8 +54,9 @@ class HomeViewModel @Inject constructor(
     }
 
     fun clearRegistersList() {
-        Log.d(TAG, "clearRegistersList")
-        //_registersList.value = mutableListOf() TODO crear use case
+        viewModelScope.launch(Dispatchers.IO) {
+            deleteAllRecordsUseCase()
+        }
     }
 
     fun setupWorkers(context: Context){
