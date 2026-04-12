@@ -1,7 +1,7 @@
 package com.example.financesmanagementapp.ui
 
 import com.example.financesmanagementapp.data.local.entities.RecordEntity
-import com.example.financesmanagementapp.ui.addrecordetail.model.Category
+import com.example.financesmanagementapp.domain.model.Category
 import java.io.Serializable
 
 /**

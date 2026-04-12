@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.financesmanagementapp.navigation.AppScreens
 import com.example.financesmanagementapp.ui.Record
-import com.example.financesmanagementapp.ui.addrecordetail.model.Category
+import com.example.financesmanagementapp.domain.model.Category
 
 /**
  * Screen that allows adding more details to a financial record, such as description and category.

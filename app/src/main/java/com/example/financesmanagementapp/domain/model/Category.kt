@@ -1,4 +1,5 @@
-package com.example.financesmanagementapp.ui.addrecordetail.model
+package com.example.financesmanagementapp.domain.model
+
 import com.example.financesmanagementapp.R
 
 /**

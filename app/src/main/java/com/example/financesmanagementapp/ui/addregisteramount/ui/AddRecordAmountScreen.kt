@@ -39,11 +39,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.financesmanagementapp.navigation.AppScreens
 import com.example.financesmanagementapp.ui.Record
 
@@ -60,14 +58,14 @@ import com.example.financesmanagementapp.ui.Record
 fun AddRecordAmountScreen(
     navController: NavController,
     text: String?,
-    viewModel: AddRecordAmountViewModel
+    viewModel: AddRecordAmountViewModel,
 ) {
     val amountText by viewModel.amountText.collectAsState()
     val checkedSwitch by viewModel.checkedSwitch.collectAsState()
     val expandedCurrencyMenu by viewModel.expandedCurrencyMenu.collectAsState()
     val selectedCurrency by viewModel.selectedCurrency.collectAsState()
 
-    val currencyList = listOf("ARS", "USD") // TODO: DI Hilt
+    val currencyList by viewModel.currencyList.collectAsState()
 
     Scaffold(
         topBar = {
