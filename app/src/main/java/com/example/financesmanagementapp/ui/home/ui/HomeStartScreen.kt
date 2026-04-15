@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.*
@@ -34,6 +35,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,6 +51,7 @@ import com.example.financesmanagementapp.R
 import com.example.financesmanagementapp.data.local.entities.RecordEntity
 import com.example.financesmanagementapp.navigation.AppScreens
 import com.example.financesmanagementapp.utils.Constants
+import kotlinx.coroutines.launch
 
 /**
  * Main home screen of the application. Displays balance, crypto prices, and recent movements.
@@ -64,6 +67,10 @@ fun HomeStartScreen(
 ){
     val record = navController.currentBackStackEntry?.savedStateHandle?.
     getStateFlow<Record?>("record", null)
+
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+
     record?.let{
         Log.d("franco","Valor actual del Record: ${record.value}")
     } // TODO borrar
@@ -76,28 +83,55 @@ fun HomeStartScreen(
         viewModel.setupWorkers(context)
         observeWorker(context)
     }
-    Scaffold(
-        topBar = { TopAppBar(title = {Text("Inicio") })},
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    navController.navigate(route = AppScreens.AddRecordAmountScreen.route)
-                    //recordsDetailList
-                },
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Agregar")
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet {
+                Text("Mis Finanzas", modifier = Modifier.padding(18.dp))
+                HorizontalDivider()
+                NavigationDrawerItem(
+                    label = { Text("Importar registros") },
+                    selected = false,
+                    icon = {Icon(painter = painterResource(id = R.drawable.import_icon), contentDescription = "Importar registros")},
+                    onClick = { scope.launch { drawerState.close() } }
+                )
             }
         }
-    ) { paddingValues ->
-        Column (
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(paddingValues)
-        ){
-            BodyContent(viewModel)
+    ) {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("Home") },
+                    navigationIcon = {
+                        IconButton(onClick = {
+                            scope.launch { drawerState.open() }
+                        }) {
+                            Icon(Icons.Default.Menu, contentDescription = "Mis Finanzas")
+                        }
+                    }
+                )
+            },
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = {
+                        navController.navigate(route = AppScreens.AddRecordAmountScreen.route)
+                        //recordsDetailList
+                    },
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = "Agregar")
+                }
+            }
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(paddingValues)
+            ) {
+                BodyContent(viewModel)
+            }
+            val a = paddingValues // To avoid error
         }
-        val a = paddingValues // To avoid error
     }
 }
 
