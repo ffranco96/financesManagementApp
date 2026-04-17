@@ -10,6 +10,7 @@ import androidx.work.WorkManager
 import com.example.financesmanagementapp.data.local.ParseCsvUseCase
 import com.example.financesmanagementapp.data.local.SelectCsvUseCase
 import com.example.financesmanagementapp.data.local.entities.RecordEntity
+import com.example.financesmanagementapp.ui.addrecordetail.domain.SaveRecordUseCase
 import com.example.financesmanagementapp.ui.home.data.worker.UpdateCryptoactivesWorker
 import com.example.financesmanagementapp.ui.home.di.ServiceLocator
 import com.example.financesmanagementapp.ui.home.domain.DeleteAllRecordsUseCase
@@ -44,6 +45,7 @@ class HomeViewModel @Inject constructor(
     private val deleteAllRecordsUseCase: DeleteAllRecordsUseCase,
     private val selectCsvUseCase: SelectCsvUseCase,
     private val parseCsvUseCase: ParseCsvUseCase,
+    private val saveRecordUseCase: SaveRecordUseCase,
 ) : ViewModel(){
     private val _currentBtcValue = MutableStateFlow(0.0)
     val currentBtcValue: StateFlow<Double> = _currentBtcValue
@@ -97,13 +99,15 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    suspend fun importCsv() {
+    fun importCsv() {
         viewModelScope.launch(Dispatchers.IO) {
             val readCsv = selectCsvUseCase()
             val recordList = parseCsvUseCase(readCsv)
             Log.d("franco", "recordList: $recordList")
-            // insert into db
-            // update balance
+            recordList.forEach { record ->
+                saveRecordUseCase(record)
+            }
+            // TODO update balance
         }
     }
 
