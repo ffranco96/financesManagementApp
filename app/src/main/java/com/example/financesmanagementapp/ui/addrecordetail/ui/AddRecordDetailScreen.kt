@@ -36,7 +36,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.financesmanagementapp.navigation.AppScreens
-import com.example.financesmanagementapp.ui.Record
+import com.example.financesmanagementapp.domain.model.Record
 import com.example.financesmanagementapp.domain.model.Category
 
 /**

@@ -93,7 +93,12 @@ fun HomeStartScreen(
                     label = { Text("Importar registros") },
                     selected = false,
                     icon = {Icon(painter = painterResource(id = R.drawable.import_icon), contentDescription = "Importar registros")},
-                    onClick = { scope.launch { drawerState.close() } }
+                    onClick = {
+                        scope.launch {
+                            viewModel.importCsv()
+                            drawerState.close()
+                        }
+                    }
                 )
             }
         }

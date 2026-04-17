@@ -1,0 +1,3 @@
+amount; description; categoryName; date (YYYY-MM-DD); currency; isIncome
+-1000.00;Club de la milanesa. Pagamos a medias con mis amigos; Restaurant y comida rapida; 2024-05-25; ARS; false
+2000.00;Modafinilo. Pague yo;Medicamentos e insumos; 2024-03-20; ARS; false

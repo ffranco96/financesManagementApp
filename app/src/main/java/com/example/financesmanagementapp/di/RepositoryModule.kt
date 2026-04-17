@@ -1,5 +1,7 @@
 package com.example.financesmanagementapp.di
 
+import com.example.financesmanagementapp.data.repository.ConfigRepository
+import com.example.financesmanagementapp.data.repository.ConfigRepositoryImpl
 import com.example.financesmanagementapp.data.repository.RecordsRepository
 import com.example.financesmanagementapp.data.repository.RecordsRepositoryImpl
 import dagger.Binds

@@ -7,6 +7,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.example.financesmanagementapp.data.local.ParseCsvUseCase
+import com.example.financesmanagementapp.data.local.SelectCsvUseCase
 import com.example.financesmanagementapp.data.local.entities.RecordEntity
 import com.example.financesmanagementapp.ui.home.data.worker.UpdateCryptoactivesWorker
 import com.example.financesmanagementapp.ui.home.di.ServiceLocator
@@ -31,6 +33,8 @@ import javax.inject.Inject
  * @property getAllCryptoPricesUseCase Use case for getting all crypto prices.
  * @property getAllRecordsFlowUseCase Use case for getting all records as a Flow.
  * @property deleteAllRecordsUseCase Use case for deleting all records.
+ * @property selectCsvUseCase Use case to select a local CSV file.
+ * @property parseCsvUseCase Use case to parse a local CSV file.
  */
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -38,6 +42,8 @@ class HomeViewModel @Inject constructor(
     private val getAllCryptoPricesUseCase: GetAllCryptoPricesUseCase,
     private val getAllRecordsFlowUseCase: GetAllRecordsFlowUseCase,
     private val deleteAllRecordsUseCase: DeleteAllRecordsUseCase,
+    private val selectCsvUseCase: SelectCsvUseCase,
+    private val parseCsvUseCase: ParseCsvUseCase,
 ) : ViewModel(){
     private val _currentBtcValue = MutableStateFlow(0.0)
     val currentBtcValue: StateFlow<Double> = _currentBtcValue
@@ -88,6 +94,16 @@ class HomeViewModel @Inject constructor(
             btcPrice.let {
                 _btcPrice.value = btcPrice.toString()
             }
+        }
+    }
+
+    suspend fun importCsv() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val readCsv = selectCsvUseCase()
+            val recordList = parseCsvUseCase(readCsv)
+            Log.d("franco", "recordList: $recordList")
+            // insert into db
+            // update balance
         }
     }
 

@@ -6,7 +6,7 @@ import java.text.SimpleDateFormat
 
 /**
  * Entity representing a financial record in the local database.
- * Matches the structure of the [com.example.financesmanagementapp.ui.Record] domain class.
+ * Matches the structure of the [Record] domain class.
  */
 @Entity(tableName = "records")
 data class RecordEntity(

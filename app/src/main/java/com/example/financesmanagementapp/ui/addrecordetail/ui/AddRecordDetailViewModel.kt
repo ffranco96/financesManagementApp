@@ -3,8 +3,7 @@ package com.example.financesmanagementapp.ui.addrecordetail.ui
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.financesmanagementapp.domain.model.Currency
-import com.example.financesmanagementapp.ui.Record
+import com.example.financesmanagementapp.domain.model.Record
 import com.example.financesmanagementapp.ui.addrecordetail.domain.SaveRecordUseCase
 import com.example.financesmanagementapp.domain.model.Category
 import com.example.financesmanagementapp.domain.usecase.GetCategoriesUseCase

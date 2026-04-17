@@ -1,8 +1,8 @@
 package com.example.financesmanagementapp.ui.addrecordetail.domain
 
+import com.example.financesmanagementapp.data.local.mapper.toEntity
 import com.example.financesmanagementapp.data.repository.RecordsRepository
-import com.example.financesmanagementapp.ui.Record
-import com.example.financesmanagementapp.ui.toEntity
+import com.example.financesmanagementapp.domain.model.Record
 import javax.inject.Inject
 
 /**
