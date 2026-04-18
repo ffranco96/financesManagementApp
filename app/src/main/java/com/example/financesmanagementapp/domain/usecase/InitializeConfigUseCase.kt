@@ -8,23 +8,38 @@ import com.example.financesmanagementapp.domain.model.CryptoCurrency
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
+/**
+ * Use case for initializing the configuration of the app.
+ * This includes saving default fiat currencies, crypto currencies, and categories.
+ * If the data already exists, it will not be overwritten.
+ *
+ * @param configRepository The repository for configuration data.
+ * @constructor Creates an instance of InitializeConfigUseCase.
+ * //IMPROVEMENT: Agregar categorias desde un archivo de configuracion
+ */
 class InitializeConfigUseCase @Inject constructor(
-    private val repository: ConfigRepository
+    private val configRepository: ConfigRepository
 ) {
+    /**
+     * Initializes the configuration of the app by obtaining fiat and crypto currencies from
+     * the config repository.
+     *
+     * If the data does not exist, it will be saved with default values.
+     */
     suspend operator fun invoke() {
-        val fiat = repository.getFiatCurrencies().first()
+        val fiat = configRepository.getFiatCurrencies().first()
         if (fiat.isEmpty()) {
-            repository.saveFiatCurrencies(FiatCurrency.entries.toList())
+            configRepository.saveFiatCurrencies(FiatCurrency.entries.toList())
         }
 
-        val crypto = repository.getCryptoCurrencies().first()
+        val crypto = configRepository.getCryptoCurrencies().first()
         if (crypto.isEmpty()) {
-            repository.saveCryptoCurrencies(CryptoCurrency.entries)
+            configRepository.saveCryptoCurrencies(CryptoCurrency.entries)
         }
 
-        val categories = repository.getCategories().first()
+        val categories = configRepository.getCategories().first()
         if (categories.isEmpty()) {
-            repository.saveCategories(listOf(
+            configRepository.saveCategories(listOf(
                 Category("Comida y alimentos", R.drawable.ic_category_food, R.color.categ_color_food, ""),
                 Category("Restaurant y comida rapida", R.drawable.ic_category_fast_food, R.color.categ_color_fast_food, ""),
                 Category("Ropa", R.drawable.ic_category_clothes, R.color.categ_color_clothes, ""),
