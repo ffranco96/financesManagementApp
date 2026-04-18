@@ -1,6 +1,7 @@
 package com.example.financesmanagementapp.ui.home.ui
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,7 +9,7 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.financesmanagementapp.data.local.ParseCsvUseCase
-import com.example.financesmanagementapp.data.local.SelectCsvUseCase
+import com.example.financesmanagementapp.data.local.ReadCsvUseCase
 import com.example.financesmanagementapp.data.local.entities.RecordEntity
 import com.example.financesmanagementapp.ui.addrecordetail.domain.SaveRecordUseCase
 import com.example.financesmanagementapp.ui.home.data.worker.UpdateCryptoactivesWorker
@@ -34,7 +35,7 @@ import javax.inject.Inject
  * @property getAllCryptoPricesUseCase Use case for getting all crypto prices.
  * @property getAllRecordsFlowUseCase Use case for getting all records as a Flow.
  * @property deleteAllRecordsUseCase Use case for deleting all records.
- * @property selectCsvUseCase Use case to select a local CSV file.
+ * @property readCsvUseCase Use case to select a local CSV file.
  * @property parseCsvUseCase Use case to parse a local CSV file.
  */
 @HiltViewModel
@@ -43,7 +44,7 @@ class HomeViewModel @Inject constructor(
     private val getAllCryptoPricesUseCase: GetAllCryptoPricesUseCase,
     private val getAllRecordsFlowUseCase: GetAllRecordsFlowUseCase,
     private val deleteAllRecordsUseCase: DeleteAllRecordsUseCase,
-    private val selectCsvUseCase: SelectCsvUseCase,
+    private val readCsvUseCase: ReadCsvUseCase,
     private val parseCsvUseCase: ParseCsvUseCase,
     private val saveRecordUseCase: SaveRecordUseCase,
 ) : ViewModel(){
@@ -99,10 +100,15 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun importCsv() {
+    fun importCsv(uri: Uri) {
         viewModelScope.launch(Dispatchers.IO) {
-            val readCsv = selectCsvUseCase()
+            val readCsv = readCsvUseCase(uri)?: run {
+                Log.d(TAG, "Error leyendo csv")
+                return@launch
+            }
+
             val recordList = parseCsvUseCase(readCsv)
+
             Log.d("franco", "recordList: $recordList")
             recordList.forEach { record ->
                 saveRecordUseCase(record)

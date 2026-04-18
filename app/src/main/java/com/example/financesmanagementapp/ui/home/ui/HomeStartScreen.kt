@@ -1,7 +1,10 @@
 package com.example.financesmanagementapp.ui.home.ui
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -64,12 +67,18 @@ import kotlinx.coroutines.launch
 fun HomeStartScreen(
     navController : NavController,
     viewModel: HomeViewModel
-){
-    val record = navController.currentBackStackEntry?.savedStateHandle?.
-    getStateFlow<Record?>("record", null)
+) {
+    val record =
+        navController.currentBackStackEntry?.savedStateHandle?.getStateFlow<Record?>("record", null)
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let { viewModel.importCsv(it) }
+    }
 
     record?.let{
         Log.d("franco","Valor actual del Record: ${record.value}")
@@ -92,11 +101,16 @@ fun HomeStartScreen(
                 NavigationDrawerItem(
                     label = { Text("Importar registros") },
                     selected = false,
-                    icon = {Icon(painter = painterResource(id = R.drawable.import_icon), contentDescription = "Importar registros")},
+                    icon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.import_icon),
+                            contentDescription = "Importar registros"
+                        )
+                    },
                     onClick = {
                         scope.launch {
-                            viewModel.importCsv()
-                            drawerState.close()
+                            launcher.launch("text/csv")
+                            scope.launch { drawerState.close() }
                         }
                     }
                 )
