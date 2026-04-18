@@ -1,9 +1,10 @@
 package com.example.financesmanagementapp.domain.usecase
 
 import com.example.financesmanagementapp.R
-import com.example.financesmanagementapp.domain.model.Currency
+import com.example.financesmanagementapp.domain.model.FiatCurrency
 import com.example.financesmanagementapp.data.repository.ConfigRepository
 import com.example.financesmanagementapp.domain.model.Category
+import com.example.financesmanagementapp.domain.model.CryptoCurrency
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
@@ -13,21 +14,12 @@ class InitializeConfigUseCase @Inject constructor(
     suspend operator fun invoke() {
         val fiat = repository.getFiatCurrencies().first()
         if (fiat.isEmpty()) {
-            repository.saveFiatCurrencies(listOf(
-                Currency("ARS", "Pesos argentinos"),
-                Currency("USD", "Dolar estadounidense"),
-                Currency("EUR", "Euros"),
-                Currency("BRL", "Reales brasileros")
-            ))
+            repository.saveFiatCurrencies(FiatCurrency.entries.toList())
         }
 
         val crypto = repository.getCryptoCurrencies().first()
         if (crypto.isEmpty()) {
-            repository.saveCryptoCurrencies(listOf(
-                Currency("BTC", "Bitcoin"),
-                Currency("XRP", "Ripple"),
-                Currency("ETH", "Ethereum")
-            ))
+            repository.saveCryptoCurrencies(CryptoCurrency.entries)
         }
 
         val categories = repository.getCategories().first()

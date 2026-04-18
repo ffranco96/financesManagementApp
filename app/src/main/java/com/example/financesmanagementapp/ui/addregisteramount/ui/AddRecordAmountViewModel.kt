@@ -2,6 +2,7 @@ package com.example.financesmanagementapp.ui.addregisteramount.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.financesmanagementapp.domain.model.FiatCurrency
 import com.example.financesmanagementapp.domain.usecase.GetFiatCurrenciesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,11 +25,11 @@ class AddRecordAmountViewModel @Inject constructor(
     private val _expandedCurrencyMenu = MutableStateFlow(false)
     val expandedCurrencyMenu: StateFlow<Boolean> = _expandedCurrencyMenu
 
-    private val _selectedCurrency = MutableStateFlow("ARS") // TODO va a venir de primer valor de las currencies por DI
+    private val _selectedCurrency = MutableStateFlow(FiatCurrency.ARS.code) // TODO va a venir de primer valor de las currencies por DI
     val selectedCurrency: StateFlow<String> = _selectedCurrency
 
     var currencyList: StateFlow<List<String>> = getFiatCurrenciesUseCase()
-        .map{ it.map{currency -> currency.abbrev} }
+        .map{ it.map{currency -> currency.code} }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),

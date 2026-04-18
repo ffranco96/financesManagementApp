@@ -43,7 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.financesmanagementapp.navigation.AppScreens
-import com.example.financesmanagementapp.ui.Record
+import com.example.financesmanagementapp.domain.model.Record
 
 /**
  * Screen that allows the user to input the amount for a new financial record.

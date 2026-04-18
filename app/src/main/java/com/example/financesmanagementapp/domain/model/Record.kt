@@ -1,0 +1,15 @@
+package com.example.financesmanagementapp.domain.model
+
+import java.io.Serializable
+
+/**
+ * Data class representing a financial record, which is a movement that can be an income or an expense.
+ */
+data class Record (
+    var amount: Double = 0.0,
+    var description: String = "",
+    var isIncome: Boolean = false,
+    var category: Category = Category(),
+    var date:String = "",
+    var currency:String = ""
+): Serializable
