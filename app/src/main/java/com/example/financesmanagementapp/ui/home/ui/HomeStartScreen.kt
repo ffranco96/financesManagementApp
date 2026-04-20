@@ -52,6 +52,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
@@ -352,7 +353,7 @@ fun RecordContent(record: Record) {
             )
         }
 
-        RecordAmount(record.currency, record.amount)
+        RecordAmount(record.currency, record.amount, record.isIncome)
     }
 }
 
@@ -384,9 +385,10 @@ fun RecordDate(date: String, style: TextStyle, color: Color) {
 }
 
 @Composable
-fun RecordAmount(currency: String, amount: Double) {
+fun RecordAmount(currency: String, amount: Double, isIncome: Boolean) {
     Text(
         text = "$currency $amount",
-        style = MaterialTheme.typography.labelLarge
+        style = MaterialTheme.typography.labelLarge,
+        color = colorResource(if(isIncome) R.color.positive_green else R.color.negative_red)
     )
 }
