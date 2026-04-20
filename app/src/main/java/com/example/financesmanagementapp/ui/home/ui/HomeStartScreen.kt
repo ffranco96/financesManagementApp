@@ -328,26 +328,32 @@ fun MyImage(rscId: Int) {
 @Composable
 fun RecordContent(record: Record) {
     var expanded by remember { mutableStateOf(false) }
-    Column(
-        modifier = Modifier
-            .padding(start = 8.dp)
-            .clickable {
-                expanded = !expanded
-            }) {
-        RecordTitle(record.category.categoryName, MaterialTheme.typography.labelLarge)
-        RecordDescription(
-            record.description,
-            MaterialTheme.typography.labelMedium,
-            if (expanded) Int.MAX_VALUE else 1
-        )
-        RecordDate(
-            date = record.date,
-            style = MaterialTheme.typography.labelSmall,
-            color = Color()
-        )
-    }
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Column(
+            modifier = Modifier
+                .weight(1f) // Avoids the amount to be compressed
+                .padding(start = 8.dp)
+                .clickable { expanded = !expanded }
+        ) {
+            RecordTitle(record.category.categoryName, MaterialTheme.typography.labelLarge)
+            RecordDescription(
+                record.description,
+                MaterialTheme.typography.labelMedium,
+                if (expanded) Int.MAX_VALUE else 2
+            )
+            RecordDate(
+                date = record.date,
+                style = MaterialTheme.typography.labelSmall,
+                color = Color()
+            )
+        }
 
-    RecordAmount(record.currency, record.amount)
+        RecordAmount(record.currency, record.amount)
+    }
 }
 
 @Composable
