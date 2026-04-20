@@ -53,7 +53,7 @@ class InitializeConfigUseCase @Inject constructor(
                 Category("Pintura, dibujo y fotografia", R.drawable.ic_category_painting_drawing_and_photography, R.color.categ_color_painting_drawing_photos, ""),
                 Category("Inversiones y finanzas", R.drawable.ic_category_investment_and_finances, R.color.categ_color_investment_and_finances, ""),
                 Category("Salario", R.drawable.ic_category_salary, R.color.categ_color_salary, ""),
-                Category("Otros", R.drawable.ic_other_generic, R.color.categ_color_other, "")
+                Category("Faltantes", R.drawable.ic_other_generic, R.color.categ_color_other, "")
             ))
         }
     }

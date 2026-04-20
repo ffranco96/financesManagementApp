@@ -10,7 +10,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.financesmanagementapp.data.local.ParseCsvUseCase
 import com.example.financesmanagementapp.data.local.ReadCsvUseCase
-import com.example.financesmanagementapp.data.local.entities.RecordEntity
+import com.example.financesmanagementapp.domain.model.Record
 import com.example.financesmanagementapp.ui.addrecordetail.domain.SaveRecordUseCase
 import com.example.financesmanagementapp.ui.home.data.worker.UpdateCryptoactivesWorker
 import com.example.financesmanagementapp.ui.home.di.ServiceLocator
@@ -54,7 +54,11 @@ class HomeViewModel @Inject constructor(
     private val _currentBalance = MutableStateFlow(0.0)
     val currentBalance: StateFlow<Double> = _currentBalance
 
-    val recordsList: StateFlow<List<RecordEntity>> = getAllRecordsFlowUseCase()
+    /**
+     * A stateFlow, obtained from a flow that contains the updated list of records
+     * present in the DB.
+     */
+    val recordsList: StateFlow<List<Record>> = getAllRecordsFlowUseCase()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000), // Se mantiene activo si hay alguien escuchando

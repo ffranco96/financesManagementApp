@@ -2,6 +2,8 @@ package com.example.financesmanagementapp.data.local.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.financesmanagementapp.domain.model.Category
+import com.example.financesmanagementapp.domain.model.Record
 import java.text.SimpleDateFormat
 
 /**
@@ -26,3 +28,15 @@ data class RecordEntity(
         return date1.compareTo(date2)
     }
 }
+
+fun RecordEntity.toDomain(completeCategory: Category): Record {
+    return Record(
+        amount = amount,
+        description = description,
+        isIncome = isIncome,
+        category = completeCategory,
+        date = date,
+        currency = currency
+    )
+}
+

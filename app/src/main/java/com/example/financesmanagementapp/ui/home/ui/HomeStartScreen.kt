@@ -1,6 +1,7 @@
 package com.example.financesmanagementapp.ui.home.ui
 
 import android.content.Context
+import android.graphics.Color
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -13,7 +14,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -25,13 +25,21 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material3.*
 import androidx.compose.material3.Button
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -46,15 +54,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.example.financesmanagementapp.R
-import com.example.financesmanagementapp.data.local.entities.RecordEntity
 import com.example.financesmanagementapp.navigation.AppScreens
 import com.example.financesmanagementapp.utils.Constants
 import kotlinx.coroutines.launch
+import com.example.financesmanagementapp.domain.model.Record
 
 /**
  * Main home screen of the application. Displays balance, crypto prices, and recent movements.
@@ -201,6 +210,7 @@ fun BodyContent(
     ) {
         Button(
             onClick = {/*
+                //TODO Habilitar funcionaidad de boton de graficos
                 navControler.navigate(route = AppScreens.AddRecordsAmountScreen.route + "/Mi parametro") // Donde se displayara??
                 Log.d("franco", "Boton que te lleva a los graficos")
             */
@@ -271,15 +281,14 @@ fun observeWorker(context: Context){
  * Displays a list of financial registers.
  */
 @Composable
-fun RecordsList(registersDetailList: List<RecordEntity>) {
+fun RecordsList(registersDetailList: List<Record>) {
     LazyColumn(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.Start
     ) {
         items(registersDetailList) { recordDetail ->
-            Spacer(modifier = Modifier.height(8.dp))
-            Record(recordDetail)
+            RecordItem(recordDetail)
+            HorizontalDivider()
         }
     }
 }
@@ -288,40 +297,57 @@ fun RecordsList(registersDetailList: List<RecordEntity>) {
  * Individual register item component.
  */
 @Composable
-fun Record(recEntityData: RecordEntity) {
-    val recTextData = listOf(
-        recEntityData.categoryName,
-        recEntityData.description
-    ) // TODO Temporal, agregar mas caracteristicas
+fun RecordItem(record: Record) {
     Row(
         modifier = Modifier
-            .background(MaterialTheme.colorScheme.background)
-            .padding(8.dp)
+            .background(MaterialTheme.colorScheme.background) // Background of the Row
+            .padding(horizontal = 16.dp), // Space around the Row
+        verticalAlignment = Alignment.CenterVertically // Defines property for the children
     )
     {
-        MyImage()
-        RecordContent(recTextData)
+        MyImage(record.category.iconRsc)
+        Spacer(modifier = Modifier.width(12.dp))
+        RecordContent(record)
     }
+}
+
+@Composable
+fun MyImage(rscId: Int) {
+    Image(
+        painterResource(rscId),
+        "Category image",
+        modifier = Modifier
+            .size(50.dp)
+            .clip(CircleShape)
+            .background(MaterialTheme.colorScheme.onBackground))
 }
 
 /**
  * Content for a register item, handles expansion.
  */
 @Composable
-fun RecordContent(regTextData: List<String>) {
+fun RecordContent(record: Record) {
     var expanded by remember { mutableStateOf(false) }
-    Column(modifier = Modifier
-        .padding(start = 8.dp)
-        .clickable {
-            expanded = !expanded
-        }) {
-        RecordTitle(regTextData[0], MaterialTheme.typography.labelLarge)
+    Column(
+        modifier = Modifier
+            .padding(start = 8.dp)
+            .clickable {
+                expanded = !expanded
+            }) {
+        RecordTitle(record.category.categoryName, MaterialTheme.typography.labelLarge)
         RecordDescription(
-            regTextData[1],
+            record.description,
             MaterialTheme.typography.labelMedium,
-            if(expanded) Int.MAX_VALUE else 1
+            if (expanded) Int.MAX_VALUE else 1
+        )
+        RecordDate(
+            date = record.date,
+            style = MaterialTheme.typography.labelSmall,
+            color = Color()
         )
     }
+
+    RecordAmount(record.currency, record.amount)
 }
 
 @Composable
@@ -337,17 +363,24 @@ fun RecordDescription(desc: String, style: TextStyle, lines: Int = Int.MAX_VALUE
     Text(
         text = desc,
         style = style,
-        maxLines = lines
+        maxLines = lines,
+        overflow = TextOverflow.Ellipsis, // Hides text when record is not selected
     )
 }
 
 @Composable
-fun MyImage() {
-    Image(
-        painterResource(R.drawable.ic_launcher_foreground),
-        "Mi imagen",
-        modifier = Modifier
-            .size(50.dp)
-            .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.onBackground))
+fun RecordDate(date: String, style: TextStyle, color: Color) {
+    Text(
+        text = date,
+        style = MaterialTheme.typography.labelSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant
+    )
+}
+
+@Composable
+fun RecordAmount(currency: String, amount: Double) {
+    Text(
+        text = "$currency $amount",
+        style = MaterialTheme.typography.labelLarge
+    )
 }
