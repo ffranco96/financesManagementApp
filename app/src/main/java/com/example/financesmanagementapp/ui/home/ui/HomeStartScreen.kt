@@ -312,6 +312,9 @@ fun RecordItem(record: Record) {
     }
 }
 
+/**
+ * Displays an icon for the corresponding category.
+ */
 @Composable
 fun MyImage(rscId: Int) {
     Image(
@@ -357,6 +360,9 @@ fun RecordContent(record: Record) {
     }
 }
 
+/**
+ * Displays a title for a record, being it the name of the corresponding category.
+ */
 @Composable
 fun RecordTitle(title: String, style: TextStyle) {
     Text(
@@ -365,6 +371,9 @@ fun RecordTitle(title: String, style: TextStyle) {
     )
 }
 
+/**
+ * Displays a description for a record.
+ */
 @Composable
 fun RecordDescription(desc: String, style: TextStyle, lines: Int = Int.MAX_VALUE) {
     Text(
@@ -375,6 +384,9 @@ fun RecordDescription(desc: String, style: TextStyle, lines: Int = Int.MAX_VALUE
     )
 }
 
+/**
+ * Displays a date for a record.
+ */
 @Composable
 fun RecordDate(date: String, style: TextStyle, color: Color) {
     Text(
@@ -384,6 +396,9 @@ fun RecordDate(date: String, style: TextStyle, color: Color) {
     )
 }
 
+/**
+ * Displays a the amount and the currency of the record.
+ */
 @Composable
 fun RecordAmount(currency: String, amount: Double, isIncome: Boolean) {
     Text(

@@ -15,6 +15,9 @@ data class Record (
     var currency:String = ""
 ): Serializable
 
+/**
+ * Extension function to convert a [Record] domain class to a [RecordEntity] entity.
+ */
 fun Record.toEntity(): RecordEntity {
     return RecordEntity(
         amount = amount,
