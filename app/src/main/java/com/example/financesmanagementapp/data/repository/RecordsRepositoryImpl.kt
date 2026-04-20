@@ -18,6 +18,8 @@ class RecordsRepositoryImpl @Inject constructor(
 
     /**
      * Retrieves all records from the database as a Flow.
+     * At this point, the category attribute is as a simple String,
+     * not a Category object.
      */
     override fun getAllRecordsFlow(): Flow<List<RecordEntity>> {
         return recordsDao.getAllAsFlow()

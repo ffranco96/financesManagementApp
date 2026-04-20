@@ -7,7 +7,7 @@ import com.example.financesmanagementapp.R
  * The categories can be: Food, Health, Hobbies, Investments, etc.
  */
 data class Category(
-    var categoryName: String = "Otro",
+    var categoryName: String = "Faltantes",
     var iconRsc: Int = R.drawable.ic_other_generic,
     var colorIcon: Int = R.color.sad_grey,
     var details: String = ""

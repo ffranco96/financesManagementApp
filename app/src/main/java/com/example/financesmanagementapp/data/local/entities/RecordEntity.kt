@@ -2,6 +2,8 @@ package com.example.financesmanagementapp.data.local.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.financesmanagementapp.domain.model.Category
+import com.example.financesmanagementapp.domain.model.Record
 import java.text.SimpleDateFormat
 
 /**
@@ -26,3 +28,20 @@ data class RecordEntity(
         return date1.compareTo(date2)
     }
 }
+
+/**
+ * Extension function to convert a [RecordEntity] to a [Record] domain class.
+ * @param completeCategory The complete object of type [Category] category associated with the
+ * record, obtained from the data store in run-time. Will be assigned to the 'category' attribute.
+ */
+fun RecordEntity.toDomain(completeCategory: Category): Record {
+    return Record(
+        amount = amount,
+        description = description,
+        isIncome = isIncome,
+        category = completeCategory,
+        date = date,
+        currency = currency
+    )
+}
+
