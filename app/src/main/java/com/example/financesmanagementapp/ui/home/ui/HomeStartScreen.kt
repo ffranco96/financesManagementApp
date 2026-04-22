@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -104,6 +105,13 @@ fun HomeStartScreen(
     LaunchedEffect(Unit) {
         viewModel.setupWorkers(context)
         observeWorker(context)
+        viewModel.exportedCsvEvent.collect { event ->
+            when (event) {
+                is HomeUiEvent.ShowToast -> {
+                    Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -144,8 +152,8 @@ fun HomeStartScreen(
                     },
                     onClick = {
                         scope.launch {
-                            // obtener registros actuales
                             Log.d("franco", "recordList: $recordsList")
+                            viewModel.exportCsv()
                             scope.launch { drawerState.close() }
                         }
                     }
