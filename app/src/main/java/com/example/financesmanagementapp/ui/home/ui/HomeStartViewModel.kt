@@ -39,7 +39,7 @@ import javax.inject.Inject
  * @property parseCsvUseCase Use case to parse a local CSV file.
  */
 @HiltViewModel
-class HomeViewModel @Inject constructor(
+open class HomeViewModel @Inject constructor(
     private val getBtcPriceUseCase : GetCryptoPriceByTickerUseCase,
     private val getAllCryptoPricesUseCase: GetAllCryptoPricesUseCase,
     private val getAllRecordsFlowUseCase: GetAllRecordsFlowUseCase,
@@ -52,13 +52,13 @@ class HomeViewModel @Inject constructor(
     val currentBtcValue: StateFlow<Double> = _currentBtcValue
 
     private val _currentBalance = MutableStateFlow(0.0)
-    val currentBalance: StateFlow<Double> = _currentBalance
+    open val currentBalance: StateFlow<Double> = _currentBalance
 
     /**
      * A stateFlow, obtained from a flow that contains the updated list of records
      * present in the DB.
      */
-    val recordsList: StateFlow<List<Record>> = getAllRecordsFlowUseCase()
+    open val recordsList: StateFlow<List<Record>> = getAllRecordsFlowUseCase()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000), // Se mantiene activo si hay alguien escuchando
@@ -66,7 +66,7 @@ class HomeViewModel @Inject constructor(
         )
 
     private val _btcPrice = MutableStateFlow("0.0")
-    val btcPrice: StateFlow<String> = _btcPrice
+    open val btcPrice: StateFlow<String> = _btcPrice
 
     init {
         if (ServiceLocator.getBtcPriceUseCase == null) {
