@@ -143,11 +143,11 @@ fun HomeStartScreen(
                     selected = false,
                     icon = {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_other_generic),
+                            painter = painterResource(id = R.drawable.export_icon),
                             contentDescription = "Exportar registros",
                             Modifier
-                                .width(36.dp)
-                                .height(36.dp)
+                                .width(30.dp)
+                                .height(30.dp)
                         )
                     },
                     onClick = {
