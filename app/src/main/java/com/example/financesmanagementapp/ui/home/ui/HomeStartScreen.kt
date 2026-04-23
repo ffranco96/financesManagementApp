@@ -322,7 +322,7 @@ fun observeWorker(context: Context){
 }
 
 /**
- * Displays a list of financial registers.
+ * Displays a list of financial records.
  */
 @Composable
 fun RecordsList(recordsList: List<Record>) {
@@ -330,15 +330,15 @@ fun RecordsList(recordsList: List<Record>) {
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.Start
     ) {
-        items(recordsList) { recordDetail ->
-            RecordItem(recordDetail)
+        items(recordsList) { recordObject ->
+            RecordItem(recordObject)
             HorizontalDivider()
         }
     }
 }
 
 /**
- * Individual register item component.
+ * Individual record item component.
  */
 @Composable
 fun RecordItem(record: Record) {
@@ -370,7 +370,7 @@ fun MyImage(rscId: Int) {
 }
 
 /**
- * Content for a register item, handles expansion.
+ * Content of a record item, handles expansion of the detail of the item.
  */
 @Composable
 fun RecordContent(record: Record) {
