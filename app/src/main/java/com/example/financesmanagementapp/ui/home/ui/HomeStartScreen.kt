@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -75,7 +77,7 @@ import com.example.financesmanagementapp.domain.model.Record
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeStartScreen(
-    navController : NavController,
+    navController: NavController,
     viewModel: HomeViewModel
 ) {
     val record =
@@ -84,11 +86,13 @@ fun HomeStartScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    val launcher = rememberLauncherForActivityResult(
+    val csvSelectorLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let { viewModel.importCsv(it) }
     }
+
+    val recordsList by viewModel.recordsList.collectAsState(initial = emptyList())
 
     record?.let{
         Log.d("franco","Valor actual del Record: ${record.value}")
@@ -101,6 +105,13 @@ fun HomeStartScreen(
     LaunchedEffect(Unit) {
         viewModel.setupWorkers(context)
         observeWorker(context)
+        viewModel.exportedCsvEvent.collect { event ->
+            when (event) {
+                is HomeUiEvent.ShowToast -> {
+                    Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -114,12 +125,35 @@ fun HomeStartScreen(
                     icon = {
                         Icon(
                             painter = painterResource(id = R.drawable.import_icon),
-                            contentDescription = "Importar registros"
+                            contentDescription = "Importar registros",
+                            Modifier
+                                .width(36.dp)
+                                .height(36.dp)
                         )
                     },
                     onClick = {
                         scope.launch {
-                            launcher.launch("text/csv")
+                            csvSelectorLauncher.launch("text/csv")
+                            scope.launch { drawerState.close() }
+                        }
+                    }
+                )
+                NavigationDrawerItem(
+                    label = { Text("Exportar registros") },
+                    selected = false,
+                    icon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.export_icon),
+                            contentDescription = "Exportar registros",
+                            Modifier
+                                .width(30.dp)
+                                .height(30.dp)
+                        )
+                    },
+                    onClick = {
+                        scope.launch {
+                            Log.d("franco", "recordList: $recordsList")
+                            viewModel.exportCsv()
                             scope.launch { drawerState.close() }
                         }
                     }
@@ -157,7 +191,10 @@ fun HomeStartScreen(
                     .fillMaxWidth()
                     .padding(paddingValues)
             ) {
-                BodyContent(viewModel)
+                BodyContent(
+                    viewModel,
+                    recordsList
+                )
             }
             val a = paddingValues // To avoid error
         }
@@ -169,11 +206,11 @@ fun HomeStartScreen(
  */
 @Composable
 fun BodyContent(
-    viewModel: HomeViewModel
+    viewModel: HomeViewModel,
+    recordsList: List<Record>,
 ) {
     val currentBalance by viewModel.currentBalance.collectAsState(initial = 0.0)
     val currentBtcValueDouble by viewModel.btcPrice.collectAsState(initial = 0.0)
-    val recordsList by viewModel.recordsList.collectAsState(initial = emptyList())
 
     Column (
         modifier = Modifier

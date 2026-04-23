@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.example.financesmanagementapp.data.local.ExportCsvUseCase
 import com.example.financesmanagementapp.data.local.ParseCsvUseCase
 import com.example.financesmanagementapp.data.local.ReadCsvUseCase
 import com.example.financesmanagementapp.domain.model.Record
@@ -20,9 +21,11 @@ import com.example.financesmanagementapp.ui.home.domain.GetAllRecordsFlowUseCase
 import com.example.financesmanagementapp.ui.home.domain.GetCryptoPriceByTickerUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
@@ -39,7 +42,7 @@ import javax.inject.Inject
  * @property parseCsvUseCase Use case to parse a local CSV file.
  */
 @HiltViewModel
-class HomeViewModel @Inject constructor(
+open class HomeViewModel @Inject constructor(
     private val getBtcPriceUseCase : GetCryptoPriceByTickerUseCase,
     private val getAllCryptoPricesUseCase: GetAllCryptoPricesUseCase,
     private val getAllRecordsFlowUseCase: GetAllRecordsFlowUseCase,
@@ -47,18 +50,22 @@ class HomeViewModel @Inject constructor(
     private val readCsvUseCase: ReadCsvUseCase,
     private val parseCsvUseCase: ParseCsvUseCase,
     private val saveRecordUseCase: SaveRecordUseCase,
+    private val exportCsvUseCase: ExportCsvUseCase,
 ) : ViewModel(){
     private val _currentBtcValue = MutableStateFlow(0.0)
     val currentBtcValue: StateFlow<Double> = _currentBtcValue
 
     private val _currentBalance = MutableStateFlow(0.0)
-    val currentBalance: StateFlow<Double> = _currentBalance
+    open val currentBalance: StateFlow<Double> = _currentBalance
+
+    private val _exportedCsvEvent = MutableSharedFlow<HomeUiEvent>()
+    val exportedCsvEvent = _exportedCsvEvent.asSharedFlow()
 
     /**
      * A stateFlow, obtained from a flow that contains the updated list of records
      * present in the DB.
      */
-    val recordsList: StateFlow<List<Record>> = getAllRecordsFlowUseCase()
+    open val recordsList: StateFlow<List<Record>> = getAllRecordsFlowUseCase()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000), // Se mantiene activo si hay alguien escuchando
@@ -66,7 +73,7 @@ class HomeViewModel @Inject constructor(
         )
 
     private val _btcPrice = MutableStateFlow("0.0")
-    val btcPrice: StateFlow<String> = _btcPrice
+    open val btcPrice: StateFlow<String> = _btcPrice
 
     init {
         if (ServiceLocator.getBtcPriceUseCase == null) {
@@ -118,6 +125,27 @@ class HomeViewModel @Inject constructor(
                 saveRecordUseCase(record)
             }
             // TODO update balance
+        }
+    }
+
+    /**
+     * Function to export a list of records to a CSV file using ExportCsvUseCase.
+     * Checks if there are records to export; if not, emits a UI event to show a Toast.
+     */
+    fun exportCsv() {
+        viewModelScope.launch {
+            val currentRecords = recordsList.value
+            if (currentRecords.isEmpty()) {
+                _exportedCsvEvent.emit(HomeUiEvent.ShowToast("No hay registros para exportar"))
+                return@launch
+            }
+
+            val exportResult = exportCsvUseCase(currentRecords)
+            if (exportResult) {
+                _exportedCsvEvent.emit(HomeUiEvent.ShowToast("CSV exportado exitosamente"))
+            } else {
+                _exportedCsvEvent.emit(HomeUiEvent.ShowToast("Error al exportar CSV"))
+            }
         }
     }
 
