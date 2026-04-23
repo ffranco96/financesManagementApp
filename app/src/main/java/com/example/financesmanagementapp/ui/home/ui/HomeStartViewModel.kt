@@ -130,14 +130,21 @@ open class HomeViewModel @Inject constructor(
 
     /**
      * Function to export a list of records to a CSV file using ExportCsvUseCase.
+     * Checks if there are records to export; if not, emits a UI event to show a Toast.
      */
     fun exportCsv() {
         viewModelScope.launch {
-            val exportResult = exportCsvUseCase(recordsList.value)
+            val currentRecords = recordsList.value
+            if (currentRecords.isEmpty()) {
+                _exportedCsvEvent.emit(HomeUiEvent.ShowToast("No hay registros para exportar"))
+                return@launch
+            }
+
+            val exportResult = exportCsvUseCase(currentRecords)
             if (exportResult) {
                 _exportedCsvEvent.emit(HomeUiEvent.ShowToast("CSV exportado exitosamente"))
             } else {
-                _exportedCsvEvent.emit(HomeUiEvent.ShowToast("CSV no fue exportado"))
+                _exportedCsvEvent.emit(HomeUiEvent.ShowToast("Error al exportar CSV"))
             }
         }
     }
