@@ -212,6 +212,12 @@ fun BodyContent(
     val currentBalance by viewModel.currentBalance.collectAsState(initial = 0.0)
     val currentBtcValueDouble by viewModel.btcPrice.collectAsState(initial = 0.0)
 
+    // Using remember with recordsList as key ensures that whenever recordsList updates
+    // (from the StateFlow), the sorting is recalculated efficiently.
+    val sortedRecords = remember(recordsList) {
+        recordsList.sortedDescending()
+    }
+
     Column (
         modifier = Modifier
             .fillMaxWidth()
@@ -278,7 +284,7 @@ fun BodyContent(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-       RecordsList(recordsList)
+       RecordsList(sortedRecords)
     }
 }
 
@@ -316,23 +322,23 @@ fun observeWorker(context: Context){
 }
 
 /**
- * Displays a list of financial registers.
+ * Displays a list of financial records.
  */
 @Composable
-fun RecordsList(registersDetailList: List<Record>) {
+fun RecordsList(recordsList: List<Record>) {
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.Start
     ) {
-        items(registersDetailList) { recordDetail ->
-            RecordItem(recordDetail)
+        items(recordsList) { recordObject ->
+            RecordItem(recordObject)
             HorizontalDivider()
         }
     }
 }
 
 /**
- * Individual register item component.
+ * Individual record item component.
  */
 @Composable
 fun RecordItem(record: Record) {
@@ -364,7 +370,7 @@ fun MyImage(rscId: Int) {
 }
 
 /**
- * Content for a register item, handles expansion.
+ * Content of a record item, handles expansion of the detail of the item.
  */
 @Composable
 fun RecordContent(record: Record) {
