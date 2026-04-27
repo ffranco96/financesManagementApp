@@ -14,6 +14,10 @@ interface RecordsRepository {
      */
     fun getAllRecordsFlow(): Flow<List<RecordEntity>>
 
+    fun getTotalBalanceByAccountFlow(accountId: Int): Flow<Double?>
+
+    fun getBalanceByAccountAndCategoryFlow(accountId: Int, categoryName: String): Flow<Double?>
+
     /**
      * Adds a new financial record to the database.
      * @param record The record entity to be added.
