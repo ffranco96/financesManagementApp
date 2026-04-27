@@ -13,7 +13,8 @@ import java.text.SimpleDateFormat
 @Entity(tableName = "records")
 data class RecordEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    val id: Int = DEFAULT_ACCOUNT_ID,
+    val accountId: Int = 0,
     val amount: Double,
     val description: String,
     val isIncome: Boolean,
@@ -27,6 +28,10 @@ data class RecordEntity(
         val date2 = formatter.parse(other.date)
         return date1.compareTo(date2)
     }
+
+    companion object {
+        const val DEFAULT_ACCOUNT_ID = 0
+    }
 }
 
 /**
@@ -36,6 +41,7 @@ data class RecordEntity(
  */
 fun RecordEntity.toDomain(completeCategory: Category): Record {
     return Record(
+        accountId = accountId,
         amount = amount,
         description = description,
         isIncome = isIncome,

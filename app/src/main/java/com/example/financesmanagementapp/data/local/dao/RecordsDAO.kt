@@ -19,6 +19,15 @@ interface RecordsDAO {
     @Query("SELECT * FROM records")
     fun getAllAsFlow(): Flow<List<RecordEntity>>
 
+    @Query(
+        """
+        SELECT * FROM records 
+        WHERE (:categoryName IS NULL OR categoryName = :categoryName) 
+        AND (:accountId IS NULL OR accountId = :accountId)
+    """
+    )
+    fun getRecordsByCategoryAndAccount(categoryName: String?, accountId: String?): Flow<List<RecordEntity>>
+
     @Query("DELETE FROM records")
     fun deleteAll()
 

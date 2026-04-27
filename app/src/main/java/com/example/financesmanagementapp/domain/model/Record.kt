@@ -9,12 +9,13 @@ import java.time.format.DateTimeParseException
  * Data class representing a financial record, which is a movement that can be an income or an expense.
  */
 data class Record (
+    var accountId: Int = 0,
     var amount: Double = 0.0,
     var description: String = "",
     var isIncome: Boolean = false,
     var category: Category = Category(),
     var date:String = "", // Format yyyy-MM-dd
-    var currency:String = ""
+    var currency:String = "",
 ): Serializable, Comparable<Record> {
     /**
      * Compares this record with other based on the date field (ISO yyyy-MM-dd)
@@ -37,6 +38,7 @@ data class Record (
  */
 fun Record.toEntity(): RecordEntity {
     return RecordEntity(
+        accountId = accountId,
         amount = amount,
         description = description,
         isIncome = isIncome,
