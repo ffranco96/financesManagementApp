@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.financesmanagementapp.data.local.dao.RecordsDAO
 import com.example.financesmanagementapp.data.local.entities.RecordEntity
 
@@ -17,24 +19,31 @@ import com.example.financesmanagementapp.data.local.entities.RecordEntity
  * - exportSchema: Recommended to be false because generates a build warning if you don't plan to export the schema.
  */
 @Database(
-    entities = [
-        RecordEntity::class
-    ],
-    version = 1,
+    entities = [RecordEntity::class],
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     companion object {
         @Volatile
         private var INSTANCE: AppDatabase? = null
-        private const val DATABASE_NAME = "financesAppDataBase"
+        const val DATABASE_NAME = "finances_app_database"
+
+        val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE records ADD COLUMN accountId INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+
         fun getInstance(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
                     DATABASE_NAME
-                ).build()
+                )
+                    .addMigrations(MIGRATION_1_2)
+                    .build()
                 INSTANCE = instance
                 return instance
             }

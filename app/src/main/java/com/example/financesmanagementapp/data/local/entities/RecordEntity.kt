@@ -30,7 +30,7 @@ data class RecordEntity(
     }
 
     companion object {
-        const val DEFAULT_ACCOUNT_ID = 0
+        const val DEFAULT_ACCOUNT_ID = 0 // TODO ver si esta bien que este aca
     }
 }
 

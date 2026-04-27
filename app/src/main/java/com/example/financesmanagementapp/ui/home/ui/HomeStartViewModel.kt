@@ -11,6 +11,7 @@ import androidx.work.WorkManager
 import com.example.financesmanagementapp.data.local.ExportCsvUseCase
 import com.example.financesmanagementapp.data.local.ParseCsvUseCase
 import com.example.financesmanagementapp.data.local.ReadCsvUseCase
+import com.example.financesmanagementapp.data.local.entities.RecordEntity.Companion.DEFAULT_ACCOUNT_ID
 import com.example.financesmanagementapp.domain.model.Record
 import com.example.financesmanagementapp.ui.addrecordetail.domain.SaveRecordUseCase
 import com.example.financesmanagementapp.ui.home.data.worker.UpdateCryptoactivesWorker
@@ -19,6 +20,7 @@ import com.example.financesmanagementapp.ui.home.domain.DeleteAllRecordsUseCase
 import com.example.financesmanagementapp.ui.home.domain.GetAllCryptoPricesUseCase
 import com.example.financesmanagementapp.ui.home.domain.GetAllRecordsFlowUseCase
 import com.example.financesmanagementapp.ui.home.domain.GetCryptoPriceByTickerUseCase
+import com.example.financesmanagementapp.ui.home.domain.GetTotalBalanceByAccountUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -51,12 +53,17 @@ open class HomeViewModel @Inject constructor(
     private val parseCsvUseCase: ParseCsvUseCase,
     private val saveRecordUseCase: SaveRecordUseCase,
     private val exportCsvUseCase: ExportCsvUseCase,
+    private val getTotalBalanceUseCase: GetTotalBalanceByAccountUseCase,
 ) : ViewModel(){
     private val _currentBtcValue = MutableStateFlow(0.0)
     val currentBtcValue: StateFlow<Double> = _currentBtcValue
 
-    private val _currentBalance = MutableStateFlow(0.0)
-    open val currentBalance: StateFlow<Double> = _currentBalance
+    open val currentBalance: StateFlow<Double> = getTotalBalanceUseCase(DEFAULT_ACCOUNT_ID)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = 0.0
+        )
 
     private val _exportedCsvEvent = MutableSharedFlow<HomeUiEvent>()
     val exportedCsvEvent = _exportedCsvEvent.asSharedFlow()
