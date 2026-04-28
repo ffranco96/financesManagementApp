@@ -11,8 +11,8 @@ import androidx.work.WorkManager
 import com.example.financesmanagementapp.data.local.ExportCsvUseCase
 import com.example.financesmanagementapp.data.local.ParseCsvUseCase
 import com.example.financesmanagementapp.data.local.ReadCsvUseCase
-import com.example.financesmanagementapp.data.local.entities.RecordEntity.Companion.DEFAULT_ACCOUNT_ID
 import com.example.financesmanagementapp.domain.model.Record
+import com.example.financesmanagementapp.domain.model.Record.Companion.DEFAULT_ACCOUNT_ID
 import com.example.financesmanagementapp.ui.addrecordetail.domain.SaveRecordUseCase
 import com.example.financesmanagementapp.ui.home.data.worker.UpdateCryptoactivesWorker
 import com.example.financesmanagementapp.ui.home.di.ServiceLocator

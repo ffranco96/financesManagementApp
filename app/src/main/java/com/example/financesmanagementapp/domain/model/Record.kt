@@ -31,6 +31,10 @@ data class Record (
             this.date.compareTo(other.date)
         }
     }
+
+    companion object {
+        const val DEFAULT_ACCOUNT_ID = 0
+    }
 }
 
 /**

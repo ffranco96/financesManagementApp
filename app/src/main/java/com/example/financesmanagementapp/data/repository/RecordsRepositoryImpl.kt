@@ -17,11 +17,6 @@ class RecordsRepositoryImpl @Inject constructor(
 
     private val recordsDao = appDatabase.recordsDao()
 
-    /**
-     * Retrieves all records from the database as a Flow.
-     * At this point, the category attribute is as a simple String,
-     * not a Category object.
-     */
     override fun getAllRecordsFlow(): Flow<List<RecordEntity>> {
         return recordsDao.getAllAsFlow()
     }
@@ -34,18 +29,10 @@ class RecordsRepositoryImpl @Inject constructor(
         return recordsDao.getBalanceByCategoryAndAccount(accountId, categoryName)
     }
 
-    /**
-     * Persists a financial record into the local database.
-     *
-     * @param record The entity representing the record to be saved.
-     */
     override suspend fun addRecord(record: RecordEntity) {
         recordsDao.insert(record)
     }
 
-    /**
-     * Removes all records from the financial records table.
-     */
     override suspend fun deleteAllRecords() {
         recordsDao.deleteAll()
     }

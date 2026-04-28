@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.financesmanagementapp.domain.model.Category
 import com.example.financesmanagementapp.domain.model.Record
+import com.example.financesmanagementapp.domain.model.Record.Companion.DEFAULT_ACCOUNT_ID
 import java.text.SimpleDateFormat
 
 /**
@@ -27,10 +28,6 @@ data class RecordEntity(
         val date1 = formatter.parse(date)
         val date2 = formatter.parse(other.date)
         return date1.compareTo(date2)
-    }
-
-    companion object {
-        const val DEFAULT_ACCOUNT_ID = 0 // TODO ver si esta bien que este aca
     }
 }
 
