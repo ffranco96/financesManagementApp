@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.financesmanagementapp.domain.model.Category
 import com.example.financesmanagementapp.domain.model.Record
+import com.example.financesmanagementapp.domain.model.Record.Companion.DEFAULT_ACCOUNT_ID
 import java.text.SimpleDateFormat
 
 /**
@@ -13,7 +14,8 @@ import java.text.SimpleDateFormat
 @Entity(tableName = "records")
 data class RecordEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    val id: Int = DEFAULT_ACCOUNT_ID,
+    val accountId: Int = 0,
     val amount: Double,
     val description: String,
     val isIncome: Boolean,
@@ -36,6 +38,7 @@ data class RecordEntity(
  */
 fun RecordEntity.toDomain(completeCategory: Category): Record {
     return Record(
+        accountId = accountId,
         amount = amount,
         description = description,
         isIncome = isIncome,

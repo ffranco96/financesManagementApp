@@ -29,7 +29,8 @@ object DatabaseModule {
         return Room.databaseBuilder(
             context,
             AppDatabase::class.java,
-            "finances_app_database"
-        ).build()
+            AppDatabase.DATABASE_NAME
+        ).addMigrations(AppDatabase.MIGRATION_1_2)
+            .build()
     }
 }
