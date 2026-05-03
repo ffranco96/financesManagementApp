@@ -231,7 +231,7 @@ fun BodyContent(
             Text(text = currentBalance.toString(), style = MaterialTheme.typography.titleLarge)
         }
     }
-    Column (
+    /*Column (
         modifier = Modifier
             .fillMaxWidth()
     ) {
@@ -247,8 +247,8 @@ fun BodyContent(
                 Icon(Icons.Default.Refresh, "Sync btc value")
             }
         }
-    }
-    Column(
+    }*/
+    /*Column(
         modifier = Modifier
             .fillMaxWidth()
     ) {
@@ -262,7 +262,7 @@ fun BodyContent(
         ) {
             Text("Graficos")
         }
-    }
+    }*/
     Column (
         modifier = Modifier
             .fillMaxWidth()
