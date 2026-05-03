@@ -14,8 +14,22 @@ android {
         applicationId = "com.example.financesmanagementapp"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = (project.property("APP_VERSION_CODE") as String).toInt()
+        versionName = project.property("APP_VERSION_NAME") as String
+
+        // Output APK
+        applicationVariants.all {
+            val variant = this
+            variant.outputs
+                .map { it as com.android.build.gradle.internal.api.BaseVariantOutputImpl }
+                .forEach { output ->
+                    val appName = rootProject.name
+                    val buildType = variant.buildType.name        // debug / release
+                    val version = variant.versionName
+
+                    output.outputFileName = "${appName}_v${version}_${buildType}.apk"
+                }
+        }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
