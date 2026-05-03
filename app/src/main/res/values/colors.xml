@@ -1,10 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="ui_blue">#060C80</color>
+    <color name="ui_light_blue">#199ACD</color>
+    <color name="ui_grey_blue">#AAD9FF</color>
+    <color name="sad_grey">#8D8E9F</color>
+    <color name="positive_green">#05CD10</color>
+    <color name="negative_red">#DA0101</color>
+    <color name="categ_color_clothes">#01C8DA</color>
+    <color name="categ_color_concerts">#EDD60D</color>
+    <color name="categ_color_fast_food">#DA0101</color>
+    <color name="categ_color_food">#DA0101</color>
+    <color name="categ_color_health">#1D9F22</color>
+    <color name="categ_color_hobbies">#DC0DC0</color>
+    <color name="categ_color_investment_and_finances">#45915E</color>
+    <color name="categ_color_medicine">#1D9F22</color>
+    <color name="categ_color_painting_drawing_photos">#DC0DC0</color>
+    <color name="categ_color_studies">#1D9F22</color>
+    <color name="categ_color_salary">#45915E</color>
+    <color name="categ_color_vehicles">#730E85</color>
+    <color name="categ_color_vehicles_maintenance">#730E85</color>
+    <color name="categ_color_other">#8D8E9F</color>
 </resources>

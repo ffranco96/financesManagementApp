@@ -8,14 +8,28 @@ plugins {
 
 android {
     namespace = "com.example.financesmanagementapp"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.financesmanagementapp"
-        minSdk = 24
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        minSdk = 26
+        targetSdk = 35
+        versionCode = (project.property("APP_VERSION_CODE") as String).toInt()
+        versionName = project.property("APP_VERSION_NAME") as String
+
+        // Output APK
+        applicationVariants.all {
+            val variant = this
+            variant.outputs
+                .map { it as com.android.build.gradle.internal.api.BaseVariantOutputImpl }
+                .forEach { output ->
+                    val appName = rootProject.name
+                    val buildType = variant.buildType.name        // debug / release
+                    val version = variant.versionName
+
+                    output.outputFileName = "${appName}_v${version}_${buildType}.apk"
+                }
+        }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -67,9 +81,21 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.coroutines.android)
+    implementation(libs.work.runtime)
+    implementation(libs.work.test)
     implementation(libs.lifecycle)
     implementation(libs.hilt.android)
+    implementation(libs.hilt.navigation)
     kapt(libs.hilt.compiler)
+
+    // Room
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    kapt(libs.room.compiler)
+
+    // DataStore
+    implementation(libs.androidx.datastore.preferences)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
