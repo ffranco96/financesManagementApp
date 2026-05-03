@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -184,7 +185,7 @@ fun BodyContent(
                 } else {
                     {
                         Icon(
-                            imageVector = Icons.Filled.KeyboardArrowLeft, // TODO poner signo de resta
+                            imageVector = Icons.Default.Remove,
                             contentDescription = null,
                             modifier = Modifier.size(SwitchDefaults.IconSize),
                             tint = Color.Red
