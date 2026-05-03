@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -40,9 +41,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.financesmanagementapp.navigation.AppScreens
-import com.example.financesmanagementapp.domain.model.Record
 import com.example.financesmanagementapp.domain.model.Category
+import com.example.financesmanagementapp.domain.model.Record
+import com.example.financesmanagementapp.navigation.AppScreens
 
 /**
  * Screen that allows adding more details to a financial record, such as description and category.
@@ -62,6 +63,7 @@ fun AddRecordDetailScreen(
     val categoryList by viewModel.categories.collectAsState()
     val selectedDate by viewModel.selectedDate.collectAsState()
     val showDatePicker by viewModel.showDatePicker.collectAsState()
+    val lastMillis by viewModel.lastSelectedDateMillis.collectAsState()
 
 
     val recordStateFlow = navController.previousBackStackEntry?.savedStateHandle?.getStateFlow<Record?>(
@@ -70,6 +72,10 @@ fun AddRecordDetailScreen(
     recordStateFlow?.let{
         Log.d("franco","Valor actual del Record desde RecordDetailScreen: ${recordStateFlow.value}")
     }
+
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = lastMillis
+    )
 
     Scaffold(
         topBar = {
@@ -124,6 +130,7 @@ fun AddRecordDetailScreen(
             onDateSelected = { viewModel.onDateSelected(it) },
             onDatePickerDismiss = { viewModel.setShowDatePicker(false) },
             innerPadding = innerPadding,
+            datePickerState = datePickerState,
         )
     }
 }
@@ -148,10 +155,11 @@ fun BodyContent(
     onDateSelected: (Long?) -> Unit,
     onDatePickerDismiss: () -> Unit,
     innerPadding: PaddingValues,
+    datePickerState: DatePickerState,
 ){
     if (showDatePicker) {
         // Widget internal state
-        val datePickerState = rememberDatePickerState()
+
         DatePickerDialog(
             onDismissRequest = onDatePickerDismiss,
             confirmButton = {

@@ -41,6 +41,9 @@ class AddRecordDetailViewModel @Inject constructor(
     private val _selectedDate = MutableStateFlow(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE))
     val selectedDate: StateFlow<String> = _selectedDate
 
+    private val _lastSelectedDateMillis = MutableStateFlow<Long?>(null)
+    val lastSelectedDateMillis: StateFlow<Long?> = _lastSelectedDateMillis
+
     private val _showDatePicker = MutableStateFlow(false)
     val showDatePicker: StateFlow<Boolean> = _showDatePicker
 
@@ -70,6 +73,7 @@ class AddRecordDetailViewModel @Inject constructor(
 
     fun onDateSelected(millis: Long?) {
         millis?.let {
+            _lastSelectedDateMillis.value = it
             val date = Instant.ofEpochMilli(it).atZone(ZoneId.of("UTC")).toLocalDate()
             _selectedDate.value = date.format(DateTimeFormatter.ISO_LOCAL_DATE)
         }
