@@ -63,7 +63,7 @@ fun AddRecordDetailScreen(
     val categoryList by viewModel.categories.collectAsState()
     val selectedDate by viewModel.selectedDate.collectAsState()
     val showDatePicker by viewModel.showDatePicker.collectAsState()
-    val lastMillis by viewModel.lastSelectedDateMillis.collectAsState()
+    val lastSelectedDateMillis by viewModel.lastSelectedDateMillis.collectAsState()
 
 
     val recordStateFlow = navController.previousBackStackEntry?.savedStateHandle?.getStateFlow<Record?>(
@@ -74,7 +74,7 @@ fun AddRecordDetailScreen(
     }
 
     val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = lastMillis
+        initialSelectedDateMillis = lastSelectedDateMillis
     )
 
     Scaffold(
