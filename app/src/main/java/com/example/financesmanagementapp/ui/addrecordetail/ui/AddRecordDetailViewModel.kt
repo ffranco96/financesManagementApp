@@ -70,7 +70,7 @@ class AddRecordDetailViewModel @Inject constructor(
 
     fun onDateSelected(millis: Long?) {
         millis?.let {
-            val date = Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate()
+            val date = Instant.ofEpochMilli(it).atZone(ZoneId.of("UTC")).toLocalDate()
             _selectedDate.value = date.format(DateTimeFormatter.ISO_LOCAL_DATE)
         }
         setShowDatePicker(false)
