@@ -145,15 +145,7 @@ fun BodyContent(
 
         TextField(
             value = valueAmountText,
-            onValueChange = onAmountTextChange,
-            placeholder = {
-                Text(
-                    "0.00",
-                    fontSize = 55.sp,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.End,
-                )
-            },
+            onValueChange = onAmountTextChange, // Kotlin allows simplification because parameter and onValueChange has similar sign
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),

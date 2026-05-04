@@ -10,14 +10,17 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
 class AddRecordAmountViewModel @Inject constructor(
     private val getFiatCurrenciesUseCase: GetFiatCurrenciesUseCase,
 ): ViewModel() {
-    private val _amountText = MutableStateFlow("")
-    val amountText: StateFlow<String> = _amountText
+    private val _amountInCents = MutableStateFlow(0L)
+    val amountText: StateFlow<String> = _amountInCents.map { cents -> // When using map, it's converted to a cold Flow
+        formatCentsToAmountText(cents)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "0.00")
 
     private val _checkedSwitch = MutableStateFlow(false)
     val checkedSwitch: StateFlow<Boolean> = _checkedSwitch
@@ -37,8 +40,19 @@ class AddRecordAmountViewModel @Inject constructor(
         )
 
     fun onAmountTextChange(newValue: String){
-        if (newValue.all{it.isDigit() || it == '.'})
-            _amountText.value = newValue
+        val digits = newValue.filter { it.isDigit() }
+        if(digits.isEmpty()){
+            _amountInCents.value = 0L
+            return
+        }
+        if(digits.length <= MAX_AMOUNT_TEXT_LENGTH){
+            _amountInCents.value = digits.toLong()
+        }
+    }
+
+    private fun formatCentsToAmountText(cents: Long): String {
+        val doubleValue = cents / 100.0
+        return "%.2f".format(Locale.US, doubleValue)
     }
 
     fun onCheckedSwitchChange(newValue: Boolean){
@@ -56,5 +70,10 @@ class AddRecordAmountViewModel @Inject constructor(
     fun onCurrencySelected(currency: String) {
         _selectedCurrency.value = currency
         onDismissRequest()
+    }
+
+    companion object{
+        const val MAX_AMOUNT_TEXT_LENGTH = 12
+
     }
 }
