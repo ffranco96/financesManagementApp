@@ -228,7 +228,7 @@ fun BodyContent(
         ) {
             Text(text = "ARS", style = MaterialTheme.typography.titleLarge)
             Spacer(modifier = Modifier.width(22.dp))
-            Text(text = currentBalance.toString(), style = MaterialTheme.typography.titleLarge)
+            Text(text = String.format(java.util.Locale.US, "%.2f", currentBalance), style = MaterialTheme.typography.titleLarge)
         }
     }
     /*Column (
@@ -445,7 +445,7 @@ fun RecordDate(date: String, style: TextStyle, color: Color) {
 @Composable
 fun RecordAmount(currency: String, amount: Double, isIncome: Boolean) {
     Text(
-        text = "$currency $amount",
+        text = "$currency ${String.format(java.util.Locale.US, "%.2f", amount)}",
         style = MaterialTheme.typography.labelLarge,
         color = colorResource(if(isIncome) R.color.positive_green else R.color.negative_red)
     )

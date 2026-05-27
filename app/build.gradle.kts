@@ -86,6 +86,7 @@ dependencies {
     implementation(libs.lifecycle)
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation)
+    implementation(libs.androidx.compose.material.icons.extended)
     kapt(libs.hilt.compiler)
 
     // Room
