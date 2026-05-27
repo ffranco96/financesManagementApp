@@ -245,12 +245,3 @@ fun BodyContent(
         }
     }
 }
-
-/*@Preview(showBackground = true)
-@Composable
-fun AddRecordAmountScreenPreview() {
-    val navController = rememberNavController()
-    val viewModel = AddRecordAmountViewModel()
-
-    AddRecordAmountScreen(navController = navController, text = "Texto de ejemplo", viewModel = viewModel )
-}*/
