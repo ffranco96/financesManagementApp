@@ -1,0 +1,31 @@
+package com.example.financesmanagementapp.ui.graphs.domain
+
+import com.example.financesmanagementapp.data.repository.RecordsRepository
+import com.example.financesmanagementapp.ui.graphs.model.CategorySpending
+import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
+
+/**
+ * Use case that retrieves all records for a given account, filters those within
+ * the last 30 days, groups them by category and computes the net amount
+ * (income - expense) per category.
+ *
+ * Categories with a net amount of exactly 0.0 are excluded from the result.
+ *
+ * @property repository The [RecordsRepository] used to fetch the raw records.
+ */
+class GetCategorySpendingUseCase @Inject constructor(
+    private val repository: RecordsRepository
+) {
+    /**
+     * Executes the use case.
+     *
+     * @param accountId The ID of the account to filter records by.
+     * @return A [Flow] emitting the aggregated [CategorySpending] list every time
+     *   the underlying data changes (e.g. after a record insert or update).
+     */
+    operator fun invoke(accountId: Int): Flow<List<CategorySpending>> {
+        // TODO: implement during TDD
+        throw NotImplementedError("Not yet implemented")
+    }
+}
