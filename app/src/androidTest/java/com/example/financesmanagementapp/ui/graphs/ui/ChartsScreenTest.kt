@@ -7,7 +7,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.navigation.NavController
 import com.example.financesmanagementapp.R
-import com.example.financesmanagementapp.ui.graphs.model.CategorySpending
+import com.example.financesmanagementapp.ui.graphs.model.CategoryTotal
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -38,14 +38,14 @@ class ChartsScreenTest {
     }
 
     @Test
-    fun displaysBarsForCategoriesWithSpending() {
+    fun displaysBarsForCategoriesWithTotals() {
         val mockViewModel = mockk<ChartsViewModel>(relaxed = true)
-        val spendings = listOf(
-            CategorySpending("Comida y alimentos", -150.0, R.color.categ_color_food),
-            CategorySpending("Salud", -50.0, R.color.categ_color_health)
+        val totals = listOf(
+            CategoryTotal("Comida y alimentos", -150.0, R.color.categ_color_food),
+            CategoryTotal("Salud", -50.0, R.color.categ_color_health)
         )
         every { mockViewModel.uiState } returns MutableStateFlow(
-            ChartsUiState(categorySpendings = spendings, isEmpty = false)
+            ChartsUiState(categoryTotals = totals, isEmpty = false)
         )
 
         composeTestRule.setContent {
@@ -82,11 +82,11 @@ class ChartsScreenTest {
     @Test
     fun displaysAmountAboveEachBar() {
         val mockViewModel = mockk<ChartsViewModel>(relaxed = true)
-        val spendings = listOf(
-            CategorySpending("Comida y alimentos", -150.0, R.color.categ_color_food)
+        val totals = listOf(
+            CategoryTotal("Comida y alimentos", -150.0, R.color.categ_color_food)
         )
         every { mockViewModel.uiState } returns MutableStateFlow(
-            ChartsUiState(categorySpendings = spendings, isEmpty = false)
+            ChartsUiState(categoryTotals = totals, isEmpty = false)
         )
 
         composeTestRule.setContent {

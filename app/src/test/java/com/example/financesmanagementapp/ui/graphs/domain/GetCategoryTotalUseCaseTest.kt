@@ -4,7 +4,7 @@ import com.example.financesmanagementapp.R
 import com.example.financesmanagementapp.data.local.entities.RecordEntity
 import com.example.financesmanagementapp.data.repository.RecordsRepository
 import com.example.financesmanagementapp.domain.model.Record.Companion.DEFAULT_ACCOUNT_ID
-import com.example.financesmanagementapp.ui.graphs.model.CategorySpending
+import com.example.financesmanagementapp.ui.graphs.model.CategoryTotal
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.first
@@ -16,18 +16,18 @@ import org.junit.Before
 import org.junit.Test
 import java.time.LocalDate
 
-class GetCategorySpendingUseCaseTest {
+class GetCategoryTotalUseCaseTest {
 
     private val mockRepository: RecordsRepository = mockk()
-    private lateinit var useCase: GetCategorySpendingUseCase
+    private lateinit var useCase: GetCategoryTotalUseCase
 
     @Before
     fun setUp() {
-        useCase = GetCategorySpendingUseCase(mockRepository)
+        useCase = GetCategoryTotalUseCase(mockRepository)
     }
 
     @Test
-    fun `given records from different categories in last 30 days then returns grouped spendings`() = runTest {
+    fun `given records from different categories in last 30 days then returns grouped totals`() = runTest {
         val today = LocalDate.now()
         val records = listOf(
             RecordEntity(amount = 100.0, isIncome = false, categoryName = "Comida y alimentos", date = today.toString(), currency = "ARS", description = ""),
@@ -36,12 +36,12 @@ class GetCategorySpendingUseCaseTest {
         )
         every { mockRepository.getAllRecordsFlow() } returns flowOf(records)
 
-        val result: List<CategorySpending> = useCase(DEFAULT_ACCOUNT_ID).first()
+        val result: List<CategoryTotal> = useCase(DEFAULT_ACCOUNT_ID).first()
 
         assertEquals(3, result.size)
-        assertEquals(-100.0, result.find { it.categoryName == "Comida y alimentos" }?.totalAmount, 0.001)
-        assertEquals(-50.0, result.find { it.categoryName == "Salud" }?.totalAmount, 0.001)
-        assertEquals(200.0, result.find { it.categoryName == "Salario" }?.totalAmount, 0.001)
+        assertEquals(-100.0, result.find { it.categoryName == "Comida y alimentos" }!!.totalAmount, 0.001)
+        assertEquals(-50.0, result.find { it.categoryName == "Salud" }!!.totalAmount, 0.001)
+        assertEquals(200.0, result.find { it.categoryName == "Salario" }!!.totalAmount, 0.001)
     }
 
     @Test
@@ -123,7 +123,7 @@ class GetCategorySpendingUseCaseTest {
     }
 
     @Test
-    fun `given records from single category then returns single spending`() = runTest {
+    fun `given records from single category then returns single total`() = runTest {
         val today = LocalDate.now()
         val records = listOf(
             RecordEntity(amount = 50.0, isIncome = false, categoryName = "Comida y alimentos", date = today.toString(), currency = "ARS", description = "")
@@ -152,7 +152,7 @@ class GetCategorySpendingUseCaseTest {
     }
 
     @Test
-    fun `maps category to CategorySpending with correct colorResId`() = runTest {
+    fun `maps category to CategoryTotal with correct colorResId`() = runTest {
         val today = LocalDate.now()
         val records = listOf(
             RecordEntity(amount = 50.0, isIncome = false, categoryName = "Comida y alimentos", date = today.toString(), currency = "ARS", description = "")

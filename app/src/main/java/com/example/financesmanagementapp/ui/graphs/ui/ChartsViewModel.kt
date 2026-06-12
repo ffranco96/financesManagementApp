@@ -3,7 +3,7 @@ package com.example.financesmanagementapp.ui.graphs.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.financesmanagementapp.domain.model.Record
-import com.example.financesmanagementapp.ui.graphs.domain.GetCategorySpendingUseCase
+import com.example.financesmanagementapp.ui.graphs.domain.GetCategoryTotalUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,15 +13,15 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * ViewModel for the Charts screen. Collects spendings from
- * [GetCategorySpendingUseCase] and exposes the aggregated data as [ChartsUiState]
+ * ViewModel for the Charts screen. Collects totals from
+ * [GetCategoryTotalUseCase] and exposes the aggregated data as [ChartsUiState]
  * to drive the bar chart composable.
  *
- * @property getCategorySpendingUseCase Use case that provides per-category net amounts.
+ * @property getCategoryTotalUseCase Use case that provides per-category net amounts.
  */
 @HiltViewModel
 class ChartsViewModel @Inject constructor(
-    private val getCategorySpendingUseCase: GetCategorySpendingUseCase
+    private val getCategoryTotalUseCase: GetCategoryTotalUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ChartsUiState())
@@ -29,10 +29,10 @@ class ChartsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            getCategorySpendingUseCase(Record.DEFAULT_ACCOUNT_ID).collectLatest { spendings ->
+            getCategoryTotalUseCase(Record.DEFAULT_ACCOUNT_ID).collectLatest { total ->
                 _uiState.value = ChartsUiState(
-                    categorySpendings = spendings,
-                    isEmpty = spendings.isEmpty()
+                    categoryTotals = total,
+                    isEmpty = total.isEmpty()
                 )
             }
         }
