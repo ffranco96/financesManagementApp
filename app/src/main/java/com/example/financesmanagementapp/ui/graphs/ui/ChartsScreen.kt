@@ -1,10 +1,23 @@
 package com.example.financesmanagementapp.ui.graphs.ui
 
 import android.content.res.Configuration
+import androidx.compose.animation.core.EaseOutCubic
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -15,26 +28,28 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.financesmanagementapp.R
 import com.example.financesmanagementapp.ui.graphs.model.CategoryTotal
 import com.example.financesmanagementapp.ui.theme.FinancesManagementAppTheme
 
-/**
- * Composable screen that displays a bar chart of category total amount.
- *
- * Shows an empty-state message ("No hay datos cargados") when [ChartsUiState.isEmpty] is true.
- * Provides a back button in the top bar that navigates to the previous screen via
- * [NavController.popBackStack].
- *
- * @param navController Controller used for navigation (back press).
- * @param viewModel ViewModel supplying the [ChartsUiState].
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChartsScreen(
@@ -48,13 +63,6 @@ fun ChartsScreen(
     )
 }
 
-/**
- * Content-only version of the Charts screen, useful for previews and testing
- * since it has no dependency on [NavController] or [ChartsViewModel].
- *
- * @param uiState The current UI state to render.
- * @param onBackClick Callback invoked when the back button is pressed.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ChartsScreenContent(
@@ -76,26 +84,154 @@ private fun ChartsScreenContent(
             )
         }
     ) { padding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
-            contentAlignment = Alignment.Center
-        ) {
-            if (uiState.isEmpty) {
+        if (uiState.isEmpty) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+                contentAlignment = Alignment.Center
+            ) {
                 Text(
                     text = "No hay datos cargados",
                     style = MaterialTheme.typography.bodyLarge
                 )
-            } else {
-                Column {
-                    uiState.categoryTotals.forEach { total ->
-                        Text(text = total.categoryName)
-                        Text(text = total.totalAmount.toString())
+            }
+        } else {
+            val total = uiState.categoryTotals.sumOf { kotlin.math.abs(it.totalAmount) }
+            val totalLabel = "${"%.0f".format(total)}"
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(horizontal = 20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Spacer(modifier = Modifier.height(24.dp))
+
+                DonutChart(
+                    categories = uiState.categoryTotals,
+                    totalLabel = totalLabel,
+                    modifier = Modifier.size(240.dp),
+                )
+
+                Spacer(modifier = Modifier.height(28.dp))
+
+                val left = uiState.categoryTotals.filterIndexed { i, _ -> i % 2 == 0 }
+                val right = uiState.categoryTotals.filterIndexed { i, _ -> i % 2 == 1 }
+                val rows = maxOf(left.size, right.size)
+
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    repeat(rows) { row ->
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            left.getOrNull(row)?.let { cat ->
+                                LegendItem(category = cat, modifier = Modifier.weight(1f))
+                            } ?: Spacer(Modifier.weight(1f))
+                            Spacer(Modifier.width(24.dp))
+                            right.getOrNull(row)?.let { cat ->
+                                LegendItem(category = cat, modifier = Modifier.weight(1f))
+                            } ?: Spacer(Modifier.weight(1f))
+                        }
+                        Spacer(modifier = Modifier.height(10.dp))
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun DonutChart(
+    categories: List<CategoryTotal>,
+    totalLabel: String,
+    modifier: Modifier = Modifier,
+    strokeWidth: Dp = 36.dp,
+    gapDegrees: Float = 3f,
+) {
+    val nonZero = categories.filter { it.totalAmount != 0.0 }
+    val total = nonZero.sumOf { kotlin.math.abs(it.totalAmount).toDouble() }.toFloat()
+
+    val animProgress = remember { Animatable(0f) }
+    LaunchedEffect(Unit) {
+        animProgress.animateTo(
+            targetValue = 1f,
+            animationSpec = tween(durationMillis = 900, easing = EaseOutCubic)
+        )
+    }
+
+    val context = LocalContext.current
+
+    Box(modifier = modifier, contentAlignment = Alignment.Center) {
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val stroke = Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Round)
+            val diameter = minOf(size.width, size.height)
+            val topLeft = Offset(
+                x = (size.width - diameter) / 2f + strokeWidth.toPx() / 2,
+                y = (size.height - diameter) / 2f + strokeWidth.toPx() / 2,
+            )
+            val arcSize = Size(
+                diameter - strokeWidth.toPx(),
+                diameter - strokeWidth.toPx(),
+            )
+
+            var startAngle = -90f
+
+            nonZero.forEach { cat ->
+                val fraction = kotlin.math.abs(cat.totalAmount).toFloat() / total
+                val sweep = (fraction * 360f - gapDegrees) * animProgress.value
+
+                drawArc(
+                    color = Color(context.getColor(cat.colorResId)),
+                    startAngle = startAngle,
+                    sweepAngle = sweep,
+                    useCenter = false,
+                    topLeft = topLeft,
+                    size = arcSize,
+                    style = stroke,
+                )
+                startAngle += fraction * 360f
+            }
+        }
+
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = totalLabel,
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+            )
+        }
+    }
+}
+
+@Composable
+private fun LegendItem(category: CategoryTotal, modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(10.dp)
+                .background(
+                    color = Color(context.getColor(category.colorResId)),
+                    shape = CircleShape
+                )
+        )
+        Spacer(modifier = Modifier.width(6.dp))
+        Text(
+            text = category.categoryName,
+            fontSize = 12.sp,
+            maxLines = 1,
+            modifier = Modifier.weight(1f),
+        )
+        Text(
+            text = "%.1f".format(category.totalAmount),
+            fontSize = 12.sp,
+            fontWeight = FontWeight.SemiBold,
+        )
     }
 }
 
@@ -124,7 +260,7 @@ private fun ChartsScreenDataPreview() {
     val totals = listOf(
         CategoryTotal("Comida y alimentos", -150.0, R.color.categ_color_food),
         CategoryTotal("Salud", -50.0, R.color.categ_color_health),
-        CategoryTotal("Salario", 200.0, R.color.categ_color_salary)
+        CategoryTotal("Salario", 200.0, R.color.categ_color_salary),
     )
     FinancesManagementAppTheme {
         ChartsScreenContent(
