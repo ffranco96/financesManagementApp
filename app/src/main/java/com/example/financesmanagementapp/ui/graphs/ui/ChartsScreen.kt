@@ -98,7 +98,7 @@ private fun ChartsScreenContent(
             }
         } else {
             val total = uiState.categoryTotals.sumOf { kotlin.math.abs(it.totalAmount) }
-            val totalLabel = "${"%.0f".format(total)}"
+            val totalLabel = "%.2f".format(total)
 
             Column(
                 modifier = Modifier
@@ -148,8 +148,8 @@ private fun DonutChart(
     strokeWidth: Dp = 36.dp,
     gapDegrees: Float = 3f,
 ) {
-    val nonZero = categories.filter { it.totalAmount != 0.0 }
-    val total = nonZero.sumOf { kotlin.math.abs(it.totalAmount).toDouble() }.toFloat()
+    val nonZeroCategories = categories.filter { it.totalAmount != 0.0 }
+    val total = nonZeroCategories.sumOf { kotlin.math.abs(it.totalAmount).toDouble() }.toFloat()
 
     val animProgress = remember { Animatable(0f) }
     LaunchedEffect(Unit) {
@@ -163,7 +163,7 @@ private fun DonutChart(
 
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
         Canvas(modifier = Modifier.fillMaxSize()) {
-            val stroke = Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Round)
+            val stroke = Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Square)
             val diameter = minOf(size.width, size.height)
             val topLeft = Offset(
                 x = (size.width - diameter) / 2f + strokeWidth.toPx() / 2,
@@ -176,7 +176,7 @@ private fun DonutChart(
 
             var startAngle = -90f
 
-            nonZero.forEach { cat ->
+            nonZeroCategories.forEach { cat ->
                 val fraction = kotlin.math.abs(cat.totalAmount).toFloat() / total
                 val sweep = (fraction * 360f - gapDegrees) * animProgress.value
 
@@ -228,7 +228,7 @@ private fun LegendItem(category: CategoryTotal, modifier: Modifier = Modifier) {
             modifier = Modifier.weight(1f),
         )
         Text(
-            text = "%.1f".format(category.totalAmount),
+            text = "%.2f".format(category.totalAmount),
             fontSize = 12.sp,
             fontWeight = FontWeight.SemiBold,
         )
