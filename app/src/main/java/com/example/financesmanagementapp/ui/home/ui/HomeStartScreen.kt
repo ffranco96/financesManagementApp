@@ -198,7 +198,8 @@ fun HomeStartScreen(
             ) {
                 BodyContent(
                     viewModel,
-                    recordsList
+                    recordsList,
+                    onNavigateToCharts = { navController.navigate(AppScreens.ChartsScreen.route) }
                 )
             }
             val a = paddingValues // To avoid error
@@ -213,6 +214,7 @@ fun HomeStartScreen(
 fun BodyContent(
     viewModel: HomeViewModel,
     recordsList: List<Record>,
+    onNavigateToCharts: () -> Unit = {},
 ) {
     val currentBalance by viewModel.currentBalance.collectAsState(initial = 0.0)
     val currentBtcValueDouble by viewModel.btcPrice.collectAsState(initial = 0.0)
@@ -253,21 +255,11 @@ fun BodyContent(
             }
         }
     }*/
-    /*Column(
-        modifier = Modifier
-            .fillMaxWidth()
+    Button(
+        onClick = onNavigateToCharts
     ) {
-        Button(
-            onClick = {/*
-                //TODO Habilitar funcionaidad de boton de graficos
-                navControler.navigate(route = AppScreens.AddRecordsAmountScreen.route + "/Mi parametro") // Donde se displayara??
-                Log.d("franco", "Boton que te lleva a los graficos")
-            */
-            }
-        ) {
-            Text("Graficos")
-        }
-    }*/
+        Text("Gráficos")
+    }
     Column (
         modifier = Modifier
             .fillMaxWidth()

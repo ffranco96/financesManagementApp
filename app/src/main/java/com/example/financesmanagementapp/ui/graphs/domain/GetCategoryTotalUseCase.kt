@@ -1,8 +1,11 @@
 package com.example.financesmanagementapp.ui.graphs.domain
 
 import com.example.financesmanagementapp.data.repository.RecordsRepository
+import com.example.financesmanagementapp.domain.model.Category
 import com.example.financesmanagementapp.ui.graphs.model.CategoryTotal
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import java.time.LocalDate
 import javax.inject.Inject
 
 /**
@@ -25,7 +28,31 @@ class GetCategoryTotalUseCase @Inject constructor(
      *   the underlying data changes (e.g. after a record insert or update).
      */
     operator fun invoke(accountId: Int): Flow<List<CategoryTotal>> {
-        // TODO: implement during TDD
-        throw NotImplementedError("Not yet implemented")
+        return repository.getAllRecordsFlow().map { entities ->
+            val thirtyDaysAgo = LocalDate.now().minusDays(30)
+            entities
+                .filter { it.accountId == accountId }
+                .filter { entity ->
+                    try {
+                        val date = LocalDate.parse(entity.date)
+                        !date.isBefore(thirtyDaysAgo)
+                    } catch (_: Exception) {
+                        false
+                    }
+                }
+                .groupBy { it.categoryName }
+                .map { (categoryName, records) ->
+                    val total = records.sumOf { record ->
+                        if (record.isIncome) record.amount else -record.amount
+                    }
+                    val category = Category.fromName(categoryName)
+                    CategoryTotal(
+                        categoryName = categoryName,
+                        totalAmount = total,
+                        colorResId = category.colorIcon
+                    )
+                }
+                .filter { it.totalAmount != 0.0 }
+        }
     }
 }
