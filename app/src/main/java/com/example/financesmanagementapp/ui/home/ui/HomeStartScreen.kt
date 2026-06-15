@@ -86,10 +86,17 @@ fun HomeStartScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
+    val context = LocalContext.current
+
     val csvSelectorLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
+        contract = ActivityResultContracts.OpenDocument()
     ) { uri: Uri? ->
-        uri?.let { viewModel.importCsv(it) }
+        uri?.let {
+            context.contentResolver.takePersistableUriPermission(
+                it, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+            )
+            viewModel.importCsv(it)
+        }
     }
 
     val recordsList by viewModel.recordsList.collectAsState(initial = emptyList())
@@ -97,8 +104,6 @@ fun HomeStartScreen(
     record?.let{
         Log.d("franco","Valor actual del Record: ${record.value}")
     } // TODO borrar
-
-    val context = LocalContext.current
 
     observeValuesUpdatedByWorker(context, viewModel)
 
@@ -133,7 +138,7 @@ fun HomeStartScreen(
                     },
                     onClick = {
                         scope.launch {
-                            csvSelectorLauncher.launch("text/csv")
+                            csvSelectorLauncher.launch(arrayOf("*/*"))
                             scope.launch { drawerState.close() }
                         }
                     }
