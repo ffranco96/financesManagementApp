@@ -2,7 +2,7 @@ package com.example.financesmanagementapp.ui.graphs.ui
 
 import android.content.res.Configuration
 import androidx.compose.animation.core.EaseOutCubic
-import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -31,9 +31,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -151,34 +154,49 @@ private fun DonutChart(
     val nonZeroCategories = categories.filter { it.totalAmount != 0.0 }
     val total = nonZeroCategories.sumOf { kotlin.math.abs(it.totalAmount).toDouble() }.toFloat()
 
-    val animProgress = remember { Animatable(0f) }
+    var animationPlayed by remember { mutableStateOf(false) }
+
+    val animScale by animateFloatAsState(
+        targetValue = if (animationPlayed) 1f else 0f,
+        animationSpec = tween(durationMillis = 900, easing = EaseOutCubic),
+    )
+
+    val animRotation by animateFloatAsState(
+        targetValue = if (animationPlayed) 90f * 11f else 0f,
+        animationSpec = tween(durationMillis = 900, easing = EaseOutCubic),
+    )
+
     LaunchedEffect(Unit) {
-        animProgress.animateTo(
-            targetValue = 1f,
-            animationSpec = tween(durationMillis = 900, easing = EaseOutCubic)
-        )
+        animationPlayed = true
     }
 
     val context = LocalContext.current
 
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            val stroke = Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Square)
-            val diameter = minOf(size.width, size.height)
+        Canvas(
+            modifier = Modifier
+                .fillMaxSize()
+                .rotate(animRotation)
+        ) {
+            val baseStrokePx = strokeWidth.toPx()
+            val scaledStrokePx = baseStrokePx * animScale
+            val stroke = Stroke(width = scaledStrokePx, cap = StrokeCap.Square)
+            val maxDiameter = minOf(size.width, size.height)
+            val scaledDiameter = maxDiameter * animScale
             val topLeft = Offset(
-                x = (size.width - diameter) / 2f + strokeWidth.toPx() / 2,
-                y = (size.height - diameter) / 2f + strokeWidth.toPx() / 2,
+                x = (size.width - scaledDiameter) / 2f + scaledStrokePx / 2,
+                y = (size.height - scaledDiameter) / 2f + scaledStrokePx / 2,
             )
             val arcSize = Size(
-                diameter - strokeWidth.toPx(),
-                diameter - strokeWidth.toPx(),
+                scaledDiameter - scaledStrokePx,
+                scaledDiameter - scaledStrokePx,
             )
 
             var startAngle = -90f
 
             nonZeroCategories.forEach { cat ->
                 val fraction = kotlin.math.abs(cat.totalAmount).toFloat() / total
-                val sweep = (fraction * 360f - gapDegrees) * animProgress.value
+                val sweep = fraction * 360f - gapDegrees
 
                 drawArc(
                     color = Color(context.getColor(cat.colorResId)),
