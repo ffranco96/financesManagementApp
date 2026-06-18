@@ -95,11 +95,11 @@ fun AddRecordDetailScreen(
             )
         },
         floatingActionButton = {
-            if (isAmountZero) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(end = 16.dp)
-                ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(16.dp)
+            ) {
+                if (isAmountZero) {
                     Text(
                         text = "No se puede agregar\nun registro con monto 0",
                         style = MaterialTheme.typography.bodySmall,
@@ -107,32 +107,28 @@ fun AddRecordDetailScreen(
                         textAlign = TextAlign.Center
                     )
                     Spacer(Modifier.width(8.dp))
-                    FloatingActionButton(
-                        onClick = {},
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-                    ) {
-                        Icon(Icons.Default.Check, contentDescription = "Aceptar")
-                    }
                 }
-            } else {
                 FloatingActionButton(
                     onClick = {
-                        val completeRecord = record?.copy(
-                            description = detailText,
-                            category = categoryList.find { it.categoryName == selectedCategory } ?: Category(),
-                            date = selectedDate
-                        )
-                        viewModel.saveRecord(completeRecord)
-                        navController.navigate(AppScreens.HomeStartScreen.route){
-                            popUpTo(AppScreens.HomeStartScreen.route){
-                                inclusive = true
+                        if (!isAmountZero) {
+                            val completeRecord = record?.copy(
+                                description = detailText,
+                                category = categoryList.find { it.categoryName == selectedCategory } ?: Category(),
+                                date = selectedDate
+                            )
+                            viewModel.saveRecord(completeRecord)
+                            navController.navigate(AppScreens.HomeStartScreen.route){
+                                popUpTo(AppScreens.HomeStartScreen.route){
+                                    inclusive = true
+                                }
                             }
                         }
                     },
-                    modifier = Modifier.padding(16.dp),
-                    content = {Icon(Icons.Default.Check, contentDescription = "Aceptar")}
-                )
+                    containerColor = if (isAmountZero) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = if (isAmountZero) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onPrimaryContainer
+                ) {
+                    Icon(Icons.Default.Check, contentDescription = "Aceptar")
+                }
             }
         }
     ) { innerPadding ->
