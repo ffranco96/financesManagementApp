@@ -86,10 +86,17 @@ fun HomeStartScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
+    val context = LocalContext.current
+
     val csvSelectorLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
+        contract = ActivityResultContracts.OpenDocument()
     ) { uri: Uri? ->
-        uri?.let { viewModel.importCsv(it) }
+        uri?.let {
+            context.contentResolver.takePersistableUriPermission(
+                it, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+            )
+            viewModel.importCsv(it)
+        }
     }
 
     val recordsList by viewModel.recordsList.collectAsState(initial = emptyList())
@@ -97,8 +104,6 @@ fun HomeStartScreen(
     record?.let{
         Log.d("franco","Valor actual del Record: ${record.value}")
     } // TODO borrar
-
-    val context = LocalContext.current
 
     observeValuesUpdatedByWorker(context, viewModel)
 
@@ -133,7 +138,7 @@ fun HomeStartScreen(
                     },
                     onClick = {
                         scope.launch {
-                            csvSelectorLauncher.launch("text/csv")
+                            csvSelectorLauncher.launch(arrayOf("*/*"))
                             scope.launch { drawerState.close() }
                         }
                     }
@@ -193,7 +198,8 @@ fun HomeStartScreen(
             ) {
                 BodyContent(
                     viewModel,
-                    recordsList
+                    recordsList,
+                    onNavigateToCharts = { navController.navigate(AppScreens.ChartsScreen.route) }
                 )
             }
             val a = paddingValues // To avoid error
@@ -208,6 +214,7 @@ fun HomeStartScreen(
 fun BodyContent(
     viewModel: HomeViewModel,
     recordsList: List<Record>,
+    onNavigateToCharts: () -> Unit = {},
 ) {
     val currentBalance by viewModel.currentBalance.collectAsState(initial = 0.0)
     val currentBtcValueDouble by viewModel.btcPrice.collectAsState(initial = 0.0)
@@ -228,7 +235,7 @@ fun BodyContent(
         ) {
             Text(text = "ARS", style = MaterialTheme.typography.titleLarge)
             Spacer(modifier = Modifier.width(22.dp))
-            Text(text = currentBalance.toString(), style = MaterialTheme.typography.titleLarge)
+            Text(text = String.format(java.util.Locale.US, "%.2f", currentBalance), style = MaterialTheme.typography.titleLarge)
         }
     }
     /*Column (
@@ -248,21 +255,11 @@ fun BodyContent(
             }
         }
     }*/
-    /*Column(
-        modifier = Modifier
-            .fillMaxWidth()
+    Button(
+        onClick = onNavigateToCharts
     ) {
-        Button(
-            onClick = {/*
-                //TODO Habilitar funcionaidad de boton de graficos
-                navControler.navigate(route = AppScreens.AddRecordsAmountScreen.route + "/Mi parametro") // Donde se displayara??
-                Log.d("franco", "Boton que te lleva a los graficos")
-            */
-            }
-        ) {
-            Text("Graficos")
-        }
-    }*/
+        Text("Gráficos")
+    }
     Column (
         modifier = Modifier
             .fillMaxWidth()
@@ -445,7 +442,7 @@ fun RecordDate(date: String, style: TextStyle, color: Color) {
 @Composable
 fun RecordAmount(currency: String, amount: Double, isIncome: Boolean) {
     Text(
-        text = "$currency $amount",
+        text = "$currency ${String.format(java.util.Locale.US, "%.2f", amount)}",
         style = MaterialTheme.typography.labelLarge,
         color = colorResource(if(isIncome) R.color.positive_green else R.color.negative_red)
     )
