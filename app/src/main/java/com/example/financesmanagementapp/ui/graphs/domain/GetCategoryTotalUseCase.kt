@@ -43,7 +43,7 @@ class GetCategoryTotalUseCase @Inject constructor(
                 .groupBy { it.categoryName }
                 .map { (categoryName, records) ->
                     val total = records.sumOf { record ->
-                        if (record.isIncome) record.amount else -record.amount
+                        record.amount
                     }
                     val category = Category.fromName(categoryName)
                     CategoryTotal(
