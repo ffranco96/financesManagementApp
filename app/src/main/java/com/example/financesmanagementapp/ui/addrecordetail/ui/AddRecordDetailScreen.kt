@@ -36,9 +36,12 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.financesmanagementapp.domain.model.Category
@@ -66,12 +69,12 @@ fun AddRecordDetailScreen(
     val lastSelectedDateMillis by viewModel.lastSelectedDateMillis.collectAsState()
 
 
-    val recordStateFlow = navController.previousBackStackEntry?.savedStateHandle?.getStateFlow<Record?>(
-        "record", null
-    )
-    recordStateFlow?.let{
-        Log.d("franco","Valor actual del Record desde RecordDetailScreen: ${recordStateFlow.value}")
-    }
+    val record by (navController.previousBackStackEntry?.savedStateHandle?.getStateFlow<Record?>("record", null)
+        ?.collectAsState() ?: remember { mutableStateOf<Record?>(null) })
+
+    Log.d("franco","Valor actual del Record desde RecordDetailScreen: $record")
+
+    val isAmountZero = record?.amount == 0.0
 
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = lastSelectedDateMillis
@@ -92,25 +95,45 @@ fun AddRecordDetailScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    // In this situation, the user accepted the record creation and wants to save it
-                    val uncompleteRecord: Record? = recordStateFlow?.value
-                    val record = uncompleteRecord?.copy(
-                        description = detailText,
-                        category = categoryList.find { it.categoryName == selectedCategory } ?: Category(),
-                        date = selectedDate
+            if (isAmountZero) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(end = 16.dp)
+                ) {
+                    Text(
+                        text = "No se puede agregar\nun registro con monto 0",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                        textAlign = TextAlign.Center
                     )
-                    viewModel.saveRecord(record)
-                    navController.navigate(AppScreens.HomeStartScreen.route){
-                        popUpTo(AppScreens.HomeStartScreen.route){
-                            inclusive = true
-                        }
+                    Spacer(Modifier.width(8.dp))
+                    FloatingActionButton(
+                        onClick = {},
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    ) {
+                        Icon(Icons.Default.Check, contentDescription = "Aceptar")
                     }
-                },
-                modifier = Modifier.padding(16.dp),
-                content = {Icon(Icons.Default.Check, contentDescription = "Aceptar")}
-            )
+                }
+            } else {
+                FloatingActionButton(
+                    onClick = {
+                        val completeRecord = record?.copy(
+                            description = detailText,
+                            category = categoryList.find { it.categoryName == selectedCategory } ?: Category(),
+                            date = selectedDate
+                        )
+                        viewModel.saveRecord(completeRecord)
+                        navController.navigate(AppScreens.HomeStartScreen.route){
+                            popUpTo(AppScreens.HomeStartScreen.route){
+                                inclusive = true
+                            }
+                        }
+                    },
+                    modifier = Modifier.padding(16.dp),
+                    content = {Icon(Icons.Default.Check, contentDescription = "Aceptar")}
+                )
+            }
         }
     ) { innerPadding ->
         BodyContent(
