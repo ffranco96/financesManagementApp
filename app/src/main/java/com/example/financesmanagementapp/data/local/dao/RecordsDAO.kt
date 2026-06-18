@@ -22,7 +22,7 @@ interface RecordsDAO {
 
     @Query("""
         SELECT 
-            SUM(CASE WHEN isIncome = 1 THEN amount ELSE -amount END) 
+            SUM(amount)
         FROM records 
         WHERE accountId = :accId
     """)
