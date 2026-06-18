@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -100,8 +102,15 @@ private fun ChartsScreenContent(
                 )
             }
         } else {
-            val total = uiState.categoryTotals.sumOf { kotlin.math.abs(it.totalAmount) }
-            val totalLabel = "%.2f".format(total)
+            val incomeTotals = uiState.categoryTotals.filter { it.totalAmount > 0 }
+            val expenseTotals = uiState.categoryTotals
+                .filter { it.totalAmount < 0 }
+                .map { it.copy(totalAmount = kotlin.math.abs(it.totalAmount)) }
+
+            val pagesData = listOf(incomeTotals, expenseTotals)
+            val pageTitles = listOf("Ingresos", "Gastos")
+
+            val pagerState = rememberPagerState(pageCount = { 2 })
 
             Column(
                 modifier = Modifier
@@ -110,34 +119,75 @@ private fun ChartsScreenContent(
                     .padding(horizontal = 20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-                DonutChart(
-                    categories = uiState.categoryTotals,
-                    totalLabel = totalLabel,
-                    modifier = Modifier.size(240.dp),
+                Text(
+                    text = pageTitles[pagerState.currentPage],
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
                 )
 
-                Spacer(modifier = Modifier.height(28.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-                val left = uiState.categoryTotals.filterIndexed { i, _ -> i % 2 == 0 }
-                val right = uiState.categoryTotals.filterIndexed { i, _ -> i % 2 == 1 }
-                val rows = maxOf(left.size, right.size)
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = Modifier.weight(1f),
+                ) { page ->
+                    val categories = pagesData[page]
+                    val pageTotal = categories.sumOf { kotlin.math.abs(it.totalAmount) }
+                    val pageTotalLabel = "%.2f".format(pageTotal)
 
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    repeat(rows) { row ->
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            left.getOrNull(row)?.let { cat ->
-                                LegendItem(category = cat, modifier = Modifier.weight(1f))
-                            } ?: Spacer(Modifier.weight(1f))
-                            Spacer(Modifier.width(24.dp))
-                            right.getOrNull(row)?.let { cat ->
-                                LegendItem(category = cat, modifier = Modifier.weight(1f))
-                            } ?: Spacer(Modifier.weight(1f))
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        if (categories.isEmpty()) {
+                            Box(
+                                modifier = Modifier.size(240.dp),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Text(
+                                    text = "No hay datos",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                )
+                            }
+                        } else {
+                            DonutChart(
+                                categories = categories,
+                                totalLabel = pageTotalLabel,
+                                modifier = Modifier.size(240.dp),
+                            )
+
+                            Spacer(modifier = Modifier.height(28.dp))
+
+                            LegendSection(categories = categories)
                         }
-                        Spacer(modifier = Modifier.height(10.dp))
                     }
                 }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+                    repeat(2) { index ->
+                        Box(
+                            modifier = Modifier
+                                .size(if (pagerState.currentPage == index) 10.dp else 8.dp)
+                                .background(
+                                    color = if (pagerState.currentPage == index)
+                                        MaterialTheme.colorScheme.primary
+                                    else
+                                        MaterialTheme.colorScheme.outlineVariant,
+                                    shape = CircleShape,
+                                )
+                        )
+                        if (index < 1) Spacer(modifier = Modifier.width(8.dp))
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
     }
@@ -250,6 +300,28 @@ private fun LegendItem(category: CategoryTotal, modifier: Modifier = Modifier) {
             fontSize = 12.sp,
             fontWeight = FontWeight.SemiBold,
         )
+    }
+}
+
+@Composable
+private fun LegendSection(categories: List<CategoryTotal>) {
+    val left = categories.filterIndexed { i, _ -> i % 2 == 0 }
+    val right = categories.filterIndexed { i, _ -> i % 2 == 1 }
+    val rows = maxOf(left.size, right.size)
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        repeat(rows) { row ->
+            Row(modifier = Modifier.fillMaxWidth()) {
+                left.getOrNull(row)?.let { cat ->
+                    LegendItem(category = cat, modifier = Modifier.weight(1f))
+                } ?: Spacer(Modifier.weight(1f))
+                Spacer(Modifier.width(24.dp))
+                right.getOrNull(row)?.let { cat ->
+                    LegendItem(category = cat, modifier = Modifier.weight(1f))
+                } ?: Spacer(Modifier.weight(1f))
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+        }
     }
 }
 
