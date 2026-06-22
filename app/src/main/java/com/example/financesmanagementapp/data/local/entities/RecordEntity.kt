@@ -5,8 +5,6 @@ import androidx.room.PrimaryKey
 import com.example.financesmanagementapp.domain.model.Category
 import com.example.financesmanagementapp.domain.model.Record
 import com.example.financesmanagementapp.domain.model.Record.Companion.DEFAULT_ACCOUNT_ID
-import java.text.SimpleDateFormat
-
 /**
  * Entity representing a financial record in the local database.
  * Matches the structure of the [Record] domain class.
@@ -20,11 +18,16 @@ data class RecordEntity(
     val description: String,
     val isIncome: Boolean,
     val categoryName: String, // Flattening Category for simplicity
-    val date: String,
+    val date: String, // Format yyyy-MM-dd'T'HH:mm:ss or yyyy-MM-dd for legacy
     val currency: String
 ): Comparable<RecordEntity>{
     override fun compareTo(other: RecordEntity): Int {
-        val formatter = SimpleDateFormat("yyyy-MM-dd")
+        try {
+            val date1 = java.time.LocalDateTime.parse(date)
+            val date2 = java.time.LocalDateTime.parse(other.date)
+            return date1.compareTo(date2)
+        } catch (_: Exception) { }
+        val formatter = java.text.SimpleDateFormat("yyyy-MM-dd")
         val date1 = formatter.parse(date)
         val date2 = formatter.parse(other.date)
         return date1.compareTo(date2)

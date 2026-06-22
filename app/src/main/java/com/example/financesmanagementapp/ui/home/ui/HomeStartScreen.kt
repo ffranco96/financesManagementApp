@@ -429,8 +429,9 @@ fun RecordDescription(desc: String, style: TextStyle, lines: Int = Int.MAX_VALUE
  */
 @Composable
 fun RecordDate(date: String, style: TextStyle, color: Color) {
+    val displayDate = if (date.length > 10) date.take(10) else date
     Text(
-        text = date,
+        text = displayDate,
         style = MaterialTheme.typography.labelSmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant
     )

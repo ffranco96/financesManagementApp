@@ -6,6 +6,7 @@ import com.example.financesmanagementapp.ui.graphs.model.CategoryTotal
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 /**
@@ -34,12 +35,16 @@ class GetCategoryTotalUseCase @Inject constructor(
             entities
                 .filter { it.accountId == accountId }
                 .filter { entity ->
-                    try {
-                        val date = LocalDate.parse(entity.date)
-                        !date.isBefore(thirtyDaysAgo)
+                    val recordDate = try {
+                        LocalDateTime.parse(entity.date).toLocalDate()
                     } catch (_: Exception) {
-                        false
+                        try {
+                            LocalDate.parse(entity.date)
+                        } catch (_: Exception) {
+                            null
+                        }
                     }
+                    recordDate != null && !recordDate.isBefore(thirtyDaysAgo)
                 }
                 .groupBy { it.categoryName }
                 .flatMap { (categoryName, records) ->

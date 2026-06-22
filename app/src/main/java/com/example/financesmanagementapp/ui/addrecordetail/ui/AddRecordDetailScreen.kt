@@ -263,8 +263,9 @@ fun BodyContent(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            val displayDate = if (selectedDate.length > 10) selectedDate.substring(0, 10) else selectedDate
             Text(
-                text = "Fecha: $selectedDate",
+                text = "Fecha: $displayDate",
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(5.dp)
             )
