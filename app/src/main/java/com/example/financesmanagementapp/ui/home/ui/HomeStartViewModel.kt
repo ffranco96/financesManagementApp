@@ -120,14 +120,14 @@ open class HomeViewModel @Inject constructor(
 
     fun importCsv(uri: Uri) {
         viewModelScope.launch(Dispatchers.IO) {
-            val readCsv = readCsvUseCase(uri)
-            if (readCsv == null) {
-                _exportedCsvEvent.emit(HomeUiEvent.ShowToast("Error al leer el archivo CSV"))
+            val readCsv = readCsvUseCase(uri)?: run {
+                Log.d(TAG, "Error leyendo csv")
                 return@launch
             }
 
             val recordList = parseCsvUseCase(readCsv)
-            Log.d(TAG, "recordList leida del csv: $recordList")
+
+            Log.d("franco", "recordList: $recordList")
             recordList.forEach { record ->
                 saveRecordUseCase(record)
             }

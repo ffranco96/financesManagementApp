@@ -1,31 +1,31 @@
 amount;description;isIncome;categoryName;date;currency
--35000.00;Cafe y medialunas;false;Restaurant y comida rapida;2026-05-17;ARS
-250000.00;Bono anual;true;Salario;2026-05-18;ARS
--67000.00;Camara Fujifilm X100V. Cuotas sin interes;false;Pintura, dibujo y fotografia;2026-05-19;ARS
--80000.00;Analgesicos y vitaminas farmacia del centro;false;Medicamentos e insumos;2026-05-20;ARS
--45000.00;Empanadas para el partido;false;Comida y alimentos;2026-05-21;ARS
--28000.00;Neumatico trasero moto. Pinchadura en autopista;false;Mantenimiento vehiculos;2026-05-22;ARS
--155000.00;Jeans y remera outlet;false;Ropa;2026-05-23;ARS
-950000.00;Sueldo mayo;true;Salario;2026-05-24;ARS
--75000.00;Sandwich y gaseosa almuerzo trabajo;false;Restaurant y comida rapida;2026-05-25;ARS
--320000.00;Inversion plazo fijo 30 dias;false;Inversiones y finanzas;2026-05-26;ARS
--50000.00;Pelo. Corte y barba;false;Hobbies;2026-05-27;ARS
--145000.00;Entradas Luna Park. Show tributo Pink Floyd;false;Recitales y eventos;2026-05-28;ARS
-370000.00;Vencimiento plazo fijo con intereses;true;Inversiones y finanzas;2026-05-29;ARS
--89000.00;Cinta y pinceles para repintar el cuarto;false;Pintura, dibujo y fotografia;2026-05-30;ARS
-950000.00;Sueldo junio;true;Salario;2026-05-31;ARS
--430000.00;Service completo auto. Cambio correa distribucion;false;Mantenimiento vehiculos;2026-06-01;ARS
--68000.00;Zapatillas running Nike;false;Ropa;2026-06-02;ARS
--1800.00;Turno oftalmologico y compra de lentes;false;Salud;2026-06-03;ARS
--9200.00;Curso programacion Android. Pago mensual;false;Estudios particulares;2026-06-04;ARS
-950000.00;Sueldo julio;true;Salario;2026-06-05;ARS
--28000.00;Facturas panaderia;false;Comida y alimentos;2026-06-06;ARS
--550000.00;Bicicleta de ruta usada. Comprada a un conocido;false;Hobbies;2026-06-07;ARS
--34000.00;Medicamentos para el viaje. Antiparasitarios y protector solar;false;Medicamentos e insumos;2026-06-08;ARS
-250000.00;Venta bici vieja;true;Hobbies;2026-06-09;ARS
--12000.00;Cena cumpleaños. Restaurante La Cabrera;false;Restaurant y comida rapida;2026-06-10;ARS
--1100.00;Aceite de oliva y especias importadas;false;Comida y alimentos;2026-06-11;ARS
-95000.00;Sueldo septiembre;true;Salario;2026-06-12;ARS
--500.00;Estacionamiento y peajes fin de semana;false;Vehiculos;2026-06-13;ARS
--18700.00;Campera de cuero. Liquidacion invierno;false;Ropa;2026-06-14;ARS
--4100.00;Consulta nutricionista. Plan alimentario 3 meses, incluyendo alimentación, suplementos, rutinas de entrenamiento y control diario de calorías. Pesado cada 2 semanas;false;Salud;2026-06-15;ARS
+-35000.00;Cafe y medialunas;false;Restaurant y comida rapida;2024-03-22;ARS
+250000.00;Bono anual;true;Salario;2024-03-28;ARS
+-67000.00;Camara Fujifilm X100V. Cuotas sin interes;false;Pintura, dibujo y fotografia;2024-04-02;ARS
+-80000.00;Analgesicos y vitaminas farmacia del centro;false;Medicamentos e insumos;2024-04-07;ARS
+-45000.00;Empanadas para el partido;false;Comida y alimentos;2024-04-14;ARS
+-28000.00;Neumatico trasero moto. Pinchadura en autopista;false;Mantenimiento vehiculos;2024-04-25;ARS
+-155000.00;Jeans y remera outlet;false;Ropa;2024-05-03;ARS
+950000.00;Sueldo mayo;true;Salario;2024-05-20;ARS
+-75000.00;Sandwich y gaseosa almuerzo trabajo;false;Restaurant y comida rapida;2024-05-28;ARS
+-320000.00;Inversion plazo fijo 30 dias;false;Inversiones y finanzas;2024-06-01;ARS
+-50000.00;Pelo. Corte y barba;false;Hobbies;2024-06-10;ARS
+-145000.00;Entradas Luna Park. Show tributo Pink Floyd;false;Recitales y eventos;2024-06-18;ARS
+370000.00;Vencimiento plazo fijo con intereses;true;Inversiones y finanzas;2024-07-01;ARS
+-89000.00;Cinta y pinceles para repintar el cuarto;false;Pintura, dibujo y fotografia;2024-07-08;ARS
+950000.00;Sueldo junio;true;Salario;2024-06-20;ARS
+-430000.00;Service completo auto. Cambio correa distribucion;false;Mantenimiento vehiculos;2024-07-19;ARS
+-68000.00;Zapatillas running Nike;false;Ropa;2024-07-30;ARS
+-1800.00;Turno oftalmologico y compra de lentes;false;Salud;2024-08-05;ARS
+-9200.00;Curso programacion Android. Pago mensual;false;Estudios particulares;2024-08-12;ARS
+950000.00;Sueldo julio;true;Salario;2024-07-20;ARS
+-28000.00;Facturas panaderia;false;Comida y alimentos;2024-08-20;ARS
+-550000.00;Bicicleta de ruta usada. Comprada a un conocido;false;Hobbies;2024-09-03;ARS
+-34000.00;Medicamentos para el viaje. Antiparasitarios y protector solar;false;Medicamentos e insumos;2024-09-10;ARS
+250000.00;Venta bici vieja;true;Hobbies;2024-09-15;ARS
+-12000.00;Cena cumpleaños. Restaurante La Cabrera;false;Restaurant y comida rapida;2024-10-04;ARS
+-1100.00;Aceite de oliva y especias importadas;false;Comida y alimentos;2024-10-18;ARS
+95000.00;Sueldo septiembre;true;Salario;2024-09-20;ARS
+-500.00;Estacionamiento y peajes fin de semana;false;Vehiculos;2024-11-22;ARS
+-18700.00;Campera de cuero. Liquidacion invierno;false;Ropa;2024-12-05;ARS
+-4100.00;Consulta nutricionista. Plan alimentario 3 meses, incluyendo alimentación, suplementos, rutinas de entrenamiento y control diario de calorías. Pesado cada 2 semanas;false;Salud;2025-01-08;ARS
