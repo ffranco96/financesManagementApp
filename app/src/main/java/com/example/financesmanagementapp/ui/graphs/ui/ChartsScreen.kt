@@ -230,7 +230,7 @@ private fun DonutChart(
         ) {
             val baseStrokePx = strokeWidth.toPx()
             val scaledStrokePx = baseStrokePx * animScale
-            val stroke = Stroke(width = scaledStrokePx, cap = StrokeCap.Square)
+            val stroke = Stroke(width = scaledStrokePx, cap = StrokeCap.Butt)
             val maxDiameter = minOf(size.width, size.height)
             val scaledDiameter = maxDiameter * animScale
             val topLeft = Offset(
