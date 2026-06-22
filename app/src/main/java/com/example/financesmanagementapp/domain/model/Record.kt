@@ -1,8 +1,8 @@
 package com.example.financesmanagementapp.domain.model
 
-import com.example.financesmanagementapp.data.local.entities.RecordEntity
 import java.io.Serializable
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeParseException
 
 /**
@@ -14,15 +14,20 @@ data class Record (
     var description: String = "",
     var isIncome: Boolean = false,
     var category: Category = Category(),
-    var date:String = "", // Format yyyy-MM-dd
+    var date:String = "", // Format yyyy-MM-dd'T'HH:mm:ss (ISO 8601) or yyyy-MM-dd for legacy records
     var currency:String = "",
 ): Serializable, Comparable<Record> {
     /**
-     * Compares this record with other based on the date field (ISO yyyy-MM-dd)
-     * Allows chronological sorting of records. If date has no valid format, compares
-     * alphabetically.
+     * Compares this record with other based on the date field.
+     * Tries [LocalDateTime] first (ISO 8601 with time), falls back to [LocalDate],
+     * then to string comparison.
      */
     override fun compareTo(other: Record): Int {
+        try {
+            val date1 = LocalDateTime.parse(this.date)
+            val date2 = LocalDateTime.parse(other.date)
+            return date1.compareTo(date2)
+        } catch (_: DateTimeParseException) {} // To manage parsing errors in legacy records
         return try {
             val date1 = LocalDate.parse(this.date)
             val date2 = LocalDate.parse(other.date)
@@ -35,19 +40,4 @@ data class Record (
     companion object {
         const val DEFAULT_ACCOUNT_ID = 0
     }
-}
-
-/**
- * Extension function to convert a [Record] domain class to a [RecordEntity] entity.
- */
-fun Record.toEntity(): RecordEntity {
-    return RecordEntity(
-        accountId = accountId,
-        amount = amount,
-        description = description,
-        isIncome = isIncome,
-        categoryName = category.categoryName,
-        date = date,
-        currency = currency
-    )
 }

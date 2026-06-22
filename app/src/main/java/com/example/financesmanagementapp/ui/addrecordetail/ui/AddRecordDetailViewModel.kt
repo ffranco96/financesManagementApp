@@ -3,10 +3,10 @@ package com.example.financesmanagementapp.ui.addrecordetail.ui
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.financesmanagementapp.domain.model.Record
-import com.example.financesmanagementapp.ui.addrecordetail.domain.SaveRecordUseCase
 import com.example.financesmanagementapp.domain.model.Category
+import com.example.financesmanagementapp.domain.model.Record
 import com.example.financesmanagementapp.domain.usecase.GetCategoriesUseCase
+import com.example.financesmanagementapp.ui.addrecordetail.domain.SaveRecordUseCase
 import com.example.financesmanagementapp.ui.home.ui.HomeViewModel.Companion.TAG
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -16,7 +16,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.Instant
-import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
@@ -38,7 +39,7 @@ class AddRecordDetailViewModel @Inject constructor(
     private val _selectedCategory = MutableStateFlow("")
     val selectedCategory: StateFlow<String> = _selectedCategory
 
-    private val _selectedDate = MutableStateFlow(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE))
+    private val _selectedDate = MutableStateFlow(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
     val selectedDate: StateFlow<String> = _selectedDate
 
     private val _lastSelectedDateMillis = MutableStateFlow<Long?>(null)
@@ -74,8 +75,11 @@ class AddRecordDetailViewModel @Inject constructor(
     fun onDateSelected(millis: Long?) {
         millis?.let {
             _lastSelectedDateMillis.value = it
-            val date = Instant.ofEpochMilli(it).atZone(ZoneId.of("UTC")).toLocalDate()
-            _selectedDate.value = date.format(DateTimeFormatter.ISO_LOCAL_DATE)
+            val dateTime = LocalDateTime.of(
+                Instant.ofEpochMilli(it).atZone(ZoneId.of("UTC")).toLocalDate(),
+                LocalTime.now()
+            )
+            _selectedDate.value = dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
         }
         setShowDatePicker(false)
     }
