@@ -91,7 +91,13 @@ fun AddRecordAmountScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    val amount = amountText.toDoubleOrNull() ?: 0.0
+                    val amount = amountText.toDoubleOrNull()?.let{
+                        if(checkedSwitch)
+                            it
+                        else
+                            -it
+                    } ?: 0.0
+
                     val myRecord = Record(amount = amount, isIncome = checkedSwitch, currency = selectedCurrency)
                     navController.currentBackStackEntry?.savedStateHandle?.set("record", myRecord)
                     navController.navigate(AppScreens.AddRecordDetailScreen.route)
