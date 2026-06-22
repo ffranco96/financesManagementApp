@@ -14,8 +14,6 @@ import com.example.financesmanagementapp.ui.addregisteramount.ui.AddRecordAmount
 import com.example.financesmanagementapp.ui.addregisteramount.ui.AddRecordAmountViewModel
 import com.example.financesmanagementapp.ui.home.ui.HomeStartScreen
 import com.example.financesmanagementapp.ui.home.ui.HomeViewModel
-import com.example.financesmanagementapp.ui.graphs.ui.ChartsScreen
-import com.example.financesmanagementapp.ui.graphs.ui.ChartsViewModel
 import com.example.financesmanagementapp.ui.login.ui.LoginScreen
 import com.example.financesmanagementapp.ui.login.ui.LoginViewModel
 
@@ -69,10 +67,6 @@ fun AppNavigation() {
                 navController = navController,
                 addRecordDetailViewModel
             )
-        }
-        composable(route = AppScreens.ChartsScreen.route) {
-            val chartsViewModel: ChartsViewModel = hiltViewModel()
-            ChartsScreen(navController = navController, viewModel = chartsViewModel)
         }
     }
 }
