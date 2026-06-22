@@ -10,10 +10,11 @@ import javax.inject.Inject
 
 /**
  * Use case that retrieves all records for a given account, filters those within
- * the last 30 days, groups them by category and computes the net amount
- * (income - expense) per category.
+ * the last 30 days, groups them by category and computes separate totals for
+ * income (positive amount) and expense (negative amount) per category.
  *
- * Categories with a net amount of exactly 0.0 are excluded from the result.
+ * Categories can appear in both income and expense results when they have
+ * records of both types. Zero-amount totals are excluded.
  *
  * @property repository The [RecordsRepository] used to fetch the raw records.
  */
@@ -41,18 +42,23 @@ class GetCategoryTotalUseCase @Inject constructor(
                     }
                 }
                 .groupBy { it.categoryName }
-                .map { (categoryName, records) ->
-                    val total = records.sumOf { record ->
-                        record.amount
-                    }
+                .flatMap { (categoryName, records) ->
                     val category = Category.fromName(categoryName)
-                    CategoryTotal(
-                        categoryName = categoryName,
-                        totalAmount = total,
-                        colorResId = category.colorIcon
+                    val incomeTotal = records.filter { it.amount > 0 }.sumOf { it.amount }
+                    val expenseTotal = records.filter { it.amount < 0 }.sumOf { it.amount }
+                    listOfNotNull(
+                        CategoryTotal(
+                            categoryName = categoryName,
+                            totalAmount = incomeTotal,
+                            colorResId = category.colorIcon
+                        ).takeIf { incomeTotal != 0.0 },
+                        CategoryTotal(
+                            categoryName = categoryName,
+                            totalAmount = expenseTotal,
+                            colorResId = category.colorIcon
+                        ).takeIf { expenseTotal != 0.0 }
                     )
                 }
-                .filter { it.totalAmount != 0.0 }
         }
     }
 }
