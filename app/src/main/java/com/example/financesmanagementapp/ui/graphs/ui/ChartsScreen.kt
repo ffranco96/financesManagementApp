@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -59,20 +61,22 @@ import com.example.financesmanagementapp.ui.theme.FinancesManagementAppTheme
 @Composable
 fun ChartsScreen(
     navController: NavController,
-    viewModel: ChartsViewModel
+    viewModel: ChartsViewModel // TODO hilt-dagger
 ) {
     val uiState by viewModel.uiState.collectAsState()
     ChartsScreenContent(
         uiState = uiState,
-        onBackClick = { navController.popBackStack() }
+        onBackClick = { navController.popBackStack() },
     )
 }
+
+const val CHARTS_QTTY = 2
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ChartsScreenContent(
     uiState: ChartsUiState,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -102,6 +106,7 @@ private fun ChartsScreenContent(
                 )
             }
         } else {
+            val scrollState = rememberScrollState()
             val incomeTotals = uiState.categoryTotals.filter { it.totalAmount > 0 }
             val expenseTotals = uiState.categoryTotals
                 .filter { it.totalAmount < 0 }
@@ -110,13 +115,14 @@ private fun ChartsScreenContent(
             val pagesData = listOf(incomeTotals, expenseTotals)
             val pageTitles = listOf("Ingresos", "Gastos")
 
-            val pagerState = rememberPagerState(pageCount = { 2 })
+            val pagerState = rememberPagerState(pageCount = { CHARTS_QTTY })
 
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
-                    .padding(horizontal = 20.dp),
+                    .padding(horizontal = 20.dp)
+                    .verticalScroll(scrollState),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
@@ -131,7 +137,9 @@ private fun ChartsScreenContent(
 
                 HorizontalPager(
                     state = pagerState,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(360.dp),
                 ) { page ->
                     val categories = pagesData[page]
                     val pageTotal = categories.sumOf { kotlin.math.abs(it.totalAmount) }
@@ -171,7 +179,7 @@ private fun ChartsScreenContent(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center,
                 ) {
-                    repeat(2) { index ->
+                    repeat(CHARTS_QTTY) { index ->
                         Box(
                             modifier = Modifier
                                 .size(if (pagerState.currentPage == index) 10.dp else 8.dp)
@@ -183,11 +191,38 @@ private fun ChartsScreenContent(
                                     shape = CircleShape,
                                 )
                         )
-                        if (index < 1) Spacer(modifier = Modifier.width(8.dp))
+                        if (index < CHARTS_QTTY - 1) Spacer(modifier = Modifier.width(8.dp))
                     }
                 }
 
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Text(
+                    text = "Evolución del balance",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+
                 Spacer(modifier = Modifier.height(8.dp))
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.surfaceVariant,
+                            shape = MaterialTheme.shapes.medium,
+                        ),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = "Próximamente",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
