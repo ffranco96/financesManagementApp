@@ -67,6 +67,7 @@ fun ChartsScreen(
     ChartsScreenContent(
         uiState = uiState,
         onBackClick = { navController.popBackStack() },
+        viewModel = viewModel,
     )
 }
 
@@ -77,6 +78,7 @@ const val CHARTS_QTTY = 2
 private fun ChartsScreenContent(
     uiState: ChartsUiState,
     onBackClick: () -> Unit,
+    viewModel: ChartsViewModel? = null,
 ) {
     Scaffold(
         topBar = {
@@ -107,6 +109,9 @@ private fun ChartsScreenContent(
             }
         } else {
             val scrollState = rememberScrollState()
+            val recordsState = viewModel?.allRecords?.collectAsState()
+                ?: remember { mutableStateOf(emptyList()) }
+            val records by recordsState
             val incomeTotals = uiState.categoryTotals.filter { it.totalAmount > 0 }
             val expenseTotals = uiState.categoryTotals
                 .filter { it.totalAmount < 0 }
@@ -205,22 +210,10 @@ private fun ChartsScreenContent(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .background(
-                            color = MaterialTheme.colorScheme.surfaceVariant,
-                            shape = MaterialTheme.shapes.medium,
-                        ),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = "Próximamente",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
+                FinanceLineChart(
+                    records = records,
+                    modifier = Modifier.fillMaxWidth(),
+                )
 
                 Spacer(modifier = Modifier.height(16.dp))
             }
