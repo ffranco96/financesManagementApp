@@ -51,19 +51,19 @@ class GetCategoryTotalUseCaseTest {
         val recentRecord = RecordEntity(amount = 50.0, isIncome = false, categoryName = "Comida y alimentos", date = today.minusDays(10).toString(), currency = "ARS", description = "")
         every { mockRepository.getAllRecordsFlow() } returns flowOf(listOf(oldRecord, recentRecord))
 
-        val result = useCase(DEFAULT_ACCOUNT_ID).first()
+        val result = useCase(DEFAULT_ACCOUNT_ID, 30).first()
 
         assertEquals(1, result.size)
         assertEquals(-50.0, result[0].totalAmount, 0.001)
     }
 
     @Test
-    fun `given record exactly 30 days ago then includes it`() = runTest {
+    fun `given record exactly at the limit date then includes it`() = runTest {
         val today = LocalDate.now()
         val record = RecordEntity(amount = 100.0, isIncome = false, categoryName = "Comida y alimentos", date = today.minusDays(30).toString(), currency = "ARS", description = "")
         every { mockRepository.getAllRecordsFlow() } returns flowOf(listOf(record))
 
-        val result = useCase(DEFAULT_ACCOUNT_ID).first()
+        val result = useCase(DEFAULT_ACCOUNT_ID, 30).first()
 
         assertEquals(1, result.size)
         assertEquals(-100.0, result[0].totalAmount, 0.001)

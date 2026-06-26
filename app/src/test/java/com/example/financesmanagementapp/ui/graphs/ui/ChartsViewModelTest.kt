@@ -33,7 +33,7 @@ class ChartsViewModelTest {
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        every { mockUseCase.invoke(any()) } returns totalsFlow
+        every { mockUseCase.invoke(any(), any()) } returns totalsFlow
         every { mockAllRecordsUseCase.invoke() } returns flowOf(emptyList())
     }
 

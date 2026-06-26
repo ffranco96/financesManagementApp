@@ -35,7 +35,7 @@ class ChartsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            getCategoryTotalUseCase(Record.DEFAULT_ACCOUNT_ID).collectLatest { total ->
+            getCategoryTotalUseCase(Record.DEFAULT_ACCOUNT_ID, 30).collectLatest { total ->
                 _uiState.value = ChartsUiState(
                     categoryTotals = total,
                     isEmpty = total.isEmpty()
