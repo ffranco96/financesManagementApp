@@ -10,8 +10,8 @@ import java.time.LocalDateTime
 import javax.inject.Inject
 
 /**
- * Use case that retrieves all records for a given account, filters those within
- * the last 30 days, groups them by category and computes separate totals for
+ * Use case that retrieves all records for a given account, optionally filtering
+ * by the last N days. Groups by category and computes separate totals for
  * income (positive amount) and expense (negative amount) per category.
  *
  * Categories can appear in both income and expense results when they have
@@ -26,15 +26,18 @@ class GetCategoryTotalUseCase @Inject constructor(
      * Executes the use case.
      *
      * @param accountId The ID of the account to filter records by.
+     * @param lastDays Optional day-range filter. When > 0 only records from the
+     *   last [lastDays] days are included. When 0 (default) no temporal filter is applied.
      * @return A [Flow] emitting the aggregated [CategoryTotal] list every time
      *   the underlying data changes (e.g. after a record insert or update).
      */
-    operator fun invoke(accountId: Int): Flow<List<CategoryTotal>> {
+    operator fun invoke(accountId: Int, lastDays: Int = 0): Flow<List<CategoryTotal>> {
         return repository.getAllRecordsFlow().map { entities ->
-            val thirtyDaysAgo = LocalDate.now().minusDays(30)
-            entities
-                .filter { it.accountId == accountId }
-                .filter { entity ->
+            var filtered = entities.filter { it.accountId == accountId }
+
+            if (lastDays > 0) {
+                val limitDate = LocalDate.now().minusDays(lastDays.toLong())
+                filtered = filtered.filter { entity ->
                     val recordDate = try {
                         LocalDateTime.parse(entity.date).toLocalDate()
                     } catch (_: Exception) {
@@ -44,8 +47,11 @@ class GetCategoryTotalUseCase @Inject constructor(
                             null
                         }
                     }
-                    recordDate != null && !recordDate.isBefore(thirtyDaysAgo)
+                    recordDate != null && !recordDate.isBefore(limitDate)
                 }
+            }
+
+            filtered
                 .groupBy { it.categoryName }
                 .flatMap { (categoryName, records) ->
                     val category = Category.fromName(categoryName)

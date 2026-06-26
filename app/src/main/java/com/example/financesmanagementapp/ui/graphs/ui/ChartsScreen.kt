@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -46,6 +48,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -59,20 +62,24 @@ import com.example.financesmanagementapp.ui.theme.FinancesManagementAppTheme
 @Composable
 fun ChartsScreen(
     navController: NavController,
-    viewModel: ChartsViewModel
+    viewModel: ChartsViewModel // TODO hilt-dagger
 ) {
     val uiState by viewModel.uiState.collectAsState()
     ChartsScreenContent(
         uiState = uiState,
-        onBackClick = { navController.popBackStack() }
+        onBackClick = { navController.popBackStack() },
+        viewModel = viewModel,
     )
 }
+
+const val CHARTS_QTTY = 2
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ChartsScreenContent(
     uiState: ChartsUiState,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    viewModel: ChartsViewModel? = null,
 ) {
     Scaffold(
         topBar = {
@@ -102,6 +109,10 @@ private fun ChartsScreenContent(
                 )
             }
         } else {
+            val scrollState = rememberScrollState()
+            val recordsState = viewModel?.allRecords?.collectAsState()
+                ?: remember { mutableStateOf(emptyList()) }
+            val records by recordsState
             val incomeTotals = uiState.categoryTotals.filter { it.totalAmount > 0 }
             val expenseTotals = uiState.categoryTotals
                 .filter { it.totalAmount < 0 }
@@ -110,13 +121,14 @@ private fun ChartsScreenContent(
             val pagesData = listOf(incomeTotals, expenseTotals)
             val pageTitles = listOf("Ingresos", "Gastos")
 
-            val pagerState = rememberPagerState(pageCount = { 2 })
+            val pagerState = rememberPagerState(pageCount = { CHARTS_QTTY })
 
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
-                    .padding(horizontal = 20.dp),
+                    .padding(horizontal = 20.dp)
+                    .verticalScroll(scrollState),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
@@ -131,7 +143,9 @@ private fun ChartsScreenContent(
 
                 HorizontalPager(
                     state = pagerState,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(420.dp),
                 ) { page ->
                     val categories = pagesData[page]
                     val pageTotal = categories.sumOf { kotlin.math.abs(it.totalAmount) }
@@ -139,7 +153,7 @@ private fun ChartsScreenContent(
 
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxSize(),
                     ) {
                         if (categories.isEmpty()) {
                             Box(
@@ -160,7 +174,14 @@ private fun ChartsScreenContent(
 
                             Spacer(modifier = Modifier.height(28.dp))
 
-                            LegendSection(categories = categories)
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .verticalScroll(rememberScrollState()),
+                                verticalArrangement = Arrangement.Top,
+                            ) {
+                                LegendSection(categories = categories)
+                            }
                         }
                     }
                 }
@@ -171,7 +192,7 @@ private fun ChartsScreenContent(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center,
                 ) {
-                    repeat(2) { index ->
+                    repeat(CHARTS_QTTY) { index ->
                         Box(
                             modifier = Modifier
                                 .size(if (pagerState.currentPage == index) 10.dp else 8.dp)
@@ -183,11 +204,26 @@ private fun ChartsScreenContent(
                                     shape = CircleShape,
                                 )
                         )
-                        if (index < 1) Spacer(modifier = Modifier.width(8.dp))
+                        if (index < CHARTS_QTTY - 1) Spacer(modifier = Modifier.width(8.dp))
                     }
                 }
 
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Text(
+                    text = "Evolución del balance",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+
                 Spacer(modifier = Modifier.height(8.dp))
+
+                FinanceLineChart(
+                    records = records,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
@@ -292,7 +328,8 @@ private fun LegendItem(category: CategoryTotal, modifier: Modifier = Modifier) {
         Text(
             text = category.categoryName,
             fontSize = 12.sp,
-            maxLines = 1,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f),
         )
         Text(
@@ -315,7 +352,7 @@ private fun LegendSection(categories: List<CategoryTotal>) {
                 left.getOrNull(row)?.let { cat ->
                     LegendItem(category = cat, modifier = Modifier.weight(1f))
                 } ?: Spacer(Modifier.weight(1f))
-                Spacer(Modifier.width(24.dp))
+                Spacer(Modifier.width(12.dp))
                 right.getOrNull(row)?.let { cat ->
                     LegendItem(category = cat, modifier = Modifier.weight(1f))
                 } ?: Spacer(Modifier.weight(1f))

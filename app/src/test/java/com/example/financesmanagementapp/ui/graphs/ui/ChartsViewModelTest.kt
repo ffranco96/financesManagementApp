@@ -3,11 +3,13 @@ package com.example.financesmanagementapp.ui.graphs.ui
 import com.example.financesmanagementapp.R
 import com.example.financesmanagementapp.ui.graphs.domain.GetCategoryTotalUseCase
 import com.example.financesmanagementapp.ui.graphs.model.CategoryTotal
+import com.example.financesmanagementapp.ui.home.domain.GetAllRecordsFlowUseCase
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -25,12 +27,14 @@ class ChartsViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
     private val mockUseCase: GetCategoryTotalUseCase = mockk()
+    private val mockAllRecordsUseCase: GetAllRecordsFlowUseCase = mockk()
     private val totalsFlow = MutableStateFlow<List<CategoryTotal>>(emptyList())
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        every { mockUseCase.invoke(any()) } returns totalsFlow
+        every { mockUseCase.invoke(any(), any()) } returns totalsFlow
+        every { mockAllRecordsUseCase.invoke() } returns flowOf(emptyList())
     }
 
     @After
@@ -46,7 +50,7 @@ class ChartsViewModelTest {
         )
         totalsFlow.value = totals
 
-        val viewModel = ChartsViewModel(mockUseCase)
+        val viewModel = ChartsViewModel(mockUseCase, mockAllRecordsUseCase)
         testDispatcher.scheduler.advanceUntilIdle()
 
         val state = viewModel.uiState.first()
@@ -58,7 +62,7 @@ class ChartsViewModelTest {
     fun `given use case returns empty list then uiState isEmpty is true`() = runTest(testDispatcher) {
         totalsFlow.value = emptyList()
 
-        val viewModel = ChartsViewModel(mockUseCase)
+        val viewModel = ChartsViewModel(mockUseCase, mockAllRecordsUseCase)
         testDispatcher.scheduler.advanceUntilIdle()
 
         val state = viewModel.uiState.first()
@@ -69,7 +73,7 @@ class ChartsViewModelTest {
     @Test
     fun `given new emission from use case then uiState updates reactively`() = runTest(testDispatcher) {
         totalsFlow.value = emptyList()
-        val viewModel = ChartsViewModel(mockUseCase)
+        val viewModel = ChartsViewModel(mockUseCase, mockAllRecordsUseCase)
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertEquals(0, viewModel.uiState.value.categoryTotals.size)
