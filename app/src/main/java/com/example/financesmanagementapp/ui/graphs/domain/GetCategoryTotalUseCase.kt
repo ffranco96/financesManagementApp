@@ -27,11 +27,11 @@ class GetCategoryTotalUseCase @Inject constructor(
      * Executes the use case.
      *
      * @param accountId The ID of the account to filter records by.
-     * @param daysToGetTotal Quantity of days from the current day to the past to obtain the total.
+     * @param daysToGetTotal Optional quantity of days from the current day to the past to obtain the total.
      * @return A [Flow] emitting the aggregated [CategoryTotal] list every time
      *   the underlying data changes (e.g. after a record insert or update).
      */
-    operator fun invoke(accountId: Int, daysToGetTotal: Int): Flow<List<CategoryTotal>> {
+    operator fun invoke(accountId: Int, daysToGetTotal: Int = 30): Flow<List<CategoryTotal>> {
         require(daysToGetTotal > 0) { "daysToGetTotal must be positive, got $daysToGetTotal" }
         return repository.getAllRecordsFlow().map { entities ->
             val nDaysAgo = LocalDate.now().minusDays(daysToGetTotal.toLong())
