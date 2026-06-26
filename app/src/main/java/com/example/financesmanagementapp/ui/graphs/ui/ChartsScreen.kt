@@ -48,6 +48,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -142,7 +143,7 @@ private fun ChartsScreenContent(
                     state = pagerState,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(360.dp),
+                        .height(420.dp),
                 ) { page ->
                     val categories = pagesData[page]
                     val pageTotal = if (page == 0) categories.sumOf { it.incomes } else categories.sumOf { kotlin.math.abs(it.expenses) }
@@ -150,7 +151,7 @@ private fun ChartsScreenContent(
 
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxSize(),
                     ) {
                         if (categories.isEmpty()) {
                             Box(
@@ -172,10 +173,17 @@ private fun ChartsScreenContent(
 
                             Spacer(modifier = Modifier.height(28.dp))
 
-                            LegendSection(
-                                categories = categories,
-                                valueSelector = if (page == 0) { cat -> cat.incomes } else { cat -> kotlin.math.abs(cat.expenses) },
-                            )
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .verticalScroll(rememberScrollState()),
+                                verticalArrangement = Arrangement.Top,
+                            ) {
+                                LegendSection(
+                                    categories = categories,
+                                    valueSelector = if (page == 0) { cat -> cat.incomes } else { cat -> kotlin.math.abs(cat.expenses) },
+                                )
+                            }
                         }
                     }
                 }
@@ -327,7 +335,8 @@ private fun LegendItem(
         Text(
             text = category.categoryName,
             fontSize = 12.sp,
-            maxLines = 1,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f),
         )
         Text(
@@ -353,7 +362,7 @@ private fun LegendSection(
                 left.getOrNull(row)?.let { cat ->
                     LegendItem(category = cat, valueSelector = valueSelector, modifier = Modifier.weight(1f))
                 } ?: Spacer(Modifier.weight(1f))
-                Spacer(Modifier.width(24.dp))
+                Spacer(Modifier.width(12.dp))
                 right.getOrNull(row)?.let { cat ->
                     LegendItem(category = cat, valueSelector = valueSelector, modifier = Modifier.weight(1f))
                 } ?: Spacer(Modifier.weight(1f))
