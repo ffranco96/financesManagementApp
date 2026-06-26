@@ -232,8 +232,8 @@ private fun DrawScope.drawChart(
 
     val pointStep = 28.dp.toPx()
 
-    val ninetyDaysAgo = LocalDate.now().minusDays(90)
-    val recentPoints = points.filter { !it.date.isBefore(ninetyDaysAgo) }
+    val limitDate = LocalDate.now().minusDays(90)
+    val recentPoints = points.filter { !it.date.isBefore(limitDate) }
     val minY = if (recentPoints.isEmpty()) points.minOf { it.balance } else recentPoints.minOf { it.balance }
     val maxY = if (recentPoints.isEmpty()) points.maxOf { it.balance } else recentPoints.maxOf { it.balance }
 
