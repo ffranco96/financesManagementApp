@@ -4,15 +4,17 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,6 +39,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.times
 import com.example.financesmanagementapp.domain.model.Record
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -104,7 +107,6 @@ fun FinanceLineChart(
 ) {
     val points = remember(records) { buildChartPoints(records) }
 
-    var scrollOffset by remember { mutableStateOf(0f) }
     var selectedIndex by remember { mutableStateOf(-1) }
 
     val drawProgress by animateFloatAsState(
@@ -177,41 +179,34 @@ fun FinanceLineChart(
 
             Spacer(modifier = Modifier.height(12.dp))
 
+            val pointStep = 28.dp
+            val leftPad = 56.dp
+            val rightPad = 16.dp
+            val canvasWidth = leftPad + (points.size - 1).coerceAtLeast(0) * pointStep + rightPad + pointStep
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(220.dp)
+                    .horizontalScroll(rememberScrollState())
             ) {
-                val pointsRef = points
-                val scrollRef = scrollOffset
-
                 Canvas(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .pointerInput(Unit) {
-                            detectHorizontalDragGestures { _, dragAmount ->
-                                val maxScroll =
-                                    (pointsRef.size * 28.dp.toPx()) - size.width * 0.8f
-                                scrollOffset =
-                                    (scrollOffset - dragAmount).coerceIn(0f, maxScroll.coerceAtLeast(0f))
-                            }
-                        }
+                        .width(canvasWidth)
+                        .fillMaxHeight()
                         .pointerInput(Unit) {
                             detectTapGestures { offset ->
                                 selectedIndex = nearestIndex(
                                     tapX = offset.x,
-                                    points = pointsRef,
-                                    scroll = scrollRef,
-                                    width = size.width.toFloat(),
-                                    leftPad = 56.dp.toPx(),
-                                    pointStep = 28.dp.toPx()
+                                    points = points,
+                                    leftPad = leftPad.toPx(),
+                                    pointStep = pointStep.toPx()
                                 )
                             }
                         }
                 ) {
                     drawChart(
-                        points = pointsRef,
-                        scrollOffset = scrollRef,
+                        points = points,
                         drawProgress = drawProgress,
                         selectedIdx = selectedIndex
                     )
@@ -223,7 +218,6 @@ fun FinanceLineChart(
 
 private fun DrawScope.drawChart(
     points: List<ChartPoint>,
-    scrollOffset: Float,
     drawProgress: Float,
     selectedIdx: Int
 ) {
@@ -234,14 +228,14 @@ private fun DrawScope.drawChart(
     val topPad = 12.dp.toPx()
     val bottomPad = 36.dp.toPx()
 
-    val chartW = size.width - leftPad - rightPad
     val chartH = size.height - topPad - bottomPad
 
     val pointStep = 28.dp.toPx()
 
-    val minY = points.minOf { it.balance }
-    val maxY = points.maxOf { it.balance }
-    val rangeY = (maxY - minY).coerceAtLeast(1.0)
+    val ninetyDaysAgo = LocalDate.now().minusDays(90)
+    val recentPoints = points.filter { !it.date.isBefore(ninetyDaysAgo) }
+    val minY = if (recentPoints.isEmpty()) points.minOf { it.balance } else recentPoints.minOf { it.balance }
+    val maxY = if (recentPoints.isEmpty()) points.maxOf { it.balance } else recentPoints.maxOf { it.balance }
 
     val tickSize = 100_000.0
     val tickMin = Math.floor(minY / tickSize) * tickSize
@@ -249,7 +243,7 @@ private fun DrawScope.drawChart(
     val tickRange = (tickMax - tickMin).coerceAtLeast(tickSize)
 
     fun toScreenX(index: Int): Float =
-        leftPad + index * pointStep - scrollOffset
+        leftPad + index * pointStep
 
     fun toScreenY(value: Double): Float =
         topPad + chartH * (1f - ((value - tickMin) / tickRange)).toFloat()
@@ -286,7 +280,6 @@ private fun DrawScope.drawChart(
     var lastMonth = -1
     for (i in points.indices) {
         val x = toScreenX(i)
-        if (x < leftPad - 10 || x > size.width + 10) continue
         val month = points[i].date.monthValue
         if (month != lastMonth) {
             lastMonth = month
@@ -381,12 +374,10 @@ private fun DrawScope.drawChart(
 private fun nearestIndex(
     tapX: Float,
     points: List<ChartPoint>,
-    scroll: Float,
-    width: Float,
     leftPad: Float,
     pointStep: Float
 ): Int {
     if (points.isEmpty()) return -1
-    val rawIndex = ((tapX - leftPad + scroll) / pointStep).roundToInt()
+    val rawIndex = ((tapX - leftPad) / pointStep).roundToInt()
     return rawIndex.coerceIn(0, points.size - 1)
 }
