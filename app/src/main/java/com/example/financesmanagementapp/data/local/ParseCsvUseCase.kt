@@ -26,9 +26,9 @@ class ParseCsvUseCase @Inject constructor(
 
     private fun parseLine(line: String): Record {
         val columns = line.split(";")
-        // CSV structure: amount[0]; description[1]; isIncome[2]; categoryName[3]; date[4]; currency[5]
-        
-        val category = Category.fromName(columns[3].trim())
+        // CSV structure: amount[0]; description[1]; categoryName[2]; date[3]; currency[4]; isIncome[5]
+
+        val category = Category.fromName(columns[2].trim())
 
         try {
             val resourceName = context.resources.getResourceEntryName(category.iconRsc)
@@ -41,10 +41,10 @@ class ParseCsvUseCase @Inject constructor(
             accountId = Record.DEFAULT_ACCOUNT_ID,
             amount = columns[0].trim().toDouble(),
             description = columns[1].trim(),
-            isIncome = columns[2].trim().lowercase().toBoolean(),
             category = category,
-            date = columns[4].trim(),
-            currency = columns[5].trim()
+            date = columns[3].trim(),
+            currency = columns[4].trim(),
+            isIncome = columns[5].trim().lowercase().toBoolean()
         )
     }
 }
