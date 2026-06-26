@@ -1,0 +1,39 @@
+amount; description; categoryName; date; currency; isIncome
+1050000.0; Sueldo abril; Salario; 2025-04-01; ARS; true
+-42000.0; Supermercado; Comida y alimentos; 2025-04-03; ARS; false
+-18500.0; Restaurante; Restaurant y comida rapida; 2025-04-05; ARS; false
+-75000.0; Ropa invierno; Ropa; 2025-04-07; ARS; false
+-30000.0; Farmacia; Medicamentos e insumos; 2025-04-09; ARS; false
+-55000.0; Service auto; Mantenimiento vehiculos; 2025-04-11; ARS; false
+-22000.0; Verduleria; Comida y alimentos; 2025-04-14; ARS; false
+-90000.0; Recital; Recitales y eventos; 2025-04-16; ARS; false
+-15000.0; Medico; Salud; 2025-04-18; ARS; false
+-48000.0; Ingles; Estudios particulares; 2025-04-20; ARS; false
+-12000.0; Libros; Hobbies; 2025-04-22; ARS; false
+-60000.0; Plazo fijo; Inversiones y finanzas; 2025-04-25; ARS; false
+-35000.0; Supermercado 2; Comida y alimentos; 2025-04-28; ARS; false
+1080000.0; Sueldo mayo; Salario; 2025-05-01; ARS; true
+-50000.0; Supermercado; Comida y alimentos; 2025-05-03; ARS; false
+-25000.0; Pizza; Restaurant y comida rapida; 2025-05-05; ARS; false
+-85000.0; Patente; Vehiculos; 2025-05-08; ARS; false
+-40000.0; Zapatillas; Ropa; 2025-05-10; ARS; false
+-20000.0; Farmacia; Medicamentos e insumos; 2025-05-12; ARS; false
+-95000.0; Dentista; Salud; 2025-05-14; ARS; false
+-30000.0; Carniceria; Comida y alimentos; 2025-05-17; ARS; false
+-65000.0; Camara; Pintura, dibujo y fotografia; 2025-05-19; ARS; false
+-10000.0; Juego; Hobbies; 2025-05-21; ARS; false
+-45000.0; Curso online; Estudios particulares; 2025-05-23; ARS; false
+-28000.0; Faltante caja; Faltantes; 2025-05-26; ARS; false
+-55000.0; Supermercado 2; Comida y alimentos; 2025-05-29; ARS; false
+1120000.0; Sueldo junio; Salario; 2025-06-01; ARS; true
+-38000.0; Supermercado; Comida y alimentos; 2025-06-03; ARS; false
+-70000.0; Teatro; Recitales y eventos; 2025-06-06; ARS; false
+-22000.0; Delivery; Restaurant y comida rapida; 2025-06-08; ARS; false
+-15000.0; Vitaminas; Medicamentos e insumos; 2025-06-10; ARS; false
+-88000.0; Gomeria; Mantenimiento vehiculos; 2025-06-12; ARS; false
+-60000.0; Acciones; Inversiones y finanzas; 2025-06-15; ARS; false
+-33000.0; Campera; Ropa; 2025-06-17; ARS; false
+-50000.0; Analisis; Salud; 2025-06-19; ARS; false
+-18000.0; Manualidades; Hobbies; 2025-06-21; ARS; false
+-42000.0; Taller; Estudios particulares; 2025-06-24; ARS; false
+-25000.0; Verduleria; Comida y alimentos; 2025-06-27; ARS; false
