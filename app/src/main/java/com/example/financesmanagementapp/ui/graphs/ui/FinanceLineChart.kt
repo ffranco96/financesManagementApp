@@ -1,4 +1,4 @@
-package com.example.financesmanagementapp.ui.graphs.ui
+﻿package com.example.financesmanagementapp.ui.graphs.ui
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -36,10 +36,12 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
+import com.example.financesmanagementapp.R
 import com.example.financesmanagementapp.domain.model.Record
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -48,6 +50,19 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 
 data class ChartPoint(val date: LocalDate, val balance: Double)
+
+private data class ChartColors(
+    val bgDark: Color,
+    val greenLine: Color,
+    val greenFillTop: Color,
+    val greenFillBot: Color,
+    val redLine: Color,
+    val redFillTop: Color,
+    val redFillBot: Color,
+    val zeroLine: Color,
+    val axisLabel: Color,
+    val white: Color,
+)
 
 private fun buildChartPoints(records: List<Record>): List<ChartPoint> {
     val sorted = records.sortedBy {
@@ -89,22 +104,23 @@ private fun formatARS(value: Double): String {
 private val monthFormatter = DateTimeFormatter.ofPattern("MMM")
 private val fullFormatter = DateTimeFormatter.ofPattern("dd MMM")
 
-private val BgDark = Color(0xFF0E1117)
-private val GreenLine = Color(0xFF00E676)
-private val GreenFillTop = Color(0x5500E676)
-private val GreenFillBot = Color(0x0000E676)
-private val RedLine = Color(0xFFFF5252)
-private val RedFillTop = Color(0x55FF5252)
-private val RedFillBot = Color(0x00FF5252)
-private val ZeroLine = Color(0x33FFFFFF)
-private val AxisLabel = Color(0xFF8A9BB0)
-private val White = Color(0xFFFFFFFF)
-
 @Composable
 fun FinanceLineChart(
     records: List<Record>,
     modifier: Modifier = Modifier,
 ) {
+    val chartColors = ChartColors(
+            bgDark = colorResource(R.color.chart_bg_dark),
+            greenLine = colorResource(R.color.chart_green_line),
+            greenFillTop = colorResource(R.color.chart_green_fill_top),
+            greenFillBot = colorResource(R.color.chart_green_fill_bot),
+            redLine = colorResource(R.color.chart_red_line),
+            redFillTop = colorResource(R.color.chart_red_fill_top),
+            redFillBot = colorResource(R.color.chart_red_fill_bot),
+            zeroLine = colorResource(R.color.chart_zero_line),
+            axisLabel = colorResource(R.color.chart_axis_label),
+            white = colorResource(R.color.chart_white),
+    )
     val points = remember(records) { buildChartPoints(records) }
 
     var selectedIndex by remember { mutableStateOf(-1) }
@@ -118,7 +134,7 @@ fun FinanceLineChart(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(BgDark, shape = RoundedCornerShape(16.dp))
+            .background(chartColors.bgDark, shape = RoundedCornerShape(16.dp))
             .padding(top = 16.dp)
     ) {
         if (points.isEmpty()) {
@@ -130,7 +146,7 @@ fun FinanceLineChart(
             ) {
                 Text(
                     text = "No hay datos suficientes",
-                    color = AxisLabel,
+                    color = chartColors.axisLabel,
                     fontSize = 14.sp
                 )
             }
@@ -143,11 +159,11 @@ fun FinanceLineChart(
             ) {
                 if (selectedIndex in points.indices) {
                     val pt = points[selectedIndex]
-                    val color = if (pt.balance >= 0) GreenLine else RedLine
+                    val color = if (pt.balance >= 0) chartColors.greenLine else chartColors.redLine
                     Column {
                         Text(
                             text = pt.date.format(fullFormatter),
-                            color = AxisLabel,
+                            color = chartColors.axisLabel,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Normal
                         )
@@ -160,11 +176,11 @@ fun FinanceLineChart(
                     }
                 } else {
                     val lastBalance = points.lastOrNull()?.balance ?: 0.0
-                    val color = if (lastBalance >= 0) GreenLine else RedLine
+                    val color = if (lastBalance >= 0) chartColors.greenLine else chartColors.redLine
                     Column {
                         Text(
                             text = "Balance acumulado",
-                            color = AxisLabel,
+                            color = chartColors.axisLabel,
                             fontSize = 12.sp,
                         )
                         Text(
@@ -208,7 +224,8 @@ fun FinanceLineChart(
                     drawChart(
                         points = points,
                         drawProgress = drawProgress,
-                        selectedIdx = selectedIndex
+                        selectedIdx = selectedIndex,
+                        chartColors = chartColors,
                     )
                 }
             }
@@ -219,7 +236,8 @@ fun FinanceLineChart(
 private fun DrawScope.drawChart(
     points: List<ChartPoint>,
     drawProgress: Float,
-    selectedIdx: Int
+    selectedIdx: Int,
+    chartColors: ChartColors,
 ) {
     if (points.isEmpty()) return
 
@@ -255,7 +273,7 @@ private fun DrawScope.drawChart(
         if (y < topPad || y > topPad + chartH) continue
 
         val lineColor =
-            if (value == 0.0) ZeroLine.copy(alpha = 0.6f) else ZeroLine.copy(alpha = 0.2f)
+            if (value == 0.0) chartColors.zeroLine.copy(alpha = 0.6f) else chartColors.zeroLine.copy(alpha = 0.2f)
         drawLine(
             color = lineColor,
             start = Offset(leftPad, y),
@@ -308,9 +326,9 @@ private fun DrawScope.drawChart(
         }
 
         val isPositive = (points.lastOrNull()?.balance ?: 0.0) >= 0
-        val lineColor = if (isPositive) GreenLine else RedLine
-        val fillTop = if (isPositive) GreenFillTop else RedFillTop
-        val fillBot = if (isPositive) GreenFillBot else RedFillBot
+        val lineColor = if (isPositive) chartColors.greenLine else chartColors.redLine
+        val fillTop = if (isPositive) chartColors.greenFillTop else chartColors.redFillTop
+        val fillBot = if (isPositive) chartColors.greenFillBot else chartColors.redFillBot
 
         val fillPath = Path().apply {
             addPath(linePath)
@@ -345,7 +363,7 @@ private fun DrawScope.drawChart(
             val sy = toScreenY(points[selectedIdx].balance)
 
             drawLine(
-                color = White.copy(alpha = 0.25f),
+                color = chartColors.white.copy(alpha = 0.25f),
                 start = Offset(sx, topPad),
                 end = Offset(sx, topPad + chartH),
                 strokeWidth = 1.dp.toPx(),
@@ -363,7 +381,7 @@ private fun DrawScope.drawChart(
                 center = Offset(sx, sy)
             )
             drawCircle(
-                color = BgDark,
+                color = chartColors.bgDark,
                 radius = 2.dp.toPx(),
                 center = Offset(sx, sy)
             )
@@ -381,3 +399,4 @@ private fun nearestIndex(
     val rawIndex = ((tapX - leftPad) / pointStep).roundToInt()
     return rawIndex.coerceIn(0, points.size - 1)
 }
+
