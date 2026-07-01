@@ -35,7 +35,6 @@ class RecordsRepositoryImplTest {
         val recordEntity = RecordEntity(
             amount = 1.0,
             description = "Hola mundo",
-            isIncome = true,
             categoryName = Category.CATEGORY_HEALTH,
             date = "2025-01-12",
             currency = FiatCurrency.ARS.description,
@@ -74,7 +73,6 @@ class RecordsRepositoryImplTest {
         val record = RecordEntity(
             amount = 100.0,
             description = "Test",
-            isIncome = true,
             categoryName = Category.CATEGORY_FOOD,
             date = "2025-06-01",
             currency = FiatCurrency.ARS.description

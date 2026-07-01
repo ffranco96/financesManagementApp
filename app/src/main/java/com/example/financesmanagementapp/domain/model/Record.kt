@@ -12,7 +12,6 @@ data class Record (
     var accountId: Int = 0,
     var amount: Double = 0.0,
     var description: String = "",
-    var isIncome: Boolean = false,
     var category: Category = Category(),
     var date:String = "", // Format yyyy-MM-dd'T'HH:mm:ss (ISO 8601) or yyyy-MM-dd for legacy records
     var currency:String = "",

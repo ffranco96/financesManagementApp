@@ -28,7 +28,7 @@ Versions in `gradle.properties`: `APP_VERSION_NAME`, `APP_VERSION_CODE`.
 ## Key quirks
 
 - **WorkManager + Hilt gap**: Workers use a static `ServiceLocator` object (in `ui/home/di/`) because Hilt injection into Workers is not wired up
-- **CSV delimiter**: semicolon `;`, NOT comma. Header: `amount; description; categoryName; date; currency; isIncome`
+- **CSV delimiter**: semicolon `;`, NOT comma. Header: `amount; description; categoryName; date; currency`
 - **Category mapping**: DB stores `categoryName` as String; runtime maps to full `Category` object via `Category.fromName()`
 - **Login**: mock — writes `isLoggedIn = true` to SharedPreferences, no real auth
 - **`hilt.enableAggregatingTask = false`** in app build.gradle
