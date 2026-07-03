@@ -102,10 +102,8 @@ private fun ChartsScreenContent(
                 )
             }
         } else {
-            val incomeTotals = uiState.categoryTotals.filter { it.totalAmount > 0 }
-            val expenseTotals = uiState.categoryTotals
-                .filter { it.totalAmount < 0 }
-                .map { it.copy(totalAmount = kotlin.math.abs(it.totalAmount)) }
+            val incomeTotals = uiState.categoryTotals.filter { it.incomes > 0 }
+            val expenseTotals = uiState.categoryTotals.filter { it.expenses > 0 }
 
             val pagesData = listOf(incomeTotals, expenseTotals)
             val pageTitles = listOf("Ingresos", "Gastos")
@@ -134,7 +132,7 @@ private fun ChartsScreenContent(
                     modifier = Modifier.weight(1f),
                 ) { page ->
                     val categories = pagesData[page]
-                    val pageTotal = categories.sumOf { kotlin.math.abs(it.totalAmount) }
+                    val pageTotal = if (page == 0) categories.sumOf { it.incomes } else categories.sumOf { it.expenses }
                     val pageTotalLabel = "%.2f".format(pageTotal)
 
                     Column(
@@ -155,12 +153,16 @@ private fun ChartsScreenContent(
                             DonutChart(
                                 categories = categories,
                                 totalLabel = pageTotalLabel,
+                                valueSelector = if (page == 0) { cat -> cat.incomes } else { cat -> cat.expenses },
                                 modifier = Modifier.size(240.dp),
                             )
 
                             Spacer(modifier = Modifier.height(28.dp))
 
-                            LegendSection(categories = categories)
+                            LegendSection(
+                                categories = categories,
+                                valueSelector = if (page == 0) { cat -> cat.incomes } else { cat -> cat.expenses },
+                            )
                         }
                     }
                 }
@@ -197,12 +199,13 @@ private fun ChartsScreenContent(
 private fun DonutChart(
     categories: List<CategoryTotal>,
     totalLabel: String,
+    valueSelector: (CategoryTotal) -> Double,
     modifier: Modifier = Modifier,
     strokeWidth: Dp = 36.dp,
     gapDegrees: Float = 3f,
 ) {
-    val nonZeroCategories = categories.filter { it.totalAmount != 0.0 }
-    val total = nonZeroCategories.sumOf { kotlin.math.abs(it.totalAmount).toDouble() }.toFloat()
+    val nonZeroCategories = categories.filter { valueSelector(it) != 0.0 }
+    val total = nonZeroCategories.sumOf { kotlin.math.abs(valueSelector(it)) }.toFloat()
 
     var animationPlayed by remember { mutableStateOf(false) }
 
@@ -245,7 +248,7 @@ private fun DonutChart(
             var startAngle = -90f
 
             nonZeroCategories.forEach { cat ->
-                val fraction = kotlin.math.abs(cat.totalAmount).toFloat() / total
+                val fraction = kotlin.math.abs(valueSelector(cat)).toFloat() / total
                 val sweep = fraction * 360f - gapDegrees
 
                 drawArc(
@@ -272,7 +275,11 @@ private fun DonutChart(
 }
 
 @Composable
-private fun LegendItem(category: CategoryTotal, modifier: Modifier = Modifier) {
+private fun LegendItem(
+    category: CategoryTotal,
+    valueSelector: (CategoryTotal) -> Double,
+    modifier: Modifier = Modifier,
+) {
     val context = LocalContext.current
 
     Row(
@@ -296,7 +303,7 @@ private fun LegendItem(category: CategoryTotal, modifier: Modifier = Modifier) {
             modifier = Modifier.weight(1f),
         )
         Text(
-            text = "%.2f".format(category.totalAmount),
+            text = "%.2f".format(valueSelector(category)),
             fontSize = 12.sp,
             fontWeight = FontWeight.SemiBold,
         )
@@ -304,7 +311,10 @@ private fun LegendItem(category: CategoryTotal, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun LegendSection(categories: List<CategoryTotal>) {
+private fun LegendSection(
+    categories: List<CategoryTotal>,
+    valueSelector: (CategoryTotal) -> Double,
+) {
     val left = categories.filterIndexed { i, _ -> i % 2 == 0 }
     val right = categories.filterIndexed { i, _ -> i % 2 == 1 }
     val rows = maxOf(left.size, right.size)
@@ -313,11 +323,11 @@ private fun LegendSection(categories: List<CategoryTotal>) {
         repeat(rows) { row ->
             Row(modifier = Modifier.fillMaxWidth()) {
                 left.getOrNull(row)?.let { cat ->
-                    LegendItem(category = cat, modifier = Modifier.weight(1f))
+                    LegendItem(category = cat, valueSelector = valueSelector, modifier = Modifier.weight(1f))
                 } ?: Spacer(Modifier.weight(1f))
                 Spacer(Modifier.width(24.dp))
                 right.getOrNull(row)?.let { cat ->
-                    LegendItem(category = cat, modifier = Modifier.weight(1f))
+                    LegendItem(category = cat, valueSelector = valueSelector, modifier = Modifier.weight(1f))
                 } ?: Spacer(Modifier.weight(1f))
             }
             Spacer(modifier = Modifier.height(10.dp))
@@ -348,9 +358,9 @@ private fun ChartsScreenEmptyPreview() {
 @Composable
 private fun ChartsScreenDataPreview() {
     val totals = listOf(
-        CategoryTotal("Comida y alimentos", -150.0, R.color.categ_color_food),
-        CategoryTotal("Salud", -50.0, R.color.categ_color_health),
-        CategoryTotal("Salario", 200.0, R.color.categ_color_salary),
+        CategoryTotal("Comida y alimentos", 0.0, 150.0, -150.0, R.color.categ_color_food),
+        CategoryTotal("Salud", 0.0, 50.0, -50.0, R.color.categ_color_health),
+        CategoryTotal("Salario", 200.0, 0.0, 200.0, R.color.categ_color_salary),
     )
     FinancesManagementAppTheme {
         ChartsScreenContent(

@@ -11,11 +11,12 @@ import javax.inject.Inject
 
 /**
  * Use case that retrieves all records for a given account, filters those within
- * the last 30 days, groups them by category and computes separate totals for
- * income (positive amount) and expense (negative amount) per category.
+ * the last 30 days, groups them by category and computes separate income,
+ * expense and net totals per category.
  *
- * Categories can appear in both income and expense results when they have
- * records of both types. Zero-amount totals are excluded.
+ * Each category appears exactly once in the result, with income and expense
+ * subtotals plus their net (income - expense). Categories with both incomes
+ * and expenses equal to zero are excluded.
  *
  * @property repository The [RecordsRepository] used to fetch the raw records.
  */
@@ -47,23 +48,19 @@ class GetCategoryTotalUseCase @Inject constructor(
                     recordDate != null && !recordDate.isBefore(thirtyDaysAgo)
                 }
                 .groupBy { it.categoryName }
-                .flatMap { (categoryName, records) ->
+                .map { (categoryName, records) ->
                     val category = Category.fromName(categoryName)
-                    val incomeTotal = records.filter { it.amount > 0 }.sumOf { it.amount }
-                    val expenseTotal = records.filter { it.amount < 0 }.sumOf { it.amount }
-                    listOfNotNull(
-                        CategoryTotal(
-                            categoryName = categoryName,
-                            totalAmount = incomeTotal,
-                            colorResId = category.colorIcon
-                        ).takeIf { incomeTotal != 0.0 },
-                        CategoryTotal(
-                            categoryName = categoryName,
-                            totalAmount = expenseTotal,
-                            colorResId = category.colorIcon
-                        ).takeIf { expenseTotal != 0.0 }
+                    val incomes = records.filter { it.amount > 0 }.sumOf { it.amount }
+                    val expenses = records.filter { it.amount < 0 }.sumOf { it.amount }
+                    CategoryTotal(
+                        categoryName = categoryName,
+                        incomes = incomes,
+                        expenses = kotlin.math.abs(expenses),
+                        net = incomes + expenses,
+                        colorResId = category.colorIcon
                     )
                 }
+                .filter { it.incomes != 0.0 || it.expenses != 0.0 }
         }
     }
 }
