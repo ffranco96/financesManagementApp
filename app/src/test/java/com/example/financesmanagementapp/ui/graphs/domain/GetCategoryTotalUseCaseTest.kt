@@ -26,12 +26,12 @@ class GetCategoryTotalUseCaseTest {
         getCategoryTotalUseCase = GetCategoryTotalUseCase(mockRepository)
     }
 
-    /*@Test
+    @Test
     fun `given records from different categories in last 30 days then returns grouped totals`() = runTest {
         val today = LocalDate.now()
         val records = listOf(
-            RecordEntity(amount = 100.0, categoryName = "Comida y alimentos", date = today.toString(), currency = "ARS", description = ""),
-            RecordEntity(amount = 50.0, categoryName = "Salud", date = today.toString(), currency = "ARS", description = ""),
+            RecordEntity(amount = -100.0, categoryName = "Comida y alimentos", date = today.toString(), currency = "ARS", description = ""),
+            RecordEntity(amount = -50.0, categoryName = "Salud", date = today.toString(), currency = "ARS", description = ""),
             RecordEntity(amount = 200.0, categoryName = "Salario", date = today.toString(), currency = "ARS", description = "")
         )
         every { mockRepository.getAllRecordsFlow() } returns flowOf(records)
@@ -39,35 +39,50 @@ class GetCategoryTotalUseCaseTest {
         val result: List<CategoryTotal> = getCategoryTotalUseCase(DEFAULT_ACCOUNT_ID).first()
 
         assertEquals(3, result.size)
-        assertEquals(-100.0, result.find { it.categoryName == "Comida y alimentos" }!!.totalAmount, 0.001)
-        assertEquals(-50.0, result.find { it.categoryName == "Salud" }!!.totalAmount, 0.001)
-        assertEquals(200.0, result.find { it.categoryName == "Salario" }!!.totalAmount, 0.001)
+        val food = result.find { it.categoryName == "Comida y alimentos" }!!
+        assertEquals(0.0, food.incomes, 0.001)
+        assertEquals(100.0, food.expenses, 0.001)
+        assertEquals(-100.0, food.net, 0.001)
+
+        val health = result.find { it.categoryName == "Salud" }!!
+        assertEquals(0.0, health.incomes, 0.001)
+        assertEquals(50.0, health.expenses, 0.001)
+        assertEquals(-50.0, health.net, 0.001)
+
+        val salary = result.find { it.categoryName == "Salario" }!!
+        assertEquals(200.0, salary.incomes, 0.001)
+        assertEquals(0.0, salary.expenses, 0.001)
+        assertEquals(200.0, salary.net, 0.001)
     }
 
     @Test
     fun `given records older than 30 days then filters them out`() = runTest {
         val today = LocalDate.now()
-        val oldRecord = RecordEntity(amount = 100.0, categoryName = "Comida y alimentos", date = today.minusDays(45).toString(), currency = "ARS", description = "")
-        val recentRecord = RecordEntity(amount = 50.0, categoryName = "Comida y alimentos", date = today.minusDays(10).toString(), currency = "ARS", description = "")
+        val oldRecord = RecordEntity(amount = -100.0, categoryName = "Comida y alimentos", date = today.minusDays(45).toString(), currency = "ARS", description = "")
+        val recentRecord = RecordEntity(amount = -50.0, categoryName = "Comida y alimentos", date = today.minusDays(10).toString(), currency = "ARS", description = "")
         every { mockRepository.getAllRecordsFlow() } returns flowOf(listOf(oldRecord, recentRecord))
 
         val result = getCategoryTotalUseCase(DEFAULT_ACCOUNT_ID).first()
 
         assertEquals(1, result.size)
-        assertEquals(-50.0, result[0].totalAmount, 0.001)
+        assertEquals(0.0, result[0].incomes, 0.001)
+        assertEquals(50.0, result[0].expenses, 0.001)
+        assertEquals(-50.0, result[0].net, 0.001)
     }
 
     @Test
     fun `given record exactly 30 days ago then includes it`() = runTest {
         val today = LocalDate.now()
-        val record = RecordEntity(amount = 100.0, categoryName = "Comida y alimentos", date = today.minusDays(30).toString(), currency = "ARS", description = "")
+        val record = RecordEntity(amount = -100.0, categoryName = "Comida y alimentos", date = today.minusDays(30).toString(), currency = "ARS", description = "")
         every { mockRepository.getAllRecordsFlow() } returns flowOf(listOf(record))
 
         val result = getCategoryTotalUseCase(DEFAULT_ACCOUNT_ID).first()
 
         assertEquals(1, result.size)
-        assertEquals(-100.0, result[0].totalAmount, 0.001)
-    }*/
+        assertEquals(0.0, result[0].incomes, 0.001)
+        assertEquals(100.0, result[0].expenses, 0.001)
+        assertEquals(-100.0, result[0].net, 0.001)
+    }
 
     @Test
     fun `given no records then returns empty list`() = runTest {
@@ -90,11 +105,13 @@ class GetCategoryTotalUseCaseTest {
         val result = getCategoryTotalUseCase(DEFAULT_ACCOUNT_ID).first()
 
         assertEquals(1, result.size)
-        assertEquals(-80.0, result[0].totalAmount, 0.001)
+        assertEquals(0.0, result[0].incomes, 0.001)
+        assertEquals(80.0, result[0].expenses, 0.001)
+        assertEquals(-80.0, result[0].net, 0.001)
     }
 
-    /*@Test
-    fun `given income and expense in same category obtains income and expenses as separate totals`() = runTest {
+    @Test
+    fun `given income and expense in same category then returns single entry with correct incomes, expenses and net`() = runTest {
         val today = LocalDate.now()
         val records = listOf(
             RecordEntity(amount = -100.0, categoryName = "Comida y alimentos", date = today.toString(), currency = "ARS", description = ""),
@@ -104,27 +121,31 @@ class GetCategoryTotalUseCaseTest {
 
         val result = getCategoryTotalUseCase(DEFAULT_ACCOUNT_ID).first()
 
-        assertEquals(2, result.size)
-        assertEquals(-100.0, result[0].totalAmount, 0.001)
-        assertEquals(-50.0, result[1].totalAmount, 0.001)
-    }*/
+        assertEquals(1, result.size)
+        assertEquals(50.0, result[0].incomes, 0.001)
+        assertEquals(100.0, result[0].expenses, 0.001)
+        assertEquals(-50.0, result[0].net, 0.001)
+    }
 
-    /*@Test
-    fun `given category with net zero then excludes it`() = runTest { // TODO  Agregar otros tests de los distintos casos, versi va a haber un refactor por el tema de la suma de totales
+    @Test
+    fun `given category with matching incomes and expenses then includes it`() = runTest {
         val today = LocalDate.now()
         val records = listOf(
             RecordEntity(amount = 100.0, categoryName = "Comida y alimentos", date = today.toString(), currency = "ARS", description = ""),
-            RecordEntity(amount = 100.0, categoryName = "Comida y alimentos", date = today.toString(), currency = "ARS", description = "")
+            RecordEntity(amount = -100.0, categoryName = "Comida y alimentos", date = today.toString(), currency = "ARS", description = "")
         )
         every { mockRepository.getAllRecordsFlow() } returns flowOf(records)
 
         val result = getCategoryTotalUseCase(DEFAULT_ACCOUNT_ID).first()
 
-        assertTrue(result.isEmpty())
-    }*/
+        assertEquals(1, result.size)
+        assertEquals(100.0, result[0].incomes, 0.001)
+        assertEquals(100.0, result[0].expenses, 0.001)
+        assertEquals(0.0, result[0].net, 0.001)
+    }
 
     @Test
-    fun `given records from single category then returns single total`() = runTest {
+    fun `given records from single category then returns single entry`() = runTest {
         val today = LocalDate.now()
         val records = listOf(
             RecordEntity(amount = 50.0, categoryName = "Comida y alimentos", date = today.toString(), currency = "ARS", description = "")
@@ -135,6 +156,9 @@ class GetCategoryTotalUseCaseTest {
 
         assertEquals(1, result.size)
         assertEquals("Comida y alimentos", result[0].categoryName)
+        assertEquals(50.0, result[0].incomes, 0.001)
+        assertEquals(0.0, result[0].expenses, 0.001)
+        assertEquals(50.0, result[0].net, 0.001)
     }
 
     @Test
@@ -150,6 +174,7 @@ class GetCategoryTotalUseCaseTest {
 
         assertEquals(1, result.size)
         assertEquals("Comida y alimentos", result[0].categoryName)
+        assertEquals(50.0, result[0].incomes, 0.001)
     }
 
     @Test
