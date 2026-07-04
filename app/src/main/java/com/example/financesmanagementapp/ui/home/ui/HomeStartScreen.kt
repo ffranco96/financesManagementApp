@@ -396,7 +396,7 @@ fun RecordContent(record: Record) {
             )
         }
 
-        RecordAmount(record.currency, record.amount, record.isIncome)
+        RecordAmount(record.currency, record.amount)
     }
 }
 
@@ -441,10 +441,10 @@ fun RecordDate(date: String, style: TextStyle, color: Color) {
  * Displays a the amount and the currency of the record.
  */
 @Composable
-fun RecordAmount(currency: String, amount: Double, isIncome: Boolean) {
+fun RecordAmount(currency: String, amount: Double) {
     Text(
         text = "$currency ${String.format(java.util.Locale.US, "%.2f", amount)}",
         style = MaterialTheme.typography.labelLarge,
-        color = colorResource(if(isIncome) R.color.positive_green else R.color.negative_red)
+        color = colorResource(if(amount >= 0) R.color.positive_green else R.color.negative_red)
     )
 }

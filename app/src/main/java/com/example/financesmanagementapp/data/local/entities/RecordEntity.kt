@@ -16,7 +16,6 @@ data class RecordEntity(
     val accountId: Int = 0,
     val amount: Double,
     val description: String,
-    val isIncome: Boolean,
     val categoryName: String, // Flattening Category for simplicity
     val date: String, // Format yyyy-MM-dd'T'HH:mm:ss or yyyy-MM-dd for legacy
     val currency: String
@@ -44,7 +43,6 @@ fun RecordEntity.toDomain(completeCategory: Category): Record {
         accountId = accountId,
         amount = amount,
         description = description,
-        isIncome = isIncome,
         category = completeCategory,
         date = date,
         currency = currency

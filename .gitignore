@@ -16,3 +16,7 @@
 .externalNativeBuild
 .cxx
 local.properties
+/.idea/.name
+/.idea/copilot.data.migration.ask2agent.xml
+/.kotlin/errors/errors-1782788336215.log
+/.kotlin/errors/errors-1782788356651.log

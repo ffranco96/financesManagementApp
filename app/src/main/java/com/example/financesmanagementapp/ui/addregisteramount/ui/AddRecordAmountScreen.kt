@@ -98,7 +98,7 @@ fun AddRecordAmountScreen(
                             -it
                     } ?: 0.0
 
-                    val myRecord = Record(amount = amount, isIncome = checkedSwitch, currency = selectedCurrency)
+                    val myRecord = Record(amount = amount, currency = selectedCurrency)
                     navController.currentBackStackEntry?.savedStateHandle?.set("record", myRecord)
                     navController.navigate(AppScreens.AddRecordDetailScreen.route)
                 },

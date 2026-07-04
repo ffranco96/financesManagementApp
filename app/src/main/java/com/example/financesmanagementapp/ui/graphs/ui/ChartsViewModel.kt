@@ -29,12 +29,21 @@ class ChartsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            getCategoryTotalUseCase(Record.DEFAULT_ACCOUNT_ID).collectLatest { total ->
-                _uiState.value = ChartsUiState(
-                    categoryTotals = total,
-                    isEmpty = total.isEmpty()
-                )
+            try {
+                getCategoryTotalUseCase(Record.DEFAULT_ACCOUNT_ID, DAYS_TO_LOOK_BACK)
+                    .collectLatest { total ->
+                        _uiState.value = ChartsUiState(
+                            categoryTotals = total,
+                            isEmpty = total.isEmpty()
+                        )
+                    }
+            } catch (e: IllegalArgumentException) {
+                _uiState.value = ChartsUiState(isEmpty = true)
             }
         }
+    }
+
+    companion object {
+        private const val DAYS_TO_LOOK_BACK = 30
     }
 }

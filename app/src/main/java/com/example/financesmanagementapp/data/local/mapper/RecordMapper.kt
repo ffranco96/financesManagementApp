@@ -14,7 +14,6 @@ fun Record.toEntity(): RecordEntity{
     return RecordEntity(
         amount = amount,
         description = description,
-        isIncome = isIncome,
         categoryName = category.categoryName,
         date = date,
         currency = currency
@@ -30,7 +29,6 @@ fun RecordEntity.toDomain(): Record {
     return Record(
         amount = amount,
         description = description,
-        isIncome = isIncome,
         category = Category(categoryName),
         date = date,
         currency = currency

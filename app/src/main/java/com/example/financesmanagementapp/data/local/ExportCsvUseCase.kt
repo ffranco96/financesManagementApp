@@ -34,12 +34,12 @@ class ExportCsvUseCase @Inject constructor(
             context.contentResolver.openOutputStream(file.toUri())?.use { outputStream ->
                 BufferedWriter(OutputStreamWriter(outputStream)).use { writer ->
                     // Header
-                    writer.write("amount; description; categoryName; date; currency; isIncome")
+                    writer.write("amount; description; categoryName; date; currency")
                     writer.newLine()
                     
                     // Records
                     records.forEach { record ->
-                        val line = "${record.amount}; ${record.description}; ${record.category.categoryName}; ${record.date}; ${record.currency}; ${record.isIncome}"
+                        val line = "${record.amount}; ${record.description}; ${record.category.categoryName}; ${record.date}; ${record.currency}"
                         writer.write(line)
                         writer.newLine()
                     }
