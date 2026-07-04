@@ -27,7 +27,7 @@ class GetCategoryTotalUseCaseTest {
     }
 
     @Test
-    fun `given records from different categories in last 30 days then returns grouped totals`() = runTest {
+    fun `given records from different categories in last 30 days then returns grouped totals of incomes and expenses`() = runTest {
         val today = LocalDate.now()
         val records = listOf(
             RecordEntity(amount = -100.0, categoryName = "Comida y alimentos", date = today.toString(), currency = "ARS", description = ""),
@@ -36,7 +36,7 @@ class GetCategoryTotalUseCaseTest {
         )
         every { mockRepository.getAllRecordsFlow() } returns flowOf(records)
 
-        val result: List<CategoryTotal> = getCategoryTotalUseCase(DEFAULT_ACCOUNT_ID).first()
+        val result: List<CategoryTotal> = getCategoryTotalUseCase(DEFAULT_ACCOUNT_ID, THIRTY_DAYS_TO_LOOK_BACKWARDS).first()
 
         assertEquals(3, result.size)
         val food = result.find { it.categoryName == "Comida y alimentos" }!!
@@ -62,7 +62,7 @@ class GetCategoryTotalUseCaseTest {
         val recentRecord = RecordEntity(amount = -50.0, categoryName = "Comida y alimentos", date = today.minusDays(10).toString(), currency = "ARS", description = "")
         every { mockRepository.getAllRecordsFlow() } returns flowOf(listOf(oldRecord, recentRecord))
 
-        val result = getCategoryTotalUseCase(DEFAULT_ACCOUNT_ID).first()
+        val result = getCategoryTotalUseCase(DEFAULT_ACCOUNT_ID, THIRTY_DAYS_TO_LOOK_BACKWARDS).first()
 
         assertEquals(1, result.size)
         assertEquals(0.0, result[0].incomes, 0.001)
@@ -76,7 +76,7 @@ class GetCategoryTotalUseCaseTest {
         val record = RecordEntity(amount = -100.0, categoryName = "Comida y alimentos", date = today.minusDays(30).toString(), currency = "ARS", description = "")
         every { mockRepository.getAllRecordsFlow() } returns flowOf(listOf(record))
 
-        val result = getCategoryTotalUseCase(DEFAULT_ACCOUNT_ID).first()
+        val result = getCategoryTotalUseCase(DEFAULT_ACCOUNT_ID, THIRTY_DAYS_TO_LOOK_BACKWARDS).first()
 
         assertEquals(1, result.size)
         assertEquals(0.0, result[0].incomes, 0.001)
@@ -88,7 +88,7 @@ class GetCategoryTotalUseCaseTest {
     fun `given no records then returns empty list`() = runTest {
         every { mockRepository.getAllRecordsFlow() } returns flowOf(emptyList())
 
-        val result = getCategoryTotalUseCase(DEFAULT_ACCOUNT_ID).first()
+        val result = getCategoryTotalUseCase(DEFAULT_ACCOUNT_ID, THIRTY_DAYS_TO_LOOK_BACKWARDS).first()
 
         assertTrue(result.isEmpty())
     }
@@ -102,7 +102,7 @@ class GetCategoryTotalUseCaseTest {
         )
         every { mockRepository.getAllRecordsFlow() } returns flowOf(records)
 
-        val result = getCategoryTotalUseCase(DEFAULT_ACCOUNT_ID).first()
+        val result = getCategoryTotalUseCase(DEFAULT_ACCOUNT_ID, THIRTY_DAYS_TO_LOOK_BACKWARDS).first()
 
         assertEquals(1, result.size)
         assertEquals(0.0, result[0].incomes, 0.001)
@@ -119,7 +119,7 @@ class GetCategoryTotalUseCaseTest {
         )
         every { mockRepository.getAllRecordsFlow() } returns flowOf(records)
 
-        val result = getCategoryTotalUseCase(DEFAULT_ACCOUNT_ID).first()
+        val result = getCategoryTotalUseCase(DEFAULT_ACCOUNT_ID, THIRTY_DAYS_TO_LOOK_BACKWARDS).first()
 
         assertEquals(1, result.size)
         assertEquals(50.0, result[0].incomes, 0.001)
@@ -136,7 +136,7 @@ class GetCategoryTotalUseCaseTest {
         )
         every { mockRepository.getAllRecordsFlow() } returns flowOf(records)
 
-        val result = getCategoryTotalUseCase(DEFAULT_ACCOUNT_ID).first()
+        val result = getCategoryTotalUseCase(DEFAULT_ACCOUNT_ID, THIRTY_DAYS_TO_LOOK_BACKWARDS).first()
 
         assertEquals(1, result.size)
         assertEquals(100.0, result[0].incomes, 0.001)
@@ -152,7 +152,7 @@ class GetCategoryTotalUseCaseTest {
         )
         every { mockRepository.getAllRecordsFlow() } returns flowOf(records)
 
-        val result = getCategoryTotalUseCase(DEFAULT_ACCOUNT_ID).first()
+        val result = getCategoryTotalUseCase(DEFAULT_ACCOUNT_ID, THIRTY_DAYS_TO_LOOK_BACKWARDS).first()
 
         assertEquals(1, result.size)
         assertEquals("Comida y alimentos", result[0].categoryName)
@@ -170,7 +170,7 @@ class GetCategoryTotalUseCaseTest {
         )
         every { mockRepository.getAllRecordsFlow() } returns flowOf(records)
 
-        val result = getCategoryTotalUseCase(0).first()
+        val result = getCategoryTotalUseCase(0, THIRTY_DAYS_TO_LOOK_BACKWARDS).first()
 
         assertEquals(1, result.size)
         assertEquals("Comida y alimentos", result[0].categoryName)
@@ -185,8 +185,12 @@ class GetCategoryTotalUseCaseTest {
         )
         every { mockRepository.getAllRecordsFlow() } returns flowOf(records)
 
-        val result = getCategoryTotalUseCase(DEFAULT_ACCOUNT_ID).first()
+        val result = getCategoryTotalUseCase(DEFAULT_ACCOUNT_ID, THIRTY_DAYS_TO_LOOK_BACKWARDS).first()
 
         assertEquals(R.color.categ_color_food, result[0].colorResId)
+    }
+
+    companion object {
+        private const val THIRTY_DAYS_TO_LOOK_BACKWARDS = 30
     }
 }

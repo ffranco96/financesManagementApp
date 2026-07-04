@@ -11,11 +11,11 @@ import javax.inject.Inject
 
 /**
  * Use case that retrieves all records for a given account, filters those within
- * the last 30 days, groups them by category and computes separate income,
+ * the last 'daysToGetTotal' days, groups them by category and computes separate income,
  * expense and net totals per category.
  *
  * Each category appears exactly once in the result, with income and expense
- * subtotals plus their net (income - expense). Categories with both incomes
+ * subtotals plus their net (income + expense). Categories with both incomes
  * and expenses equal to zero are excluded.
  *
  * @property repository The [RecordsRepository] used to fetch the raw records.
@@ -27,12 +27,13 @@ class GetCategoryTotalUseCase @Inject constructor(
      * Executes the use case.
      *
      * @param accountId The ID of the account to filter records by.
+     * @daysToGetTotal: Quantity of days from the current day to the past to obtain the total.
      * @return A [Flow] emitting the aggregated [CategoryTotal] list every time
      *   the underlying data changes (e.g. after a record insert or update).
      */
-    operator fun invoke(accountId: Int): Flow<List<CategoryTotal>> {
+    operator fun invoke(accountId: Int, daysToGetTotal: Int): Flow<List<CategoryTotal>> {
         return repository.getAllRecordsFlow().map { entities ->
-            val thirtyDaysAgo = LocalDate.now().minusDays(30)
+            val nDaysAgo = LocalDate.now().minusDays(daysToGetTotal.toLong())
             entities
                 .filter { it.accountId == accountId }
                 .filter { entity ->
@@ -45,7 +46,7 @@ class GetCategoryTotalUseCase @Inject constructor(
                             null
                         }
                     }
-                    recordDate != null && !recordDate.isBefore(thirtyDaysAgo)
+                    recordDate != null && !recordDate.isBefore(nDaysAgo)
                 }
                 .groupBy { it.categoryName }
                 .map { (categoryName, records) ->

@@ -29,12 +29,16 @@ class ChartsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            getCategoryTotalUseCase(Record.DEFAULT_ACCOUNT_ID).collectLatest { total ->
+            getCategoryTotalUseCase(Record.DEFAULT_ACCOUNT_ID, DAYS_TO_LOOK_BACKWARDS).collectLatest { total ->
                 _uiState.value = ChartsUiState(
                     categoryTotals = total,
                     isEmpty = total.isEmpty()
                 )
             }
         }
+    }
+
+    companion object {
+        private const val DAYS_TO_LOOK_BACKWARDS = 30
     }
 }
