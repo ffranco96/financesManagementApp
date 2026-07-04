@@ -41,12 +41,12 @@ class GetCategoryTotalUseCaseTest {
         assertEquals(3, result.size)
         val food = result.find { it.categoryName == "Comida y alimentos" }!!
         assertEquals(0.0, food.incomes, 0.001)
-        assertEquals(100.0, food.expenses, 0.001)
+        assertEquals(-100.0, food.expenses, 0.001)
         assertEquals(-100.0, food.net, 0.001)
 
         val health = result.find { it.categoryName == "Salud" }!!
         assertEquals(0.0, health.incomes, 0.001)
-        assertEquals(50.0, health.expenses, 0.001)
+        assertEquals(-50.0, health.expenses, 0.001)
         assertEquals(-50.0, health.net, 0.001)
 
         val salary = result.find { it.categoryName == "Salario" }!!
@@ -66,7 +66,7 @@ class GetCategoryTotalUseCaseTest {
 
         assertEquals(1, result.size)
         assertEquals(0.0, result[0].incomes, 0.001)
-        assertEquals(50.0, result[0].expenses, 0.001)
+        assertEquals(-50.0, result[0].expenses, 0.001)
         assertEquals(-50.0, result[0].net, 0.001)
     }
 
@@ -80,7 +80,7 @@ class GetCategoryTotalUseCaseTest {
 
         assertEquals(1, result.size)
         assertEquals(0.0, result[0].incomes, 0.001)
-        assertEquals(100.0, result[0].expenses, 0.001)
+        assertEquals(-100.0, result[0].expenses, 0.001)
         assertEquals(-100.0, result[0].net, 0.001)
     }
 
@@ -106,7 +106,7 @@ class GetCategoryTotalUseCaseTest {
 
         assertEquals(1, result.size)
         assertEquals(0.0, result[0].incomes, 0.001)
-        assertEquals(80.0, result[0].expenses, 0.001)
+        assertEquals(-80.0, result[0].expenses, 0.001)
         assertEquals(-80.0, result[0].net, 0.001)
     }
 
@@ -123,7 +123,7 @@ class GetCategoryTotalUseCaseTest {
 
         assertEquals(1, result.size)
         assertEquals(50.0, result[0].incomes, 0.001)
-        assertEquals(100.0, result[0].expenses, 0.001)
+        assertEquals(-100.0, result[0].expenses, 0.001)
         assertEquals(-50.0, result[0].net, 0.001)
     }
 
@@ -140,7 +140,7 @@ class GetCategoryTotalUseCaseTest {
 
         assertEquals(1, result.size)
         assertEquals(100.0, result[0].incomes, 0.001)
-        assertEquals(100.0, result[0].expenses, 0.001)
+        assertEquals(-100.0, result[0].expenses, 0.001)
         assertEquals(0.0, result[0].net, 0.001)
     }
 

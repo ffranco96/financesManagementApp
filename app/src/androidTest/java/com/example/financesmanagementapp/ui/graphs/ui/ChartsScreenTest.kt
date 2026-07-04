@@ -41,8 +41,8 @@ class ChartsScreenTest {
     fun displaysBarsForCategoriesWithTotals() {
         val mockViewModel = mockk<ChartsViewModel>(relaxed = true)
         val totals = listOf(
-            CategoryTotal("Comida y alimentos", -150.0, R.color.categ_color_food),
-            CategoryTotal("Salud", -50.0, R.color.categ_color_health)
+            CategoryTotal("Comida y alimentos", 0.0, -150.0, -150.0, R.color.categ_color_food),
+            CategoryTotal("Salud", 0.0, -50.0, -50.0, R.color.categ_color_health)
         )
         every { mockViewModel.uiState } returns MutableStateFlow(
             ChartsUiState(categoryTotals = totals, isEmpty = false)
@@ -83,7 +83,7 @@ class ChartsScreenTest {
     fun displaysAmountAboveEachBar() {
         val mockViewModel = mockk<ChartsViewModel>(relaxed = true)
         val totals = listOf(
-            CategoryTotal("Comida y alimentos", -150.0, R.color.categ_color_food)
+            CategoryTotal("Comida y alimentos", 0.0, -150.0, -150.0, R.color.categ_color_food)
         )
         every { mockViewModel.uiState } returns MutableStateFlow(
             ChartsUiState(categoryTotals = totals, isEmpty = false)
@@ -96,6 +96,6 @@ class ChartsScreenTest {
             )
         }
 
-        composeTestRule.onNodeWithText("-150.0").assertIsDisplayed()
+        composeTestRule.onNodeWithText("150.0").assertIsDisplayed()
     }
 }

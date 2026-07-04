@@ -41,8 +41,8 @@ class ChartsViewModelTest {
     @Test
     fun `given use case returns totals then uiState has data and isEmpty is false`() = runTest(testDispatcher) {
         val totals = listOf(
-            CategoryTotal("Comida y alimentos", -150.0, R.color.categ_color_food),
-            CategoryTotal("Salud", -50.0, R.color.categ_color_health)
+            CategoryTotal("Comida y alimentos", 0.0, -150.0, -150.0, R.color.categ_color_food),
+            CategoryTotal("Salud", 0.0, -50.0, -50.0, R.color.categ_color_health)
         )
         totalsFlow.value = totals
 
@@ -75,13 +75,13 @@ class ChartsViewModelTest {
         assertEquals(0, viewModel.uiState.value.categoryTotals.size)
 
         val newTotals = listOf(
-            CategoryTotal("Comida y alimentos", -80.0, R.color.categ_color_food)
+            CategoryTotal("Comida y alimentos", 0.0, -80.0, -80.0, R.color.categ_color_food)
         )
         totalsFlow.value = newTotals
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertEquals(1, viewModel.uiState.value.categoryTotals.size)
-        assertEquals(-80.0, viewModel.uiState.value.categoryTotals[0].totalAmount, 0.001)
+        assertEquals(-80.0, viewModel.uiState.value.categoryTotals[0].expenses, 0.001)
         assertFalse(viewModel.uiState.value.isEmpty)
     }
 }

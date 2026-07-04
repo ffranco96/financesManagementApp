@@ -103,7 +103,7 @@ private fun ChartsScreenContent(
             }
         } else {
             val incomeTotals = uiState.categoryTotals.filter { it.incomes > 0 }
-            val expenseTotals = uiState.categoryTotals.filter { it.expenses > 0 }
+            val expenseTotals = uiState.categoryTotals.filter { it.expenses < 0 }
 
             val pagesData = listOf(incomeTotals, expenseTotals)
             val pageTitles = listOf("Ingresos", "Gastos")
@@ -132,7 +132,7 @@ private fun ChartsScreenContent(
                     modifier = Modifier.weight(1f),
                 ) { page ->
                     val categories = pagesData[page]
-                    val pageTotal = if (page == 0) categories.sumOf { it.incomes } else categories.sumOf { it.expenses }
+                    val pageTotal = if (page == 0) categories.sumOf { it.incomes } else categories.sumOf { kotlin.math.abs(it.expenses) }
                     val pageTotalLabel = "%.2f".format(pageTotal)
 
                     Column(
@@ -153,7 +153,7 @@ private fun ChartsScreenContent(
                             DonutChart(
                                 categories = categories,
                                 totalLabel = pageTotalLabel,
-                                valueSelector = if (page == 0) { cat -> cat.incomes } else { cat -> cat.expenses },
+                                valueSelector = if (page == 0) { cat -> cat.incomes } else { cat -> kotlin.math.abs(cat.expenses) },
                                 modifier = Modifier.size(240.dp),
                             )
 
@@ -161,7 +161,7 @@ private fun ChartsScreenContent(
 
                             LegendSection(
                                 categories = categories,
-                                valueSelector = if (page == 0) { cat -> cat.incomes } else { cat -> cat.expenses },
+                                valueSelector = if (page == 0) { cat -> cat.incomes } else { cat -> kotlin.math.abs(cat.expenses) },
                             )
                         }
                     }
@@ -358,8 +358,8 @@ private fun ChartsScreenEmptyPreview() {
 @Composable
 private fun ChartsScreenDataPreview() {
     val totals = listOf(
-        CategoryTotal("Comida y alimentos", 0.0, 150.0, -150.0, R.color.categ_color_food),
-        CategoryTotal("Salud", 0.0, 50.0, -50.0, R.color.categ_color_health),
+        CategoryTotal("Comida y alimentos", 0.0, -150.0, -150.0, R.color.categ_color_food),
+        CategoryTotal("Salud", 0.0, -50.0, -50.0, R.color.categ_color_health),
         CategoryTotal("Salario", 200.0, 0.0, 200.0, R.color.categ_color_salary),
     )
     FinancesManagementAppTheme {

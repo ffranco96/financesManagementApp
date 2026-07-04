@@ -55,7 +55,7 @@ class GetCategoryTotalUseCase @Inject constructor(
                     CategoryTotal(
                         categoryName = categoryName,
                         incomes = incomes,
-                        expenses = kotlin.math.abs(expenses),
+                        expenses = expenses,
                         net = incomes + expenses,
                         colorResId = category.colorIcon
                     )
