@@ -37,21 +37,22 @@ abstract class AppDatabase : RoomDatabase() {
 
         val MIGRATION_2_3 = object : Migration(2, 3) {
             override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("DROP TABLE IF EXISTS records_new")
                 db.execSQL("""
-                    CREATE TABLE IF NOT EXISTS records_new (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                        accountId INTEGER NOT NULL DEFAULT 0,
-                        amount REAL NOT NULL,
-                        description TEXT NOT NULL,
-                        categoryName TEXT NOT NULL,
-                        date TEXT NOT NULL,
-                        currency TEXT NOT NULL
-                    )
-                """.trimIndent())
+            CREATE TABLE records_new (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                accountId INTEGER NOT NULL DEFAULT 0,
+                amount REAL NOT NULL,
+                description TEXT NOT NULL,
+                categoryName TEXT NOT NULL,
+                date TEXT NOT NULL,
+                currency TEXT NOT NULL
+            )
+        """.trimIndent())
                 db.execSQL("""
-                    INSERT INTO records_new (id, accountId, amount, description, categoryName, date, currency)
-                    SELECT id, accountId, amount, description, categoryName, date, currency FROM records
-                """.trimIndent())
+            INSERT INTO records_new (id, accountId, amount, description, categoryName, date, currency)
+            SELECT id, accountId, amount, description, categoryName, date, currency FROM records
+        """.trimIndent())
                 db.execSQL("DROP TABLE records")
                 db.execSQL("ALTER TABLE records_new RENAME TO records")
             }
