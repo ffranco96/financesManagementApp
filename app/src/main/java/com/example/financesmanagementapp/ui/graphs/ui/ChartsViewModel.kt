@@ -1,4 +1,4 @@
-package com.example.financesmanagementapp.ui.graphs.ui
+﻿package com.example.financesmanagementapp.ui.graphs.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,7 +9,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -35,20 +37,14 @@ class ChartsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            try {
+            combine(
                 getCategoryTotalUseCase(Record.DEFAULT_ACCOUNT_ID, DAYS_TO_LOOK_BACK)
-                    .collectLatest { total ->
-                        _uiState.value = ChartsUiState(
-                            categoryTotals = total,
-                            isEmpty = total.isEmpty()
-                        )
-                    }
-            } catch (e: IllegalArgumentException) {
-                _uiState.value = ChartsUiState(isEmpty = true)
-            }
-        }
-        viewModelScope.launch {
-            getAllRecordsFlowUseCase().collectLatest { records ->
+                    .catch { _uiState.value = ChartsUiState(isEmpty = true) },
+                getAllRecordsFlowUseCase()
+            ) { totals, records ->
+                ChartsUiState(categoryTotals = totals, isEmpty = totals.isEmpty()) to records
+            }.collect { (uiState, records) ->
+                _uiState.value = uiState
                 _allRecords.value = records
             }
         }

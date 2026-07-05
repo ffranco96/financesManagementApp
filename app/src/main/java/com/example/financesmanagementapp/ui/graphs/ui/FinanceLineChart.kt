@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.pointerInput
+import android.graphics.Paint
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -101,6 +102,8 @@ private fun formatARS(value: Double): String {
     }
 }
 
+private const val Y_AXIS_RANGE_DAYS = 90
+
 private val monthFormatter = DateTimeFormatter.ofPattern("MMM")
 private val fullFormatter = DateTimeFormatter.ofPattern("dd MMM")
 
@@ -121,6 +124,21 @@ fun FinanceLineChart(
             axisLabel = colorResource(R.color.chart_axis_label),
             white = colorResource(R.color.chart_white),
     )
+    val axisLabelPaint = remember {
+        Paint().apply {
+            color = android.graphics.Color.argb(160, 138, 155, 176)
+            typeface = android.graphics.Typeface.DEFAULT
+            isAntiAlias = true
+        }
+    }
+    val monthLabelPaint = remember {
+        Paint().apply {
+            color = android.graphics.Color.argb(160, 138, 155, 176)
+            textAlign = Paint.Align.CENTER
+            typeface = android.graphics.Typeface.DEFAULT
+            isAntiAlias = true
+        }
+    }
     val points = remember(records) { buildChartPoints(records) }
 
     var selectedIndex by remember { mutableStateOf(-1) }
@@ -226,6 +244,8 @@ fun FinanceLineChart(
                         drawProgress = drawProgress,
                         selectedIdx = selectedIndex,
                         chartColors = chartColors,
+                        axisLabelPaint = axisLabelPaint,
+                        monthLabelPaint = monthLabelPaint,
                     )
                 }
             }
@@ -238,6 +258,8 @@ private fun DrawScope.drawChart(
     drawProgress: Float,
     selectedIdx: Int,
     chartColors: ChartColors,
+    axisLabelPaint: Paint,
+    monthLabelPaint: Paint,
 ) {
     if (points.isEmpty()) return
 
@@ -250,7 +272,7 @@ private fun DrawScope.drawChart(
 
     val pointStep = 28.dp.toPx()
 
-    val limitDate = LocalDate.now().minusDays(90)
+    val limitDate = LocalDate.now().minusDays(Y_AXIS_RANGE_DAYS.toLong())
     val recentPoints = points.filter { !it.date.isBefore(limitDate) }
     val minY = if (recentPoints.isEmpty()) points.minOf { it.balance } else recentPoints.minOf { it.balance }
     val maxY = if (recentPoints.isEmpty()) points.maxOf { it.balance } else recentPoints.maxOf { it.balance }
@@ -282,16 +304,12 @@ private fun DrawScope.drawChart(
             pathEffect = if (value == 0.0) null else PathEffect.dashPathEffect(floatArrayOf(6f, 6f))
         )
 
+        axisLabelPaint.textSize = 9.dp.toPx()
         drawContext.canvas.nativeCanvas.drawText(
             formatARS(value),
             4f,
             y + 4.dp.toPx(),
-            android.graphics.Paint().apply {
-                color = android.graphics.Color.argb(160, 138, 155, 176)
-                textSize = 9.dp.toPx()
-                typeface = android.graphics.Typeface.DEFAULT
-                isAntiAlias = true
-            }
+            axisLabelPaint
         )
     }
 
@@ -301,16 +319,12 @@ private fun DrawScope.drawChart(
         val month = points[i].date.monthValue
         if (month != lastMonth) {
             lastMonth = month
+            monthLabelPaint.textSize = 10.dp.toPx()
             drawContext.canvas.nativeCanvas.drawText(
                 points[i].date.format(monthFormatter).uppercase(),
                 x,
                 size.height - 6.dp.toPx(),
-                android.graphics.Paint().apply {
-                    color = android.graphics.Color.argb(160, 138, 155, 176)
-                    textSize = 10.dp.toPx()
-                    textAlign = android.graphics.Paint.Align.CENTER
-                    isAntiAlias = true
-                }
+                monthLabelPaint
             )
         }
     }
