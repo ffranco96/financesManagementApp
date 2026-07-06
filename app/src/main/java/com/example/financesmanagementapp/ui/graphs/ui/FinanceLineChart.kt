@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.pointerInput
 import android.graphics.Paint
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -141,7 +142,7 @@ fun FinanceLineChart(
     }
     val points = remember(records) { buildChartPoints(records) }
 
-    var selectedIndex by remember { mutableStateOf(-1) }
+    var selectedIndex by remember { mutableIntStateOf(-1) }
 
     val drawProgress by animateFloatAsState(
         targetValue = 1f,

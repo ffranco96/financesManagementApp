@@ -25,7 +25,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.DrawerValue
@@ -63,10 +62,9 @@ import androidx.navigation.NavController
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.example.financesmanagementapp.R
-import com.example.financesmanagementapp.navigation.AppScreens
-import com.example.financesmanagementapp.utils.Constants
-import kotlinx.coroutines.launch
 import com.example.financesmanagementapp.domain.model.Record
+import com.example.financesmanagementapp.navigation.AppScreens
+import kotlinx.coroutines.launch
 
 /**
  * Main home screen of the application. Displays balance, crypto prices, and recent movements.
@@ -80,9 +78,6 @@ fun HomeStartScreen(
     navController: NavController,
     viewModel: HomeViewModel
 ) {
-    val record =
-        navController.currentBackStackEntry?.savedStateHandle?.getStateFlow<Record?>("record", null)
-
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -100,10 +95,6 @@ fun HomeStartScreen(
     }
 
     val recordsList by viewModel.recordsList.collectAsState(initial = emptyList())
-
-    record?.let{
-        Log.d("franco","Valor actual del Record: ${record.value}")
-    } // TODO borrar
 
     observeValuesUpdatedByWorker(context, viewModel)
 

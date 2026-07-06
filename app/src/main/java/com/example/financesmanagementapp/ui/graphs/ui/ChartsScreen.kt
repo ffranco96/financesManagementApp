@@ -320,7 +320,7 @@ private fun LegendItem(
 
     Row(
         modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.Start,
     ) {
         Box(
