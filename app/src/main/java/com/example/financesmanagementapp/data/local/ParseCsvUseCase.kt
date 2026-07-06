@@ -27,7 +27,7 @@ class ParseCsvUseCase @Inject constructor(
     private fun parseLine(line: String): Record {
         val columns = line.split(";")
         // CSV structure: amount[0]; description[1]; categoryName[2]; date[3]; currency[4]
-        
+
         val category = Category.fromName(columns[2].trim())
 
         try {

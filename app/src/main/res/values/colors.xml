@@ -20,4 +20,14 @@
     <color name="categ_color_vehicles">#730E85</color>
     <color name="categ_color_vehicles_maintenance">#730E85</color>
     <color name="categ_color_other">#8D8E9F</color>
+    <color name="chart_bg_dark">#FF0E1117</color>
+    <color name="chart_green_line">#FF00E676</color>
+    <color name="chart_green_fill_top">#5500E676</color>
+    <color name="chart_green_fill_bot">#0000E676</color>
+    <color name="chart_red_line">#FFFF5252</color>
+    <color name="chart_red_fill_top">#55FF5252</color>
+    <color name="chart_red_fill_bot">#00FF5252</color>
+    <color name="chart_zero_line">#33FFFFFF</color>
+    <color name="chart_axis_label">#FF8A9BB0</color>
+    <color name="chart_white">#FFFFFFFF</color>
 </resources>
