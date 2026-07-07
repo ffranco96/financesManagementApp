@@ -1,39 +1,39 @@
-amount; description; categoryName; date; currency; isIncome
-1050000.0; Sueldo abril; Salario; 2026-04-01; ARS; true
--42000.0; Supermercado; Comida y alimentos; 2026-04-03; ARS; false
--18500.0; Restaurante; Restaurant y comida rapida; 2026-04-05; ARS; false
--75000.0; Ropa invierno; Ropa; 2026-04-07; ARS; false
--30000.0; Farmacia; Medicamentos e insumos; 2026-04-09; ARS; false
--55000.0; Service auto; Mantenimiento vehiculos; 2026-04-11; ARS; false
--22000.0; Verduleria; Comida y alimentos; 2026-04-14; ARS; false
--90000.0; Recital; Recitales y eventos; 2026-04-16; ARS; false
--15000.0; Medico; Salud; 2026-04-18; ARS; false
--48000.0; Ingles; Estudios particulares; 2026-04-20; ARS; false
--12000.0; Libros; Hobbies; 2026-04-22; ARS; false
--60000.0; Plazo fijo; Inversiones y finanzas; 2026-04-25; ARS; false
--35000.0; Supermercado 2; Comida y alimentos; 2026-04-28; ARS; false
-1080000.0; Sueldo mayo; Salario; 2026-05-01; ARS; true
--50000.0; Supermercado; Comida y alimentos; 2026-05-03; ARS; false
--25000.0; Pizza; Restaurant y comida rapida; 2026-05-05; ARS; false
--85000.0; Patente; Vehiculos; 2026-05-08; ARS; false
--40000.0; Zapatillas; Ropa; 2026-05-10; ARS; false
--20000.0; Farmacia; Medicamentos e insumos; 2026-05-12; ARS; false
--95000.0; Dentista; Salud; 2026-05-14; ARS; false
--30000.0; Carniceria; Comida y alimentos; 2026-05-17; ARS; false
--65000.0; Camara; Pintura, dibujo y fotografia; 2026-05-19; ARS; false
--10000.0; Juego; Hobbies; 2026-05-21; ARS; false
--45000.0; Curso online; Estudios particulares; 2026-05-23; ARS; false
--28000.0; Faltante caja; Faltantes; 2026-05-26; ARS; false
--55000.0; Supermercado 2; Comida y alimentos; 2026-05-29; ARS; false
-1120000.0; Sueldo junio; Salario; 2026-06-01; ARS; true
--38000.0; Supermercado; Comida y alimentos; 2026-06-03; ARS; false
--70000.0; Teatro; Recitales y eventos; 2026-06-06; ARS; false
--22000.0; Delivery; Restaurant y comida rapida; 2026-06-08; ARS; false
--15000.0; Vitaminas; Medicamentos e insumos; 2026-06-10; ARS; false
--88000.0; Gomeria; Mantenimiento vehiculos; 2026-06-12; ARS; false
--60000.0; Acciones; Inversiones y finanzas; 2026-06-15; ARS; false
--33000.0; Campera; Ropa; 2026-06-17; ARS; false
--50000.0; Analisis; Salud; 2026-06-19; ARS; false
--18000.0; Manualidades; Hobbies; 2026-06-21; ARS; false
--42000.0; Taller; Estudios particulares; 2026-06-24; ARS; false
--25000.0; Verduleria; Comida y alimentos; 2026-06-27; ARS; false
+description; amount; categoryName; currency; date
+Sueldo abril; 1050000.0; Salario; ARS; 2026-04-01
+Supermercado; -42000.0; Comida y alimentos; ARS; 2026-04-03
+Restaurante; -18500.0; Restaurant y comida rapida; ARS; 2026-04-05
+Ropa invierno; -75000.0; Ropa; ARS; 2026-04-07
+Farmacia; -30000.0; Medicamentos e insumos; ARS; 2026-04-09
+Service auto; -55000.0; Mantenimiento vehiculos; ARS; 2026-04-11
+Verduleria; -22000.0; Comida y alimentos; ARS; 2026-04-14
+Recital; -90000.0; Recitales y eventos; ARS; 2026-04-16
+Medico; -15000.0; Salud; ARS; 2026-04-18
+Ingles; -48000.0; Estudios particulares; ARS; 2026-04-20
+Libros; -12000.0; Hobbies; ARS; 2026-04-22
+Plazo fijo; -60000.0; Inversiones y finanzas; ARS; 2026-04-25
+Supermercado 2; -35000.0; Comida y alimentos; ARS; 2026-04-28
+Sueldo mayo; 1080000.0; Salario; ARS; 2026-05-01
+Supermercado; -50000.0; Comida y alimentos; ARS; 2026-05-03
+Pizza; -25000.0; Restaurant y comida rapida; ARS; 2026-05-05
+Patente; -85000.0; Vehiculos; ARS; 2026-05-08
+Zapatillas; -40000.0; Ropa; ARS; 2026-05-10
+Farmacia; -20000.0; Medicamentos e insumos; ARS; 2026-05-12
+Dentista; -95000.0; Salud; ARS; 2026-05-14
+Carniceria; -30000.0; Comida y alimentos; ARS; 2026-05-17
+Camara; -65000.0; Pintura, dibujo y fotografia; ARS; 2026-05-19
+Juego; -10000.0; Hobbies; ARS; 2026-05-21
+Curso online; -45000.0; Estudios particulares; ARS; 2026-05-23
+Faltante caja; -28000.0; Faltantes; ARS; 2026-05-26
+Supermercado 2; -55000.0; Comida y alimentos; ARS; 2026-05-29
+Sueldo junio; 1120000.0; Salario; ARS; 2026-06-01
+Supermercado; -38000.0; Comida y alimentos; ARS; 2026-06-03
+Teatro; -70000.0; Recitales y eventos; ARS; 2026-06-06
+Delivery; -22000.0; Restaurant y comida rapida; ARS; 2026-06-08
+Vitaminas; -15000.0; Medicamentos e insumos; ARS; 2026-06-10
+Gomeria; -88000.0; Mantenimiento vehiculos; ARS; 2026-06-12
+Acciones; -60000.0; Inversiones y finanzas; ARS; 2026-06-15
+Campera; -33000.0; Ropa; ARS; 2026-06-17
+Analisis; -50000.0; Salud; ARS; 2026-06-19
+Manualidades; -18000.0; Hobbies; ARS; 2026-06-21
+Taller; -42000.0; Estudios particulares; ARS; 2026-06-24
+Verduleria; -25000.0; Comida y alimentos; ARS; 2026-06-27

@@ -126,12 +126,11 @@ open class HomeViewModel @Inject constructor(
                 return@launch
             }
 
-            val recordList = parseCsvUseCase(readCsv)
+            val recordList = parseCsvUseCase(readCsv).records
             Log.d(TAG, "recordList leida del csv: $recordList")
             recordList.forEach { record ->
                 saveRecordUseCase(record)
             }
-            // TODO update balance
         }
     }
 
