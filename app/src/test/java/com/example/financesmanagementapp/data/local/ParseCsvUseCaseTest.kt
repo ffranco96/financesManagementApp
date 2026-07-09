@@ -182,6 +182,66 @@ class ParseCsvUseCaseTest {
     }
 
     @Test
+    fun `given csv with blank amount when invoke then returns missing field error`() {
+        val csvContent = """
+            amount;description;categoryName;date;currency
+            ;Farmacia;${Category.CATEGORY_MEDICINE};2026-04-09;ARS
+        """.trimIndent()
+        val inputStream = csvContent.byteInputStream()
+
+        val result = parseCsvUseCase(inputStream)
+
+        assertTrue(result.records.isEmpty())
+        assertEquals(1, result.errors.size)
+        assertTrue(result.errors.first() is ParseError.MissingField)
+        assertEquals("amount", (result.errors.first() as ParseError.MissingField).field)
+    }
+
+    @Test
+    fun `given csv with blank date when invoke then returns missing field error`() {
+        val csvContent = """
+            amount;description;categoryName;date;currency
+            -30000.0;Farmacia;${Category.CATEGORY_MEDICINE};;ARS
+        """.trimIndent()
+        val inputStream = csvContent.byteInputStream()
+
+        val result = parseCsvUseCase(inputStream)
+
+        assertTrue(result.records.isEmpty())
+        assertEquals(1, result.errors.size)
+        assertEquals("date", (result.errors.first() as ParseError.MissingField).field)
+    }
+
+    @Test
+    fun `given csv with blank currency when invoke then returns missing field error`() {
+        val csvContent = """
+            amount;description;categoryName;date;currency
+            -30000.0;Farmacia;${Category.CATEGORY_MEDICINE};2026-04-09;
+        """.trimIndent()
+        val inputStream = csvContent.byteInputStream()
+
+        val result = parseCsvUseCase(inputStream)
+
+        assertTrue(result.records.isEmpty())
+        assertEquals(1, result.errors.size)
+        assertEquals("currency", (result.errors.first() as ParseError.MissingField).field)
+    }
+
+    @Test
+    fun `given csv line with fewer columns than header when invoke then returns missing field error`() {
+        val csvContent = """
+            amount;description;categoryName;date;currency
+            -30000.0;Farmacia
+        """.trimIndent()
+        val inputStream = csvContent.byteInputStream()
+
+        val result = parseCsvUseCase(inputStream)
+
+        assertTrue(result.records.isEmpty())
+        assertEquals(1, result.errors.size)
+    }
+
+    @Test
     fun `given empty content when invoke then returns empty file error`() {
         val inputStream = "".byteInputStream()
 
@@ -235,6 +295,52 @@ class ParseCsvUseCaseTest {
         val result = parseCsvUseCase(inputStream)
 
         assertEquals(Category.CATEGORY_MISSING, result.records.first().category.categoryName)
+        assertTrue(result.errors.isEmpty())
+    }
+
+    @Test
+    fun `given csv line with only 3 columns when invoke then returns missing field error for date`() {
+        val csvContent = """
+            amount;description;categoryName;date;currency
+            -30000.0;Test;${Category.CATEGORY_MEDICINE}
+        """.trimIndent()
+        val inputStream = csvContent.byteInputStream()
+
+        val result = parseCsvUseCase(inputStream)
+
+        assertTrue(result.records.isEmpty())
+        assertEquals(1, result.errors.size)
+        assertEquals("date", (result.errors.first() as ParseError.MissingField).field)
+    }
+
+    @Test
+    fun `given csv line with only 4 columns when invoke then returns missing field error for currency`() {
+        val csvContent = """
+            amount;description;categoryName;date;currency
+            -30000.0;Test;${Category.CATEGORY_MEDICINE};2026-04-09
+        """.trimIndent()
+        val inputStream = csvContent.byteInputStream()
+
+        val result = parseCsvUseCase(inputStream)
+
+        assertTrue(result.records.isEmpty())
+        assertEquals(1, result.errors.size)
+        assertEquals("currency", (result.errors.first() as ParseError.MissingField).field)
+    }
+
+    @Test
+    fun `given getResourceEntryName throws when invoke then still parses record`() {
+        val csvContent = """
+            amount;description;categoryName;date;currency
+            -100.0;Test;${Category.CATEGORY_FOOD};2026-01-01;ARS
+        """.trimIndent()
+        val inputStream = csvContent.byteInputStream()
+        every { resources.getResourceEntryName(any()) } throws Resources.NotFoundException()
+
+        val result = parseCsvUseCase(inputStream)
+
+        assertEquals(1, result.records.size)
+        assertEquals(-100.0, result.records.first().amount, 0.001)
         assertTrue(result.errors.isEmpty())
     }
 }
