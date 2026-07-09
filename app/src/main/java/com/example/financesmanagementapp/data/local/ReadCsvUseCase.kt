@@ -10,7 +10,7 @@ import javax.inject.Inject
  * Reads a CSV file from a given URI.
  */
 class ReadCsvUseCase @Inject constructor(
-    @ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context
 ){
     /**
      * Receives the URI and reads the csv in the injected context.

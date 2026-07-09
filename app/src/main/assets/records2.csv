@@ -1,0 +1,9 @@
+description;amount;categoryName;currency;date
+Farmacia;-30000.0;Medicamentos e insumos;ARS;2026-04-09
+Supermercado;-42000.0;Comida y alimentos;ARS;2026-04-03
+Pago sueldo;950000.0;Salario;ARS;2026-05-01
+Monto invalido;-abc;Salud;ARS;2026-04-05
+Faltante categoria;-100.0;;ARS;2026-04-06
+Sin monto;Farmacia;Medicamentos e insumos;ARS;2026-04-07
+Delivery;-22000.0;Restaurant y comida rapida;ARS;2026-06-08
+Curso online;-45000.0;Estudios particulares;ARS;2026-05-23

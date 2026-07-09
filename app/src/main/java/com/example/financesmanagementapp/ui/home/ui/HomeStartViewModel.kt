@@ -126,12 +126,15 @@ open class HomeViewModel @Inject constructor(
                 return@launch
             }
 
-            val recordList = parseCsvUseCase(readCsv)
-            Log.d(TAG, "recordList leida del csv: $recordList")
-            recordList.forEach { record ->
+            val parseResult = parseCsvUseCase(readCsv)
+            val recordsList = parseResult.records
+            val errorsList = parseResult.errors
+            recordsList.forEach { record ->
                 saveRecordUseCase(record)
             }
-            // TODO update balance
+            errorsList.forEach { error ->
+                Log.d(TAG, "No se pudo agregar $error")
+            }
         }
     }
 
