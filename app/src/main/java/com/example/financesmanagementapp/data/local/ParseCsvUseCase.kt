@@ -43,14 +43,22 @@ class ParseCsvUseCase @Inject constructor(
             .toMap()
     }
 
-    private fun parseLine(line: String, colIndex: Map<String, Int>): ParseLineResult {
+    /**
+     * Parses a single line of a CSV file.
+     *
+     * @param line The line to parse.
+     * @param columnIndex A map of column names to their corresponding indices.
+     *
+     * @return A [ParseLineResult] indicating success or failure.
+     */
+    private fun parseLine(line: String, columnIndex: Map<String, Int>): ParseLineResult {
         val cols = line.split(";")
 
-        val amountIdx = colIndex["amount"]
-        val categoryIdx = colIndex["categoryname"]
-        val dateIdx = colIndex["date"]
-        val currencyIdx = colIndex["currency"]
-        val descriptionIdx = colIndex["description"]
+        val amountIdx = columnIndex["amount"]
+        val categoryIdx = columnIndex["categoryname"]
+        val dateIdx = columnIndex["date"]
+        val currencyIdx = columnIndex["currency"]
+        val descriptionIdx = columnIndex["description"]
 
         if (amountIdx == null) return ParseLineResult.Error(ParseError.MissingField("amount"))
         if (categoryIdx == null) return ParseLineResult.Error(ParseError.MissingField("categoryName"))

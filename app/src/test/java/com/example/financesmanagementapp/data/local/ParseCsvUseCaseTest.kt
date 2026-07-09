@@ -99,6 +99,57 @@ class ParseCsvUseCaseTest {
     }
 
     @Test
+    fun `given csv without category column when invoke then returns missing field error`() {
+        val csvContent = """
+            description;amount;date;currency
+            Farmacia;-100.23;2026-04-09;ARS
+        """.trimIndent()
+        val inputStream = csvContent.byteInputStream()
+
+        val result = parseCsvUseCase(inputStream)
+
+        assertTrue(result.records.isEmpty())
+        assertEquals(1, result.errors.size)
+        val error = result.errors.first()
+        assertTrue(error is ParseError.MissingField)
+        assertEquals("categoryName", (error as ParseError.MissingField).field)
+    }
+
+    @Test
+    fun `given csv without date column when invoke then returns missing field error`() {
+        val csvContent = """
+            amount;description;categoryName;currency
+            -30000.0;Farmacia;${Category.CATEGORY_MEDICINE};ARS
+        """.trimIndent()
+        val inputStream = csvContent.byteInputStream()
+
+        val result = parseCsvUseCase(inputStream)
+
+        assertTrue(result.records.isEmpty())
+        assertEquals(1, result.errors.size)
+        val error = result.errors.first()
+        assertTrue(error is ParseError.MissingField)
+        assertEquals("date", (error as ParseError.MissingField).field)
+    }
+
+    @Test
+    fun `given csv without currency column when invoke then returns missing field error`() {
+        val csvContent = """
+            amount;description;categoryName;date
+            -30000.0;Farmacia;${Category.CATEGORY_MEDICINE};2026-04-09
+        """.trimIndent()
+        val inputStream = csvContent.byteInputStream()
+
+        val result = parseCsvUseCase(inputStream)
+
+        assertTrue(result.records.isEmpty())
+        assertEquals(1, result.errors.size)
+        val error = result.errors.first()
+        assertTrue(error is ParseError.MissingField)
+        assertEquals("currency", (error as ParseError.MissingField).field)
+    }
+
+    @Test
     fun `given csv with non numeric amount when invoke then returns format error`() {
         val csvContent = """
             amount;description;categoryName;date;currency
