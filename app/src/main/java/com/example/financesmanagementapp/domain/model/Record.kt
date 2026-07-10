@@ -31,7 +31,7 @@ data class Record (
             val date1 = LocalDate.parse(this.date)
             val date2 = LocalDate.parse(other.date)
             date1.compareTo(date2)
-        } catch (e: DateTimeParseException) {
+        } catch (_: DateTimeParseException) {
             this.date.compareTo(other.date)
         }
     }

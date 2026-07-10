@@ -21,15 +21,16 @@ fun Record.toEntity(): RecordEntity{
 }
 
 /**
- * Extension function to convert a [RecordEntity] to a [Record].
- * From data to domain.
- * @return A [Record] object.
+ * Extension function to convert a [RecordEntity] to a [Record] domain class.
+ * @param completeCategory The complete object of type [Category] category associated with the
+ * record, obtained from the data store in run-time. Will be assigned to the 'category' attribute.
  */
-fun RecordEntity.toDomain(): Record {
+fun RecordEntity.toDomain(completeCategory: Category): Record {
     return Record(
+        accountId = accountId,
         amount = amount,
         description = description,
-        category = Category(categoryName),
+        category = completeCategory,
         date = date,
         currency = currency
     )
