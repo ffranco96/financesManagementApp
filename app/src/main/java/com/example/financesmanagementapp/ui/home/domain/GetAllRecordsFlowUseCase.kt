@@ -1,6 +1,6 @@
 package com.example.financesmanagementapp.ui.home.domain
 
-import com.example.financesmanagementapp.data.local.entities.toDomain
+import com.example.financesmanagementapp.data.local.mapper.toDomain
 import com.example.financesmanagementapp.data.repository.RecordsRepository
 import com.example.financesmanagementapp.domain.model.Category
 import com.example.financesmanagementapp.domain.model.Record

@@ -2,9 +2,9 @@ package com.example.financesmanagementapp.data.local.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.financesmanagementapp.domain.model.Category
 import com.example.financesmanagementapp.domain.model.Record
 import com.example.financesmanagementapp.domain.model.Record.Companion.DEFAULT_ACCOUNT_ID
+
 /**
  * Entity representing a financial record in the local database.
  * Matches the structure of the [Record] domain class.
@@ -31,21 +31,5 @@ data class RecordEntity(
         val date2 = formatter.parse(other.date)
         return date1.compareTo(date2)
     }
-}
-
-/**
- * Extension function to convert a [RecordEntity] to a [Record] domain class.
- * @param completeCategory The complete object of type [Category] category associated with the
- * record, obtained from the data store in run-time. Will be assigned to the 'category' attribute.
- */
-fun RecordEntity.toDomain(completeCategory: Category): Record {
-    return Record(
-        accountId = accountId,
-        amount = amount,
-        description = description,
-        category = completeCategory,
-        date = date,
-        currency = currency
-    )
 }
 

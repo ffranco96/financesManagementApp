@@ -35,4 +35,16 @@ Versions in `gradle.properties`: `APP_VERSION_NAME`, `APP_VERSION_CODE`.
 - **`HomeViewModel`** is `open` (not typical)
 - **Package split**: `graphs` domain use case exists (`GetBalanceByAccountAndCategoryUseCase`) but no UI screen for it yet
 - **Min SDK**: 26, Java 11 target
-- **Tests**: only example stub tests exist (`ExampleUnitTest`, `ExampleInstrumentedTest`)
+- **Tests**: unit tests in `app/src/test/`, instrumented tests in `app/src/androidTest/`
+
+## Testing conventions
+
+- **Framework**: JUnit 4 (`@Test`, `@Before`, `Assert.*`)
+- **Mocking**: MockK (`mockk()`, `every { } returns`, `mockkStatic`)
+- **Coroutines**: `kotlinx.coroutines.test.runTest` for suspend functions and Flows
+- **Naming**: backtick descriptive names following Given-When-Then pattern
+  - `fun \`given <precondition> when <action> then <expected result>\``
+- **Setup**: mocks created as class properties (`private val mockX = mockk()`), use case instantiated in `@Before`
+- **No Robolectric**: pure JVM unit tests only; Android dependencies must be mocked or abstracted behind interfaces
+- **Assertions**: JUnit `Assert.assertEquals`, `assertTrue`, `assertNull`, `assertNotNull`
+- **Test location**: mirror the main source package structure (e.g., `data/local/` → `data/local/`)
