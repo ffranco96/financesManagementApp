@@ -14,6 +14,7 @@ class SaveRecordUseCase @Inject constructor(
     private val recordsRepository: RecordsRepository,
 ) {
     suspend operator fun invoke(record: Record){
-        recordsRepository.addRecord(record.toEntity())
+        val recordWithAccount = record.copy(accountId = Record.DEFAULT_ACCOUNT_ID)
+        recordsRepository.addRecord(recordWithAccount.toEntity())
     }
 }

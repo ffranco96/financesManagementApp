@@ -12,6 +12,7 @@ import com.example.financesmanagementapp.domain.model.Record
  */
 fun Record.toEntity(): RecordEntity{
     return RecordEntity(
+        accountId = accountId,
         amount = amount,
         description = description,
         categoryName = category.categoryName,
