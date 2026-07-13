@@ -39,6 +39,10 @@ android {
             pickFirsts += listOf(
                 "META-INF/gradle/incremental.annotation.processors"
             )
+            excludes += setOf(
+                "META-INF/LICENSE.md",
+                "META-INF/LICENSE-notice.md"
+            )
         }
     }
 
