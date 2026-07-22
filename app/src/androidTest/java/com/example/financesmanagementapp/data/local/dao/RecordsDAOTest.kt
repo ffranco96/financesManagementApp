@@ -60,13 +60,13 @@ class RecordsDAOTest {
     // ── getAll ───────────────────────────────────────────────────────────
 
     @Test
-    fun givenEmptyDatabase_whenGetAll_thenReturnsEmptyList() = runTest {
+    fun givenEmptyDatabase_whenGetAll_thenReturnEmptyList() = runTest {
         val result = dao.getAll()
         assertTrue(result.isEmpty())
     }
 
     @Test
-    fun givenRecordsInserted_whenGetAll_thenReturnsAllRecords() = runTest {
+    fun givenRecordsInserted_whenGetAll_thenReturnAllRecords() = runTest {
         val record1 = buildRecord(description = "Record 1", amount = 50.0)
         val record2 = buildRecord(description = "Record 2", amount = -30.0)
         dao.insert(record1, record2)
@@ -102,7 +102,7 @@ class RecordsDAOTest {
     }
 
     @Test
-    fun givenRecordsWithPositiveAndNegativeAmounts_whenGetTotalBalanceByAccount_thenEmitsSumOfAmounts() = runTest {
+    fun givenPositiveAndNegativeAmounts_whenGetTotalBalanceByAccount_thenEmitsSum() = runTest {
         dao.insert(
             buildRecord(amount = 200.0, accountId = 1),
             buildRecord(amount = -50.0, accountId = 1)
@@ -113,7 +113,7 @@ class RecordsDAOTest {
     }
 
     @Test
-    fun givenRecordsWithPositiveAmounts_whenGetTotalBalanceByAccount_thenEmitsSumOfAmounts() = runTest {
+    fun givenPositiveAmounts_whenGetTotalBalanceByAccount_thenEmitsSum() = runTest {
         dao.insert(
             buildRecord(amount = 200.0, accountId = 1),
             buildRecord(amount = 50.0, accountId = 1)
@@ -124,7 +124,7 @@ class RecordsDAOTest {
     }
 
     @Test
-    fun givenRecordsWithNegativeAmounts_whenGetTotalBalanceByAccount_thenEmitsSumOfAmounts() = runTest {
+    fun givenNegativeAmounts_whenGetTotalBalanceByAccount_thenEmitsSum() = runTest {
         dao.insert(
             buildRecord(amount = -200.0, accountId = 1),
             buildRecord(amount = -50.0, accountId = 1)
@@ -135,7 +135,7 @@ class RecordsDAOTest {
     }
 
     @Test
-    fun givenRecordsWithAmountZero_whenGetTotalBalanceByAccount_thenEmitsSumOfAmounts() = runTest {
+    fun givenAmountZero_whenGetTotalBalanceByAccount_thenEmitsSum() = runTest {
         dao.insert(
             buildRecord(amount = 0.0, accountId = 1),
             buildRecord(amount = -50.0, accountId = 1)
@@ -146,7 +146,7 @@ class RecordsDAOTest {
     }
 
     @Test
-    fun givenRecordsWithDifferentAccounts_whenGetTotalBalanceByAccount_thenFiltersByAccount() = runTest {
+    fun givenDifferentAccounts_whenGetTotalBalanceByAccount_thenFiltersByAccount() = runTest {
         dao.insert(
             buildRecord(amount = 100.0, accountId = 1),
             buildRecord(amount = 300.0, accountId = 2)
@@ -165,7 +165,7 @@ class RecordsDAOTest {
     }
 
     @Test
-    fun givenRecordsWithMatchingCategory_whenGetBalanceByCategoryAndAccount_thenEmitsFilteredSum() = runTest {
+    fun givenMatchingCategory_whenGetBalanceByCategoryAndAccount_thenEmitsFilteredSum() = runTest {
         dao.insert(
             buildRecord(amount = 50.0, categoryName = "Comida y alimentos", accountId = 1),
             buildRecord(amount = 80.0, categoryName = "Transporte", accountId = 1),
@@ -178,7 +178,7 @@ class RecordsDAOTest {
     }
 
     @Test
-    fun givenRecordsWithDifferentAccounts_whenGetBalanceByCategoryAndAccount_thenFiltersByAccount() = runTest {
+    fun givenDifferentAccounts_whenGetBalanceByCategoryAndAccount_thenFiltersByAccount() = runTest {
         dao.insert(
             buildRecord(amount = 100.0, categoryName = "Comida y alimentos", accountId = 1),
             buildRecord(amount = 200.0, categoryName = "Comida y alimentos", accountId = 2)
