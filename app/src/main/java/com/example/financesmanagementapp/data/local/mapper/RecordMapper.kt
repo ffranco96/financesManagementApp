@@ -15,7 +15,7 @@ fun Record.toEntity(): RecordEntity{
         accountId = accountId,
         amount = amount,
         description = description,
-        categoryName = category.categoryName,
+        categoryName = category.categoryName.ifEmpty { Category.WITHOUT_CATEGORY },
         date = date,
         currency = currency
     )
