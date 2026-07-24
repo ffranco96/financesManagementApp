@@ -4,7 +4,6 @@ import com.example.financesmanagementapp.data.local.entities.RecordEntity
 import com.example.financesmanagementapp.domain.model.Category
 import com.example.financesmanagementapp.domain.model.Record
 
-
 /**
  * Extension function to convert a [Record] to a [RecordEntity].
  * From domain to data.
@@ -15,7 +14,10 @@ fun Record.toEntity(): RecordEntity{
         accountId = accountId,
         amount = amount,
         description = description,
-        categoryName = category.categoryName.ifEmpty { Category.WITHOUT_CATEGORY },
+        categoryName = category.categoryName.let { name ->
+            if (name.isNotEmpty() && name in Category.VALID_CATEGORY_NAMES) name
+            else Category.WITHOUT_CATEGORY
+        },
         date = date,
         currency = currency
     )

@@ -71,6 +71,18 @@ class RecordMapperTest {
     }
 
     @Test
+    fun `given Record of Category with invalid name when toEntity then maps to WITHOUT_CATEGORY`() {
+        // Given
+        val record = Record(category = Category("InvalidCategory!@#"))
+
+        // When
+        val entity = record.toEntity()
+
+        // Then
+        assertEquals(Category.WITHOUT_CATEGORY, entity.categoryName)
+    }
+
+    @Test
     fun `given Record when toEntity then maps date correctly`() {
         // Given
         val record = Record(date = "2026-07-09T12:00:00")

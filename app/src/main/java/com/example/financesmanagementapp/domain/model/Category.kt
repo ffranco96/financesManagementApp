@@ -29,6 +29,23 @@ data class Category(
         const val CATEGORY_MISSING = "Faltantes"
         const val WITHOUT_CATEGORY = "Sin Categoria"
 
+        val VALID_CATEGORY_NAMES = setOf(
+            CATEGORY_FOOD,
+            CATEGORY_FAST_FOOD,
+            CATEGORY_CLOTHES,
+            CATEGORY_VEHICLES,
+            CATEGORY_VEHICLE_MAINTENANCE,
+            CATEGORY_CONCERTS,
+            CATEGORY_HEALTH,
+            CATEGORY_SALARY,
+            CATEGORY_STUDIES,
+            CATEGORY_MEDICINE,
+            CATEGORY_HOBBIES,
+            CATEGORY_ART_PHOTO,
+            CATEGORY_INVESTMENT,
+            CATEGORY_MISSING
+        )
+
         fun fromName(name: String): Category {
             return when (name) {
                 CATEGORY_FOOD -> Category(CATEGORY_FOOD, R.drawable.ic_category_food, R.color.categ_color_food)
