@@ -43,7 +43,7 @@ class RecordsCsvFileWriter @Inject constructor(
             BufferedWriter(OutputStreamWriter(outputStream)).use { writer ->
                 writer.write(content)
             }
-        }
+        } ?: return false
         return true
     }
 }

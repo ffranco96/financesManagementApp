@@ -27,6 +27,24 @@ data class Category(
         const val CATEGORY_INVESTMENT = "Inversiones y finanzas"
         const val CATEGORY_SALARY = "Salario"
         const val CATEGORY_MISSING = "Faltantes"
+        const val WITHOUT_CATEGORY = "Sin Categoria"
+
+        val VALID_CATEGORY_NAMES = setOf(
+            CATEGORY_FOOD,
+            CATEGORY_FAST_FOOD,
+            CATEGORY_CLOTHES,
+            CATEGORY_VEHICLES,
+            CATEGORY_VEHICLE_MAINTENANCE,
+            CATEGORY_CONCERTS,
+            CATEGORY_HEALTH,
+            CATEGORY_SALARY,
+            CATEGORY_STUDIES,
+            CATEGORY_MEDICINE,
+            CATEGORY_HOBBIES,
+            CATEGORY_ART_PHOTO,
+            CATEGORY_INVESTMENT,
+            CATEGORY_MISSING
+        )
 
         fun fromName(name: String): Category {
             return when (name) {
@@ -44,6 +62,7 @@ data class Category(
                 CATEGORY_ART_PHOTO -> Category(CATEGORY_ART_PHOTO, R.drawable.ic_category_painting_drawing_and_photography, R.color.categ_color_painting_drawing_photos)
                 CATEGORY_INVESTMENT -> Category(CATEGORY_INVESTMENT, R.drawable.ic_category_investment_and_finances, R.color.categ_color_investment_and_finances)
                 CATEGORY_MISSING -> Category(CATEGORY_MISSING, R.drawable.ic_other_generic, R.color.categ_color_other)
+                WITHOUT_CATEGORY -> Category(WITHOUT_CATEGORY)
                 else -> Category(name)
             }
         }
