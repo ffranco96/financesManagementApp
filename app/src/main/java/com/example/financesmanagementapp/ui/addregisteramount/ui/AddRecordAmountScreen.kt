@@ -38,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
@@ -47,6 +48,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.financesmanagementapp.domain.model.Record
 import com.example.financesmanagementapp.navigation.AppScreens
+
+const val AMOUNT_INPUT = "amountInput"
 
 /**
  * Screen that allows the user to input the amount for a new financial record.
@@ -132,7 +135,7 @@ fun AddRecordAmountContent(
             }
         }
     ) { innerPadding ->
-        BodyContent(
+        ScaffoldBodyContent(
             valueAmountText = amountText,
             onAmountTextChange = { newValue ->
                 onAmountTextChanged(newValue)
@@ -154,7 +157,7 @@ fun AddRecordAmountContent(
  * Main content of the AddRecordAmountScreen.
  */
 @Composable
-fun BodyContent(
+fun ScaffoldBodyContent(
     valueAmountText: String,
     onAmountTextChange: (String) -> String,
     expanded: Boolean,
@@ -215,7 +218,7 @@ fun BodyContent(
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().testTag(AMOUNT_INPUT),
             textStyle = LocalTextStyle.current.copy(
                 textAlign = TextAlign.End,
                 fontSize = 55.sp
