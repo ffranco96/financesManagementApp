@@ -69,6 +69,47 @@ fun AddRecordAmountScreen(
     val editingRecord by viewModel.editingRecord.collectAsState()
     val currencyList by viewModel.currencyList.collectAsState()
 
+    AddRecordAmountContent(
+        amountText = amountText,
+        expandedCurrencyMenu = expandedCurrencyMenu,
+        selectedCurrency = selectedCurrency,
+        currencyList = currencyList,
+        isEditing = viewModel.isEditing,
+        onAmountTextChanged = viewModel::onAmountTextChange,
+        onDropDownClick = viewModel::onDropDownClick,
+        onDismissRequest = viewModel::onDismissRequest,
+        onCurrencySelected = viewModel::onCurrencySelected,
+        onBackClick = { navController.popBackStack() },
+        onNextClick = {
+            val base = editingRecord
+            // Avoid continuing before the record to edit has loaded, and never
+            // replace an existing record with a fresh one when editing.
+            if (!viewModel.isEditing || base != null) {
+                val amount = amountText.toDoubleOrNull() ?: 0.0
+                val myRecord = base?.copy(amount = amount, currency = selectedCurrency)
+                    ?: Record(amount = amount, currency = selectedCurrency)
+                navController.currentBackStackEntry?.savedStateHandle?.set("record", myRecord)
+                navController.navigate(AppScreens.AddRecordDetailScreen.route)
+            }
+        },
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AddRecordAmountContent(
+    amountText: String,
+    expandedCurrencyMenu: Boolean,
+    selectedCurrency: String,
+    currencyList: List<String>,
+    isEditing: Boolean,
+    onAmountTextChanged: (String) -> String,
+    onDropDownClick: () -> Unit,
+    onDismissRequest: () -> Unit,
+    onCurrencySelected: (String) -> Unit,
+    onBackClick: () -> Unit,
+    onNextClick: () -> Unit,
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -76,27 +117,15 @@ fun AddRecordAmountScreen(
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Arrow back",
-                        modifier = Modifier.clickable {
-                            navController.popBackStack()
-                        })
+                        modifier = Modifier.clickable(onClick = onBackClick)
+                    )
                 },
-                title = { Text(if (viewModel.isEditing) "Editar registro" else "Agregar registro") }
+                title = { Text(if (isEditing) "Editar registro" else "Agregar registro") }
             )
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = {
-                    val base = editingRecord
-                    // Avoid continuing before the record to edit has loaded, and never
-                    // replace an existing record with a fresh one when editing.
-                    if (!viewModel.isEditing || base != null) {
-                        val amount = amountText.toDoubleOrNull() ?: 0.0
-                        val myRecord = base?.copy(amount = amount, currency = selectedCurrency)
-                            ?: Record(amount = amount, currency = selectedCurrency)
-                        navController.currentBackStackEntry?.savedStateHandle?.set("record", myRecord)
-                        navController.navigate(AppScreens.AddRecordDetailScreen.route)
-                    }
-                },
+                onClick = onNextClick,
                 modifier = Modifier.padding(16.dp)
             ) {
                 Icon(Icons.Default.KeyboardArrowRight, contentDescription = "Siguiente pantalla")
@@ -106,14 +135,15 @@ fun AddRecordAmountScreen(
         BodyContent(
             valueAmountText = amountText,
             onAmountTextChange = { newValue ->
-                viewModel.onAmountTextChange(newValue)
+                onAmountTextChanged(newValue)
             },
             expanded = expandedCurrencyMenu,
-            onDropdownClick = {viewModel.onDropDownClick()},
-            onDismissRequest = {viewModel.onDismissRequest()},
+            onDropdownClick = onDropDownClick,
+            onDismissRequest = onDismissRequest,
             selectedCurrency = selectedCurrency,
-            onCurrencySelected = {  newValue ->
-                viewModel.onCurrencySelected(newValue) },
+            onCurrencySelected = { newValue ->
+                onCurrencySelected(newValue)
+            },
             currencyList = currencyList,
             innerPadding = innerPadding
         )
@@ -168,7 +198,11 @@ fun BodyContent(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Ingrese monto", fontSize = 42.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
+        Text(
+            "Ingrese monto",
+            fontSize = 42.sp,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
 
         TextField(
             value = textFieldValue,

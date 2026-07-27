@@ -19,6 +19,7 @@ import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.abs
 import kotlin.math.roundToLong
+import kotlin.text.toDoubleOrNull
 
 @HiltViewModel
 class AddRecordAmountViewModel @Inject constructor(
@@ -105,6 +106,11 @@ class AddRecordAmountViewModel @Inject constructor(
     fun onCurrencySelected(currency: String) {
         _selectedCurrency.value = currency
         onDismissRequest()
+    }
+
+    fun buildRecord(): Record {
+        val amount = amountText.value.toDoubleOrNull() ?: 0.0
+        return Record(amount = amount, currency = selectedCurrency.value)
     }
 
     companion object{
