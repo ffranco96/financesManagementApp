@@ -202,6 +202,19 @@ class RecordsDAOTest {
         assertEquals(200.0, result!!, 0.001)
     }
 
+    @Test
+    fun givenDifferentMatchesOfAccountAndCategory_whenGetBalanceByCategoryAndAccount_thenFiltersByAccountAndCategory() = runTest {
+        dao.insert(
+            buildRecord(amount = 100.0, categoryName = "Comida y alimentos", accountId = 1),
+            buildRecord(amount = 150.0, categoryName = "Transporte", accountId = 1),
+            buildRecord(amount = 200.0, categoryName = "Comida y alimentos", accountId = 2)
+        )
+
+        val result = dao.getBalanceByCategoryAndAccount(accId = 1, categoryName = "Comida y alimentos").first()
+        assertNotNull(result)
+        assertEquals(100.0, result!!, 0.001)
+    }
+
     // ── insert ───────────────────────────────────────────────────────────
 
     @Test
