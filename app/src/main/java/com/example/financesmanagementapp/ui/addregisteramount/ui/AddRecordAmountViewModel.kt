@@ -3,6 +3,7 @@ package com.example.financesmanagementapp.ui.addregisteramount.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.financesmanagementapp.domain.model.FiatCurrency
+import com.example.financesmanagementapp.domain.model.Record
 import com.example.financesmanagementapp.domain.usecase.GetFiatCurrenciesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,6 +13,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import java.util.Locale
 import javax.inject.Inject
+import kotlin.text.toDoubleOrNull
 
 @HiltViewModel
 class AddRecordAmountViewModel @Inject constructor(
@@ -63,6 +65,11 @@ class AddRecordAmountViewModel @Inject constructor(
     fun onCurrencySelected(currency: String) {
         _selectedCurrency.value = currency
         onDismissRequest()
+    }
+
+    fun buildRecord(): Record {
+        val amount = amountText.value.toDoubleOrNull() ?: 0.0
+        return Record(amount = amount, currency = selectedCurrency.value)
     }
 
     companion object{
