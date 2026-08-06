@@ -8,6 +8,9 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.InputStream
 import javax.inject.Inject
 
+/**
+ * Use case for parsing a CSV file and returning a list of [Record] objects.
+ */
 class ParseCsvUseCase @Inject constructor(
     @param:ApplicationContext private val context: Context,
 ) {
@@ -45,6 +48,7 @@ class ParseCsvUseCase @Inject constructor(
 
     /**
      * Parses a single line of a CSV file.
+     * CSV structure: amount[0]; description[1]; isIncome[2]; category[3]; subcategory[4]; date[5]; currency[6]
      *
      * @param line The line to parse.
      * @param columnIndex A map of column names to their corresponding indices.
@@ -55,24 +59,28 @@ class ParseCsvUseCase @Inject constructor(
         val cols = line.split(";")
 
         val amountIdx = columnIndex["amount"]
-        val categoryIdx = columnIndex["categoryname"]
+        val categoryNameIdx = columnIndex["category"]
+        val subcategoryNameIdx = columnIndex["subcategory"]
         val dateIdx = columnIndex["date"]
         val currencyIdx = columnIndex["currency"]
         val descriptionIdx = columnIndex["description"]
 
         if (amountIdx == null) return ParseLineResult.Error(ParseError.MissingField("amount"))
-        if (categoryIdx == null) return ParseLineResult.Error(ParseError.MissingField("categoryName"))
+        if (categoryNameIdx == null) return ParseLineResult.Error(ParseError.MissingField("category"))
+        if (subcategoryNameIdx == null) return ParseLineResult.Error(ParseError.MissingField("subcategory"))
         if (dateIdx == null) return ParseLineResult.Error(ParseError.MissingField("date"))
         if (currencyIdx == null) return ParseLineResult.Error(ParseError.MissingField("currency"))
 
         val amountStr = cols.getOrNull(amountIdx)?.trim()
-        val categoryName = cols.getOrNull(categoryIdx)?.trim()
+        val categoryName = cols.getOrNull(categoryNameIdx)?.trim()
+        val subCategoryName = cols.getOrNull(subcategoryNameIdx)?.trim()
         val date = cols.getOrNull(dateIdx)?.trim()
         val currency = cols.getOrNull(currencyIdx)?.trim()
         val description = descriptionIdx?.let { cols.getOrNull(it)?.trim() } ?: ""
 
         if (amountStr.isNullOrBlank()) return ParseLineResult.Error(ParseError.MissingField("amount"))
         if (categoryName.isNullOrBlank()) return ParseLineResult.Error(ParseError.MissingField("categoryName"))
+        if (subCategoryName.isNullOrBlank()) return ParseLineResult.Error(ParseError.MissingField("subCategoryName"))
         if (date.isNullOrBlank()) return ParseLineResult.Error(ParseError.MissingField("date"))
         if (currency.isNullOrBlank()) return ParseLineResult.Error(ParseError.MissingField("currency"))
 
@@ -82,7 +90,7 @@ class ParseCsvUseCase @Inject constructor(
             return ParseLineResult.Error(ParseError.FormatError("amount", amountStr))
         }
 
-        val category = Category.fromName(categoryName)
+        val category = Category.fromCategoryAndSubcategory(categoryName, subCategoryName)
         logResource(category)
 
         return ParseLineResult.Success(
@@ -100,9 +108,9 @@ class ParseCsvUseCase @Inject constructor(
     private fun logResource(category: Category) {
         try {
             val resourceName = context.resources.getResourceEntryName(category.iconRsc)
-            Log.d("CheckResource", "El recurso para ${category.categoryName} es: $resourceName")
+            Log.d("CheckResource", "El recurso para ${category.displayLabel} es: $resourceName")
         } catch (e: Exception) {
-            Log.e("CheckResource", "Error al obtener nombre del recurso para ${category.categoryName}")
+            Log.e("CheckResource", "Error al obtener nombre del recurso para ${category.displayLabel}")
         }
     }
 

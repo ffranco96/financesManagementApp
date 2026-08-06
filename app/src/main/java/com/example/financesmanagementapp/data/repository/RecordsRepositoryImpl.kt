@@ -25,8 +25,8 @@ class RecordsRepositoryImpl @Inject constructor(
         return recordsDao.getTotalBalanceByAccount()
     }
 
-    override fun getBalanceByAccountAndCategoryFlow(accountId: Int, categoryName: String): Flow<Double?> {
-        return recordsDao.getBalanceByCategoryAndAccount(accountId, categoryName)
+    override fun getBalanceByAccountAndCategoryFlow(accountId: Int, category: String, subcategory: String): Flow<Double?> {
+        return recordsDao.getBalanceByCategoryAndAccount(accountId, category, subcategory)
     }
 
     override suspend fun addRecord(record: RecordEntity) {

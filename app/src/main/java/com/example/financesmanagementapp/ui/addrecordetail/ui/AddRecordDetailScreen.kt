@@ -72,8 +72,6 @@ fun AddRecordDetailScreen(
     val record by (navController.previousBackStackEntry?.savedStateHandle?.getStateFlow<Record?>("record", null)
         ?.collectAsState() ?: remember { mutableStateOf<Record?>(null) })
 
-    Log.d("franco","Valor actual del Record desde RecordDetailScreen: $record")
-
     val isAmountZero = record?.amount == 0.0
 
     val datePickerState = rememberDatePickerState(
@@ -165,8 +163,8 @@ fun BodyContent(
     expanded: Boolean,
     onDropdownClick: () -> Unit,
     onDismissRequest: () -> Unit,
-    selectedCategory: String,
-    onCategorySelected: (String) -> Unit,
+    selectedCategory: Category,
+    onCategorySelected: (Category) -> Unit,
     categoryList: List<Category>,
     selectedDate: String,
     showDatePicker: Boolean,
@@ -219,10 +217,10 @@ fun BodyContent(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val displayText = if (selectedCategory.isEmpty()) {
+            val displayText = if (selectedCategory.category == Category.WITHOUT_CATEGORY) {
                 "Seleccione categoría"
             } else {
-                selectedCategory
+                selectedCategory.displayLabel
             }
 
             Text(
@@ -238,8 +236,8 @@ fun BodyContent(
             ) {
                 categoryList.forEach { category ->
                     DropdownMenuItem(
-                        text = { Text(text = category.categoryName) },
-                        onClick = { onCategorySelected(category.categoryName) }
+                        text = { Text(text = category.displayLabel) },
+                        onClick = { onCategorySelected(category) }
                     )
                 }
             }

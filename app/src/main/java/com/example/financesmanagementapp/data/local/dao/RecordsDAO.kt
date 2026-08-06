@@ -33,9 +33,10 @@ interface RecordsDAO {
             SUM(amount) 
         FROM records 
         WHERE accountId = :accId
-        AND categoryName = :categoryName
+        AND category = :category
+        AND subcategory = :subcategory
     """)
-    fun getBalanceByCategoryAndAccount(accId: Int = DEFAULT_ACCOUNT_ID, categoryName: String): Flow<Double?>
+    fun getBalanceByCategoryAndAccount(accId: Int = DEFAULT_ACCOUNT_ID, category: String, subcategory: String): Flow<Double?>
 
     @Query("DELETE FROM records")
     fun deleteAll()

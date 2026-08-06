@@ -18,7 +18,7 @@ class GetAllRecordsFlowUseCase @Inject constructor(
 ) {
     /**
      * Executes the use case to get the flow of all records as [Record] objects.
-     * Use Category.fromName to ensure the icons and colors are always correct 
+     * Use Category.fromCategoryAndSubcategory to ensure the icons and colors are always correct
      * and up to date with the current build resources.
      *
      * @return A Flow emitting the list of records with the complete category as a [List<Record>].
@@ -26,7 +26,7 @@ class GetAllRecordsFlowUseCase @Inject constructor(
     operator fun invoke(): Flow<List<Record>> {
         return recordsRepository.getAllRecordsFlow().map { entities ->
             entities.map { recordEntity ->
-                val category = Category.fromName(recordEntity.categoryName)
+                val category = Category.fromCategoryAndSubcategory(recordEntity.category, recordEntity.subcategory)
                 recordEntity.toDomain(category)
             }
         }

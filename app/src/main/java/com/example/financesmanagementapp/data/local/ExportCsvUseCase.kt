@@ -47,7 +47,7 @@ class ExportCsvUseCase @Inject constructor(
      */
     internal fun buildCsvContent(records: List<Record>): String {
         val sb = StringBuilder()
-        sb.appendLine("amount; description; categoryName; date; currency")
+        sb.appendLine("amount; description; isIncome; category; subcategory; date; currency")
         records.forEach { record ->
             sb.appendLine("${record.amount}; ${record.description}; ${record.category.categoryName}; ${record.date}; ${record.currency}")
         }

@@ -16,7 +16,9 @@ data class RecordEntity(
     val accountId: Int = 0,
     val amount: Double,
     val description: String,
-    val categoryName: String, // Flattening Category for simplicity
+    val isIncome: Boolean,
+    val category: String, // Flattening Category for simplicity
+    val subcategory: String,
     val date: String, // Format yyyy-MM-dd'T'HH:mm:ss or yyyy-MM-dd for legacy
     val currency: String
 ): Comparable<RecordEntity>{
