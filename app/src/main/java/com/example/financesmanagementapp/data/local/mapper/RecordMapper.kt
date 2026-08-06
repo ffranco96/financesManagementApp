@@ -1,6 +1,7 @@
 package com.example.financesmanagementapp.data.local.mapper
 
 import com.example.financesmanagementapp.data.local.entities.RecordEntity
+import com.example.financesmanagementapp.domain.model.Category
 import com.example.financesmanagementapp.domain.model.Record
 
 /**
@@ -16,6 +17,23 @@ fun Record.toEntity(): RecordEntity{
         isIncome = isIncome,
         category = category.category,
         subcategory = category.subcategory,
+        date = date,
+        currency = currency
+    )
+}
+
+/**
+ * Extension function to convert a [RecordEntity] to a [Record] domain class.
+ * @param completeCategory The complete object of type [Category] category associated with the
+ * record, obtained from the data store in run-time. Will be assigned to the 'category' attribute.
+ */
+fun RecordEntity.toDomain(completeCategory: Category): Record {
+    return Record(
+        accountId = accountId,
+        amount = amount,
+        description = description,
+        isIncome = isIncome,
+        category = completeCategory,
         date = date,
         currency = currency
     )
