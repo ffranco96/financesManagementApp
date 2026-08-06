@@ -22,7 +22,7 @@ class RecordsRepositoryImpl @Inject constructor(
     }
 
     override fun getTotalBalanceByAccountFlow(accountId: Int): Flow<Double?> {
-        return recordsDao.getTotalBalanceByAccount()
+        return recordsDao.getTotalBalanceByAccount(accountId)
     }
 
     override fun getBalanceByAccountAndCategoryFlow(accountId: Int, category: String, subcategory: String): Flow<Double?> {

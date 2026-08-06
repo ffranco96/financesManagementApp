@@ -14,6 +14,7 @@ data class Category(
     var displayName: String = "Sin categoría",
     var iconRsc: Int = R.drawable.ic_other_generic,
     var colorCategory: Int = R.color.categ_color_other,
+    var isIncome: Boolean = false,
     var details: String = ""
 ) {
     /**
@@ -128,7 +129,7 @@ data class Category(
          * [com.example.financesmanagementapp.domain.usecase.InitializeConfigUseCase] knows to
          * reseed the categories stored in DataStore.
          */
-        const val CATEGORIES_VERSION = 3
+        const val CATEGORIES_VERSION = 4
 
         val ALL_CATEGORIES: List<Category> = listOf(
             Category(CATEGORY_HOUSE_AND_HOME, SUBCATEGORY_INSURANCE, "Seguro del hogar", iconRsc = R.drawable.ic_house_and_home, colorCategory = R.color.categ_color_house_and_home_insurance),
@@ -160,16 +161,16 @@ data class Category(
             Category(CATEGORY_FOOD_AND_DRINKS, SUBCATEGORY_MARKET, "Supermercado y almacen", colorCategory = R.color.categ_color_food_and_drinks_market),
             Category(CATEGORY_FOOD_AND_DRINKS, SUBCATEGORY_FAST_FOOD, "Comida rapida y delivery", iconRsc = R.drawable.ic_category_fast_food, colorCategory = R.color.categ_color_fast_food),
             Category(CATEGORY_FOOD_AND_DRINKS, SUBCATEGORY_OTHERS, "Otros", iconRsc = R.drawable.ic_category_food, colorCategory = R.color.categ_color_food),
-            Category(CATEGORY_INCOME, SUBCATEGORY_PENSIONS, "Pensiones", colorCategory = R.color.categ_color_income_pensions),
-            Category(CATEGORY_INCOME, SUBCATEGORY_CHECKS_COUPONS, "Cheques y cupones", colorCategory = R.color.categ_color_income_checks_coupons),
-            Category(CATEGORY_INCOME, SUBCATEGORY_SCHOLARSHIPS, "Becas", colorCategory = R.color.categ_color_income_scholarships),
-            Category(CATEGORY_INCOME, SUBCATEGORY_INTERESTS_AND_INCOMES, "Intereses y dividendos", colorCategory = R.color.categ_color_income_interests_and_incomes),
-            Category(CATEGORY_INCOME, SUBCATEGORY_RENTALS, "Alquileres", colorCategory = R.color.categ_color_income_rentals),
-            Category(CATEGORY_INCOME, SUBCATEGORY_OTHERS, "Otros", colorCategory = R.color.categ_color_income_others),
-            Category(CATEGORY_INCOME, SUBCATEGORY_PRODUCTS_SALE, "Venta de productos", colorCategory = R.color.categ_color_income_products_sale),
-            Category(CATEGORY_INCOME, SUBCATEGORY_SALARY, "Sueldo", iconRsc = R.drawable.ic_category_salary, colorCategory = R.color.categ_color_salary),
-            Category(CATEGORY_INCOME, SUBCATEGORY_SOCIAL_BENEFITS, "Plan estatal", colorCategory = R.color.categ_color_income_social_benefits),
-            Category(CATEGORY_INCOME, SUBCATEGORY_BONUS, "Bonos, aguinaldo", colorCategory = R.color.categ_color_income_bonus),
+            Category(CATEGORY_INCOME, SUBCATEGORY_PENSIONS, "Pensiones", colorCategory = R.color.categ_color_income_pensions, isIncome = true),
+            Category(CATEGORY_INCOME, SUBCATEGORY_CHECKS_COUPONS, "Cheques y cupones", colorCategory = R.color.categ_color_income_checks_coupons, isIncome = true),
+            Category(CATEGORY_INCOME, SUBCATEGORY_SCHOLARSHIPS, "Becas", colorCategory = R.color.categ_color_income_scholarships, isIncome = true),
+            Category(CATEGORY_INCOME, SUBCATEGORY_INTERESTS_AND_INCOMES, "Intereses y dividendos", colorCategory = R.color.categ_color_income_interests_and_incomes, isIncome = true),
+            Category(CATEGORY_INCOME, SUBCATEGORY_RENTALS, "Alquileres", colorCategory = R.color.categ_color_income_rentals, isIncome = true),
+            Category(CATEGORY_INCOME, SUBCATEGORY_OTHERS, "Otros", colorCategory = R.color.categ_color_income_others, isIncome = true),
+            Category(CATEGORY_INCOME, SUBCATEGORY_PRODUCTS_SALE, "Venta de productos", colorCategory = R.color.categ_color_income_products_sale, isIncome = true),
+            Category(CATEGORY_INCOME, SUBCATEGORY_SALARY, "Sueldo", iconRsc = R.drawable.ic_category_salary, colorCategory = R.color.categ_color_salary, isIncome = true),
+            Category(CATEGORY_INCOME, SUBCATEGORY_SOCIAL_BENEFITS, "Plan estatal", colorCategory = R.color.categ_color_income_social_benefits, isIncome = true),
+            Category(CATEGORY_INCOME, SUBCATEGORY_BONUS, "Bonos, aguinaldo", colorCategory = R.color.categ_color_income_bonus, isIncome = true),
             Category(CATEGORY_INVESTMENTS, SUBCATEGORY_TRADITIONAL, "Inversiones financieras tradicionales", colorCategory = R.color.categ_color_investments_traditional),
             Category(CATEGORY_INVESTMENTS, SUBCATEGORY_CRYPTOCURRENCY, "Inversiones criptomonedas", colorCategory = R.color.categ_color_investments_cryptocurrency),
             Category(CATEGORY_INVESTMENTS, SUBCATEGORY_REAL_STATE, "Bienes inmuebles", colorCategory = R.color.categ_color_investments_real_state),

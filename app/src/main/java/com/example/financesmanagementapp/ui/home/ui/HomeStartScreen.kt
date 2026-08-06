@@ -387,7 +387,7 @@ fun RecordContent(record: Record) {
             )
         }
 
-        RecordAmount(record.currency, record.amount)
+        RecordAmount(record.currency, record.amount, record.amount > 0)
     }
 }
 

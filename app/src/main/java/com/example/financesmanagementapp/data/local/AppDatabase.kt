@@ -21,7 +21,7 @@ import com.example.financesmanagementapp.domain.model.Category
  */
 @Database(
     entities = [RecordEntity::class],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -65,6 +65,35 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        /**
+         * Drops the `isIncome` column: whether a movement is income or expense is now derived
+         * from the sign of [RecordEntity.amount] instead of being stored separately. Existing
+         * rows had `amount` stored as an unsigned magnitude with `isIncome` as the sign source,
+         * so the sign has to be folded into `amount` here before the column is dropped.
+         */
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("""
+                    CREATE TABLE records_new (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        accountId INTEGER NOT NULL DEFAULT 0,
+                        amount REAL NOT NULL,
+                        description TEXT NOT NULL,
+                        category TEXT NOT NULL,
+                        subcategory TEXT NOT NULL,
+                        date TEXT NOT NULL,
+                        currency TEXT NOT NULL
+                    )
+                """.trimIndent())
+                db.execSQL("""
+                    INSERT INTO records_new (id, accountId, amount, description, category, subcategory, date, currency)
+                    SELECT id, accountId, CASE WHEN isIncome != 0 THEN amount ELSE -amount END, description, category, subcategory, date, currency FROM records
+                """.trimIndent())
+                db.execSQL("DROP TABLE records")
+                db.execSQL("ALTER TABLE records_new RENAME TO records")
+            }
+        }
+
         fun getInstance(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -72,7 +101,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     DATABASE_NAME
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
                     .build()
                 INSTANCE = instance
                 return instance

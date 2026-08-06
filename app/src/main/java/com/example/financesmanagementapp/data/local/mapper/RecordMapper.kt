@@ -14,7 +14,6 @@ fun Record.toEntity(): RecordEntity{
         accountId = accountId,
         amount = amount,
         description = description,
-        isIncome = isIncome,
         category = category.categoryName,
         subcategory = category.subcategoryName,
         date = date,
@@ -32,7 +31,6 @@ fun RecordEntity.toDomain(completeCategory: Category): Record {
         accountId = accountId,
         amount = amount,
         description = description,
-        isIncome = isIncome,
         category = completeCategory,
         date = date,
         currency = currency

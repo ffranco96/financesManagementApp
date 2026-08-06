@@ -20,6 +20,10 @@ interface RecordsDAO {
     @Query("SELECT * FROM records")
     fun getAllAsFlow(): Flow<List<RecordEntity>>
 
+    /**
+     * [RecordEntity.amount] is stored already signed (negative for expenses, positive for
+     * income), so the total balance is a plain sum.
+     */
     @Query("""
         SELECT 
             SUM(amount)

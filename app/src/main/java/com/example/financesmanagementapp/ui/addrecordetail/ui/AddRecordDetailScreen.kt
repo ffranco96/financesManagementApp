@@ -40,11 +40,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.financesmanagementapp.domain.model.Category
+import com.example.financesmanagementapp.domain.model.Record
+import com.example.financesmanagementapp.navigation.AppScreens
+import com.example.financesmanagementapp.R
+import com.example.financesmanagementapp.domain.model.Category
+import com.example.financesmanagementapp.domain.model.Category.Companion.WITHOUT_CATEGORY
 import com.example.financesmanagementapp.domain.model.Record
 import com.example.financesmanagementapp.navigation.AppScreens
 
@@ -111,8 +118,9 @@ fun AddRecordDetailScreen(
                         if (!isAmountZero) {
                             val completeRecord = record?.copy(
                                 description = detailText,
-                                category = categoryList.find { it.categoryName == selectedCategory } ?: Category(),
-                                date = selectedDate
+                                category = categoryList.find { it.categoryName == selectedCategory.categoryName } ?: Category(),
+                                date = selectedDate,
+                                amount = if (selectedCategory.isIncome) it.amount else -it.amount
                             )
                             viewModel.saveRecord(completeRecord)
                             navController.navigate(AppScreens.HomeStartScreen.route){
@@ -139,7 +147,9 @@ fun AddRecordDetailScreen(
             onDropdownClick = {viewModel.onDropdownMenuClick()},
             onDismissRequest = {viewModel.onDismissRequest()},
             selectedCategory = selectedCategory,
-            onCategorySelected = {newValue -> viewModel.onCategorySelected(newValue)},
+            onCategorySelected = { newValue ->
+                viewModel.onCategorySelected(newValue)
+            },
             categoryList = categoryList,
             selectedDate = selectedDate,
             showDatePicker = showDatePicker,
@@ -197,7 +207,10 @@ fun BodyContent(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(innerPadding).padding(40.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(innerPadding)
+            .padding(40.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -208,16 +221,23 @@ fun BodyContent(
             placeholder = {Text("" )},
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
             singleLine = false,
-            modifier = Modifier.height(80.dp).fillMaxWidth()
+            modifier = Modifier
+                .height(80.dp)
+                .fillMaxWidth()
         )
         Spacer(Modifier.height(40.dp))
 
         Row(
-            modifier = Modifier.align(Alignment.Start).clickable(onClick = onDropdownClick).fillMaxWidth().height(50.dp).padding(5.dp),
+            modifier = Modifier
+                .align(Alignment.Start)
+                .clickable(onClick = onDropdownClick)
+                .fillMaxWidth()
+                .height(50.dp)
+                .padding(5.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val displayText = if (selectedCategory.categoryName == Category.WITHOUT_CATEGORY) {
+            val displayText = if (selectedCategory.categoryName == WITHOUT_CATEGORY) {
                 "Seleccione categoría"
             } else {
                 selectedCategory.displayLabel
@@ -227,7 +247,8 @@ fun BodyContent(
                 text = displayText,
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier
-                    .height(50.dp).padding(5.dp)
+                    .height(50.dp)
+                    .padding(5.dp)
             )
 
             DropdownMenu(
@@ -277,7 +298,14 @@ fun BodyContent(
 
         Spacer(Modifier.weight(1f))
 
-
+        Text(
+            text = if (selectedCategory.isIncome) "Ingreso" else "Gasto",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            color = colorResource(
+                if (selectedCategory.isIncome) R.color.positive_green else R.color.negative_red
+            )
+        )
     }
 }
 
