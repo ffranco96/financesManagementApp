@@ -217,7 +217,7 @@ fun BodyContent(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val displayText = if (selectedCategory.category == Category.WITHOUT_CATEGORY) {
+            val displayText = if (selectedCategory.categoryName == Category.WITHOUT_CATEGORY) {
                 "Seleccione categoría"
             } else {
                 selectedCategory.displayLabel

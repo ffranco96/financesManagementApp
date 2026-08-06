@@ -4,16 +4,16 @@ import com.example.financesmanagementapp.R
 
 /**
  * Data class representing the category of a movement in the app.
- * A category is identified by a parent [category] (e.g. "VEHICLE") and a [subcategory]
- * (e.g. "FUEL"), both stable constants used for lookup/persistence. [displayName] is
- * the text shown in the UI and is not used as a key.
+ * A category is identified by a parent [categoryName] (e.g. "VEHICLE") and a
+ * [subcategoryName] (e.g. "FUEL"), both stable constants used for lookup/persistence.
+ * [displayName] is the text shown in the UI and is not used as a key.
  */
 data class Category(
-    var category: String = WITHOUT_CATEGORY,
-    var subcategory: String = "",
+    var categoryName: String = WITHOUT_CATEGORY,
+    var subcategoryName: String = "",
     var displayName: String = "Sin categoría",
     var iconRsc: Int = R.drawable.ic_other_generic,
-    var colorIcon: Int = R.color.categ_color_other,
+    var colorCategory: Int = R.color.categ_color_other,
     var details: String = ""
 ) {
     /**
@@ -23,8 +23,8 @@ data class Category(
      */
     val displayLabel: String
         get() {
-            return if (category == WITHOUT_CATEGORY) displayName else {
-                val prettyParent = category
+            return if (categoryName == WITHOUT_CATEGORY) displayName else {
+                val prettyParent = categoryName
                     .split("_")
                     .joinToString(" ") { it.lowercase().replaceFirstChar(Char::uppercase) }
                 return "$prettyParent · $displayName"
@@ -128,95 +128,95 @@ data class Category(
          * [com.example.financesmanagementapp.domain.usecase.InitializeConfigUseCase] knows to
          * reseed the categories stored in DataStore.
          */
-        const val CATEGORIES_VERSION = 2
+        const val CATEGORIES_VERSION = 3
 
         val ALL_CATEGORIES: List<Category> = listOf(
-            Category(CATEGORY_HOUSE_AND_HOME, SUBCATEGORY_INSURANCE, "Seguro del hogar", colorIcon = R.color.categ_color_house_and_home_insurance),
-            Category(CATEGORY_HOUSE_AND_HOME, SUBCATEGORY_MAINTENANCE, "Mantenimiento y reparaciones", colorIcon = R.color.categ_color_house_and_home_maintenance),
-            Category(CATEGORY_HOUSE_AND_HOME, SUBCATEGORY_MORTGAGE, "Hipoteca", colorIcon = R.color.categ_color_house_and_home_mortgage),
-            Category(CATEGORY_HOUSE_AND_HOME, SUBCATEGORY_RENT, "Alquiler", colorIcon = R.color.categ_color_house_and_home_rent),
-            Category(CATEGORY_HOUSE_AND_HOME, SUBCATEGORY_TOOLS, "Herramientas", colorIcon = R.color.categ_color_house_and_home_tools),
-            Category(CATEGORY_HOUSE_AND_HOME, SUBCATEGORY_GARDEN, "Jardín", colorIcon = R.color.categ_color_house_and_home_garden),
-            Category(CATEGORY_HOUSE_AND_HOME, SUBCATEGORY_OTHERS, "Otros", colorIcon = R.color.categ_color_house_and_home_others),
-            Category(CATEGORY_SERVICES, SUBCATEGORY_WATER, "Agua", colorIcon = R.color.categ_color_services_water),
-            Category(CATEGORY_SERVICES, SUBCATEGORY_LIGHT_GAS_AND_ENERGY, "Luz, gas y energia", colorIcon = R.color.categ_color_services_light_gas_and_energy),
-            Category(CATEGORY_SERVICES, SUBCATEGORY_INTERNET, "Internet", colorIcon = R.color.categ_color_services_internet),
-            Category(CATEGORY_SERVICES, SUBCATEGORY_OTHERS, "Otros", colorIcon = R.color.categ_color_services_others),
-            Category(CATEGORY_SERVICES, SUBCATEGORY_STREAMING, "Plataformas streaming", colorIcon = R.color.categ_color_services_streaming),
-            Category(CATEGORY_SERVICES, SUBCATEGORY_MUNICIPAL_TAX, "Municipal", colorIcon = R.color.categ_color_services_municipal_tax),
-            Category(CATEGORY_SERVICES, SUBCATEGORY_EXPENSES, "Expensas", colorIcon = R.color.categ_color_services_expenses),
-            Category(CATEGORY_SERVICES, SUBCATEGORY_MOBILE_TELEPHONY, "Telefonia movil", colorIcon = R.color.categ_color_services_mobile_telephony),
-            Category(CATEGORY_TECHNOLOGY, SUBCATEGORY_SOFTWARE, "Software, apps y juegos", colorIcon = R.color.categ_color_technology_software),
-            Category(CATEGORY_OTHERS, SUBCATEGORY_MAIL_AND_SHIPMENTS, "Correo y envios", colorIcon = R.color.categ_color_others_mail_and_shipments),
-            Category(CATEGORY_OTHERS, SUBCATEGORY_LOTERY_CASINO, "Loteria y casino", colorIcon = R.color.categ_color_others_lotery_casino),
-            Category(CATEGORY_OTHERS, SUBCATEGORY_MISSING, "Faltantes", R.drawable.ic_other_generic, R.color.categ_color_other),
-            Category(CATEGORY_FINANCIAL_EXPENSES, SUBCATEGORY_ASSESMENT, "Asesoria financiera", colorIcon = R.color.categ_color_financial_expenses_assesment),
-            Category(CATEGORY_FINANCIAL_EXPENSES, SUBCATEGORY_CHARGES, "Cargos y comisiones", colorIcon = R.color.categ_color_financial_expenses_charges),
-            Category(CATEGORY_FINANCIAL_EXPENSES, SUBCATEGORY_FINES, "Multas", colorIcon = R.color.categ_color_financial_expenses_fines),
-            Category(CATEGORY_FINANCIAL_EXPENSES, SUBCATEGORY_INSURANCES, "Seguros", colorIcon = R.color.categ_color_financial_expenses_insurances),
-            Category(CATEGORY_FINANCIAL_EXPENSES, SUBCATEGORY_LOAN_INTERESTS, "Intereses de prestamos", colorIcon = R.color.categ_color_financial_expenses_loan_interests),
-            Category(CATEGORY_FINANCIAL_EXPENSES, SUBCATEGORY_OTHERS, "Otros", R.drawable.ic_category_investment_and_finances, R.color.categ_color_investment_and_finances),
-            Category(CATEGORY_FOOD_AND_DRINKS, SUBCATEGORY_COFEE_RESTAURANT, "Cafeteria y restaurant", colorIcon = R.color.categ_color_food_and_drinks_cofee_restaurant),
-            Category(CATEGORY_FOOD_AND_DRINKS, SUBCATEGORY_MARKET, "Supermercado y almacen", colorIcon = R.color.categ_color_food_and_drinks_market),
-            Category(CATEGORY_FOOD_AND_DRINKS, SUBCATEGORY_FAST_FOOD, "Comida rapida y delivery", R.drawable.ic_category_fast_food, R.color.categ_color_fast_food),
-            Category(CATEGORY_FOOD_AND_DRINKS, SUBCATEGORY_OTHERS, "Otros", R.drawable.ic_category_food, R.color.categ_color_food),
-            Category(CATEGORY_INCOME, SUBCATEGORY_PENSIONS, "Pensiones", colorIcon = R.color.categ_color_income_pensions),
-            Category(CATEGORY_INCOME, SUBCATEGORY_CHECKS_COUPONS, "Cheques y cupones", colorIcon = R.color.categ_color_income_checks_coupons),
-            Category(CATEGORY_INCOME, SUBCATEGORY_SCHOLARSHIPS, "Becas", colorIcon = R.color.categ_color_income_scholarships),
-            Category(CATEGORY_INCOME, SUBCATEGORY_INTERESTS_AND_INCOMES, "Intereses y dividendos", colorIcon = R.color.categ_color_income_interests_and_incomes),
-            Category(CATEGORY_INCOME, SUBCATEGORY_RENTALS, "Alquileres", colorIcon = R.color.categ_color_income_rentals),
-            Category(CATEGORY_INCOME, SUBCATEGORY_OTHERS, "Otros", colorIcon = R.color.categ_color_income_others),
-            Category(CATEGORY_INCOME, SUBCATEGORY_PRODUCTS_SALE, "Venta de productos", colorIcon = R.color.categ_color_income_products_sale),
-            Category(CATEGORY_INCOME, SUBCATEGORY_SALARY, "Sueldo", R.drawable.ic_category_salary, R.color.categ_color_salary),
-            Category(CATEGORY_INCOME, SUBCATEGORY_SOCIAL_BENEFITS, "Plan estatal", colorIcon = R.color.categ_color_income_social_benefits),
-            Category(CATEGORY_INCOME, SUBCATEGORY_BONUS, "Bonos, aguinaldo", colorIcon = R.color.categ_color_income_bonus),
-            Category(CATEGORY_INVESTMENTS, SUBCATEGORY_TRADITIONAL, "Inversiones financieras tradicionales", colorIcon = R.color.categ_color_investments_traditional),
-            Category(CATEGORY_INVESTMENTS, SUBCATEGORY_CRYPTOCURRENCY, "Inversiones criptomonedas", colorIcon = R.color.categ_color_investments_cryptocurrency),
-            Category(CATEGORY_INVESTMENTS, SUBCATEGORY_REAL_STATE, "Bienes inmuebles", colorIcon = R.color.categ_color_investments_real_state),
-            Category(CATEGORY_INVESTMENTS, SUBCATEGORY_FOREIGN_CURRENCY, "Moneda extranjera", colorIcon = R.color.categ_color_investments_foreign_currency),
-            Category(CATEGORY_INVESTMENTS, SUBCATEGORY_MOVABLE_ASSETS, "Bienes muebles", colorIcon = R.color.categ_color_investments_movable_assets),
-            Category(CATEGORY_INVESTMENTS, SUBCATEGORY_OTHERS, "Otros", colorIcon = R.color.categ_color_investments_others),
-            Category(CATEGORY_INVESTMENTS, SUBCATEGORY_HARD_ASSETS, "Activos duros", colorIcon = R.color.categ_color_investments_hard_assets),
-            Category(CATEGORY_LEISURE, SUBCATEGORY_SPORT, "Deporte", colorIcon = R.color.categ_color_leisure_sport),
-            Category(CATEGORY_LEISURE, SUBCATEGORY_BOOKS, "Libros", colorIcon = R.color.categ_color_leisure_books),
-            Category(CATEGORY_LEISURE, SUBCATEGORY_CONCERTS, "Recitales", R.drawable.ic_category_concerts, R.color.categ_color_concerts),
-            Category(CATEGORY_LEISURE, SUBCATEGORY_HOBBIES, "Hobbies", R.drawable.ic_category_hobbies, R.color.categ_color_hobbies),
-            Category(CATEGORY_LEISURE, SUBCATEGORY_TRAVEL_AND_HOLIDAYS, "Viajes y vacaciones", colorIcon = R.color.categ_color_leisure_travel_and_holidays),
-            Category(CATEGORY_LEISURE, SUBCATEGORY_CINEMA_AND_THEATER, "Cine y teatro", colorIcon = R.color.categ_color_leisure_cinema_and_theater),
-            Category(CATEGORY_LEISURE, SUBCATEGORY_EDUCATION_AND_DEVELOPMENT, "Educacion y desarrollo", colorIcon = R.color.categ_color_leisure_education_and_development),
-            Category(CATEGORY_LEISURE, SUBCATEGORY_OTHERS, "Otros", colorIcon = R.color.categ_color_leisure_others),
-            Category(CATEGORY_LEISURE, SUBCATEGORY_CHARITY, "Caridad", colorIcon = R.color.categ_color_leisure_charity),
-            Category(CATEGORY_LEISURE, SUBCATEGORY_MUSEAMS_AND_CULTURE, "Museos y cultura", colorIcon = R.color.categ_color_leisure_museams_and_culture),
-            Category(CATEGORY_LEISURE, SUBCATEGORY_ALCOHOL_TOBACCO, "Alcohol y tabaco", colorIcon = R.color.categ_color_leisure_alcohol_tobacco),
-            Category(CATEGORY_DEBT, SUBCATEGORY_LOANS, "Prestamos", colorIcon = R.color.categ_color_debt_loans),
-            Category(CATEGORY_DEBT, SUBCATEGORY_OTHERS, "Otros", colorIcon = R.color.categ_color_debt_others),
-            Category(CATEGORY_SHOPS, SUBCATEGORY_APPLIANCES, "Electrodomesticos", colorIcon = R.color.categ_color_shops_appliances),
-            Category(CATEGORY_SHOPS, SUBCATEGORY_GIFTS, "Regalos", colorIcon = R.color.categ_color_shops_gifts),
-            Category(CATEGORY_SHOPS, SUBCATEGORY_ACCESSORIES, "Accesorios", colorIcon = R.color.categ_color_shops_accessories),
-            Category(CATEGORY_SHOPS, SUBCATEGORY_PERSONAL_CARE, "Perfumeria", colorIcon = R.color.categ_color_shops_personal_care),
-            Category(CATEGORY_SHOPS, SUBCATEGORY_OTHERS, "Otros", colorIcon = R.color.categ_color_shops_others),
-            Category(CATEGORY_SHOPS, SUBCATEGORY_CLOTHES_AND_SHOES, "Ropa y calzado", R.drawable.ic_category_clothes, R.color.categ_color_clothes),
-            Category(CATEGORY_PETS, SUBCATEGORY_OTHERS, "Otros", colorIcon = R.color.categ_color_pets_others),
-            Category(CATEGORY_PETS, SUBCATEGORY_VET, "Veterinario", colorIcon = R.color.categ_color_pets_vet),
-            Category(CATEGORY_PETS, SUBCATEGORY_FOOD, "Alimento", colorIcon = R.color.categ_color_pets_food),
-            Category(CATEGORY_PETS, SUBCATEGORY_DOG_WALKER, "Paseador (perros)", colorIcon = R.color.categ_color_pets_dog_walker),
-            Category(CATEGORY_TRANSPORTATION, SUBCATEGORY_HOLIDAY, "Viajes de vacaciones", colorIcon = R.color.categ_color_transportation_holiday),
-            Category(CATEGORY_TRANSPORTATION, SUBCATEGORY_OTHERS, "Otros", colorIcon = R.color.categ_color_transportation_others),
-            Category(CATEGORY_TRANSPORTATION, SUBCATEGORY_PUBLIC, "Transporte publico", colorIcon = R.color.categ_color_transportation_public),
-            Category(CATEGORY_TRANSPORTATION, SUBCATEGORY_TAXI, "Taxi, remis y otras empresas", colorIcon = R.color.categ_color_transportation_taxi),
-            Category(CATEGORY_HEALTH, SUBCATEGORY_HEALTH_INSURANCE, "Prepaga y obra social", colorIcon = R.color.categ_color_health_health_insurance),
-            Category(CATEGORY_HEALTH, SUBCATEGORY_MEDICAL_SUPPLIES, "Insumos medicos", colorIcon = R.color.categ_color_health_medical_supplies),
-            Category(CATEGORY_HEALTH, SUBCATEGORY_BEAUTY, "Bienestar y belleza", colorIcon = R.color.categ_color_health_beauty),
-            Category(CATEGORY_HEALTH, SUBCATEGORY_STUDIES, "Estudios", R.drawable.ic_category_particular_studies, R.color.categ_color_studies),
-            Category(CATEGORY_HEALTH, SUBCATEGORY_MEDICINE, "Medicación", R.drawable.ic_category_medicine, R.color.categ_color_medicine),
-            Category(CATEGORY_HEALTH, SUBCATEGORY_OTHERS, "Otros", R.drawable.ic_category_health, R.color.categ_color_health),
-            Category(CATEGORY_VEHICLE, SUBCATEGORY_FUEL, "Combustible", colorIcon = R.color.categ_color_vehicle_fuel),
-            Category(CATEGORY_VEHICLE, SUBCATEGORY_INSURANCE, "Seguro del vehiculo", colorIcon = R.color.categ_color_vehicle_insurance),
-            Category(CATEGORY_VEHICLE, SUBCATEGORY_OTHERS, "Otros", R.drawable.ic_category_vehicle, R.color.categ_color_vehicles),
-            Category(CATEGORY_VEHICLE, SUBCATEGORY_PARKING, "Estacionamiento", colorIcon = R.color.categ_color_vehicle_parking),
-            Category(CATEGORY_VEHICLE, SUBCATEGORY_RENTAL, "Alquiler de vehiculos", colorIcon = R.color.categ_color_vehicle_rental),
-            Category(CATEGORY_VEHICLE, SUBCATEGORY_MANTAINANCE, "Mantenimiento del vehiculo", R.drawable.ic_category_vehicle_maintenance, R.color.categ_color_vehicles_maintenance),
-            Category(CATEGORY_VEHICLE, SUBCATEGORY_TOLLS, "Peajes", colorIcon = R.color.categ_color_vehicle_tolls),
+            Category(CATEGORY_HOUSE_AND_HOME, SUBCATEGORY_INSURANCE, "Seguro del hogar", iconRsc = R.drawable.ic_house_and_home, colorCategory = R.color.categ_color_house_and_home_insurance),
+            Category(CATEGORY_HOUSE_AND_HOME, SUBCATEGORY_MAINTENANCE, "Mantenimiento y reparaciones", iconRsc = R.drawable.ic_house_and_home, colorCategory = R.color.categ_color_house_and_home_maintenance),
+            Category(CATEGORY_HOUSE_AND_HOME, SUBCATEGORY_MORTGAGE, "Hipoteca", iconRsc = R.drawable.ic_house_and_home, colorCategory = R.color.categ_color_house_and_home_mortgage),
+            Category(CATEGORY_HOUSE_AND_HOME, SUBCATEGORY_RENT, "Alquiler", iconRsc = R.drawable.ic_house_and_home, colorCategory = R.color.categ_color_house_and_home_rent),
+            Category(CATEGORY_HOUSE_AND_HOME, SUBCATEGORY_TOOLS, "Herramientas", iconRsc = R.drawable.ic_house_and_home, colorCategory = R.color.categ_color_house_and_home_tools),
+            Category(CATEGORY_HOUSE_AND_HOME, SUBCATEGORY_GARDEN, "Jardín", iconRsc = R.drawable.ic_house_and_home, colorCategory = R.color.categ_color_house_and_home_garden),
+            Category(CATEGORY_HOUSE_AND_HOME, SUBCATEGORY_OTHERS, "Otros", iconRsc = R.drawable.ic_house_and_home, colorCategory = R.color.categ_color_house_and_home_others),
+            Category(CATEGORY_SERVICES, SUBCATEGORY_WATER, "Agua", colorCategory = R.color.categ_color_services_water),
+            Category(CATEGORY_SERVICES, SUBCATEGORY_LIGHT_GAS_AND_ENERGY, "Luz, gas y energia", colorCategory = R.color.categ_color_services_light_gas_and_energy),
+            Category(CATEGORY_SERVICES, SUBCATEGORY_INTERNET, "Internet", colorCategory = R.color.categ_color_services_internet),
+            Category(CATEGORY_SERVICES, SUBCATEGORY_OTHERS, "Otros", colorCategory = R.color.categ_color_services_others),
+            Category(CATEGORY_SERVICES, SUBCATEGORY_STREAMING, "Plataformas streaming", colorCategory = R.color.categ_color_services_streaming),
+            Category(CATEGORY_SERVICES, SUBCATEGORY_MUNICIPAL_TAX, "Municipal", colorCategory = R.color.categ_color_services_municipal_tax),
+            Category(CATEGORY_SERVICES, SUBCATEGORY_EXPENSES, "Expensas", colorCategory = R.color.categ_color_services_expenses),
+            Category(CATEGORY_SERVICES, SUBCATEGORY_MOBILE_TELEPHONY, "Telefonia movil", colorCategory = R.color.categ_color_services_mobile_telephony),
+            Category(CATEGORY_TECHNOLOGY, SUBCATEGORY_SOFTWARE, "Software, apps y juegos", colorCategory = R.color.categ_color_technology_software),
+            Category(CATEGORY_OTHERS, SUBCATEGORY_MAIL_AND_SHIPMENTS, "Correo y envios", colorCategory = R.color.categ_color_others_mail_and_shipments),
+            Category(CATEGORY_OTHERS, SUBCATEGORY_LOTERY_CASINO, "Loteria y casino", colorCategory = R.color.categ_color_others_lotery_casino),
+            Category(CATEGORY_OTHERS, SUBCATEGORY_MISSING, "Faltantes", iconRsc = R.drawable.ic_other_generic, colorCategory = R.color.categ_color_other),
+            Category(CATEGORY_FINANCIAL_EXPENSES, SUBCATEGORY_ASSESMENT, "Asesoria financiera", colorCategory = R.color.categ_color_financial_expenses_assesment),
+            Category(CATEGORY_FINANCIAL_EXPENSES, SUBCATEGORY_CHARGES, "Cargos y comisiones", colorCategory = R.color.categ_color_financial_expenses_charges),
+            Category(CATEGORY_FINANCIAL_EXPENSES, SUBCATEGORY_FINES, "Multas", colorCategory = R.color.categ_color_financial_expenses_fines),
+            Category(CATEGORY_FINANCIAL_EXPENSES, SUBCATEGORY_INSURANCES, "Seguros", colorCategory = R.color.categ_color_financial_expenses_insurances),
+            Category(CATEGORY_FINANCIAL_EXPENSES, SUBCATEGORY_LOAN_INTERESTS, "Intereses de prestamos", colorCategory = R.color.categ_color_financial_expenses_loan_interests),
+            Category(CATEGORY_FINANCIAL_EXPENSES, SUBCATEGORY_OTHERS, "Otros", iconRsc = R.drawable.ic_category_investment_and_finances, colorCategory = R.color.categ_color_investment_and_finances),
+            Category(CATEGORY_FOOD_AND_DRINKS, SUBCATEGORY_COFEE_RESTAURANT, "Cafeteria y restaurant", colorCategory = R.color.categ_color_food_and_drinks_cofee_restaurant),
+            Category(CATEGORY_FOOD_AND_DRINKS, SUBCATEGORY_MARKET, "Supermercado y almacen", colorCategory = R.color.categ_color_food_and_drinks_market),
+            Category(CATEGORY_FOOD_AND_DRINKS, SUBCATEGORY_FAST_FOOD, "Comida rapida y delivery", iconRsc = R.drawable.ic_category_fast_food, colorCategory = R.color.categ_color_fast_food),
+            Category(CATEGORY_FOOD_AND_DRINKS, SUBCATEGORY_OTHERS, "Otros", iconRsc = R.drawable.ic_category_food, colorCategory = R.color.categ_color_food),
+            Category(CATEGORY_INCOME, SUBCATEGORY_PENSIONS, "Pensiones", colorCategory = R.color.categ_color_income_pensions),
+            Category(CATEGORY_INCOME, SUBCATEGORY_CHECKS_COUPONS, "Cheques y cupones", colorCategory = R.color.categ_color_income_checks_coupons),
+            Category(CATEGORY_INCOME, SUBCATEGORY_SCHOLARSHIPS, "Becas", colorCategory = R.color.categ_color_income_scholarships),
+            Category(CATEGORY_INCOME, SUBCATEGORY_INTERESTS_AND_INCOMES, "Intereses y dividendos", colorCategory = R.color.categ_color_income_interests_and_incomes),
+            Category(CATEGORY_INCOME, SUBCATEGORY_RENTALS, "Alquileres", colorCategory = R.color.categ_color_income_rentals),
+            Category(CATEGORY_INCOME, SUBCATEGORY_OTHERS, "Otros", colorCategory = R.color.categ_color_income_others),
+            Category(CATEGORY_INCOME, SUBCATEGORY_PRODUCTS_SALE, "Venta de productos", colorCategory = R.color.categ_color_income_products_sale),
+            Category(CATEGORY_INCOME, SUBCATEGORY_SALARY, "Sueldo", iconRsc = R.drawable.ic_category_salary, colorCategory = R.color.categ_color_salary),
+            Category(CATEGORY_INCOME, SUBCATEGORY_SOCIAL_BENEFITS, "Plan estatal", colorCategory = R.color.categ_color_income_social_benefits),
+            Category(CATEGORY_INCOME, SUBCATEGORY_BONUS, "Bonos, aguinaldo", colorCategory = R.color.categ_color_income_bonus),
+            Category(CATEGORY_INVESTMENTS, SUBCATEGORY_TRADITIONAL, "Inversiones financieras tradicionales", colorCategory = R.color.categ_color_investments_traditional),
+            Category(CATEGORY_INVESTMENTS, SUBCATEGORY_CRYPTOCURRENCY, "Inversiones criptomonedas", colorCategory = R.color.categ_color_investments_cryptocurrency),
+            Category(CATEGORY_INVESTMENTS, SUBCATEGORY_REAL_STATE, "Bienes inmuebles", colorCategory = R.color.categ_color_investments_real_state),
+            Category(CATEGORY_INVESTMENTS, SUBCATEGORY_FOREIGN_CURRENCY, "Moneda extranjera", colorCategory = R.color.categ_color_investments_foreign_currency),
+            Category(CATEGORY_INVESTMENTS, SUBCATEGORY_MOVABLE_ASSETS, "Bienes muebles", colorCategory = R.color.categ_color_investments_movable_assets),
+            Category(CATEGORY_INVESTMENTS, SUBCATEGORY_OTHERS, "Otros", colorCategory = R.color.categ_color_investments_others),
+            Category(CATEGORY_INVESTMENTS, SUBCATEGORY_HARD_ASSETS, "Activos duros", colorCategory = R.color.categ_color_investments_hard_assets),
+            Category(CATEGORY_LEISURE, SUBCATEGORY_SPORT, "Deporte", colorCategory = R.color.categ_color_leisure_sport),
+            Category(CATEGORY_LEISURE, SUBCATEGORY_BOOKS, "Libros", colorCategory = R.color.categ_color_leisure_books),
+            Category(CATEGORY_LEISURE, SUBCATEGORY_CONCERTS, "Recitales", iconRsc = R.drawable.ic_category_concerts, colorCategory = R.color.categ_color_concerts),
+            Category(CATEGORY_LEISURE, SUBCATEGORY_HOBBIES, "Hobbies", iconRsc = R.drawable.ic_category_hobbies, colorCategory = R.color.categ_color_hobbies),
+            Category(CATEGORY_LEISURE, SUBCATEGORY_TRAVEL_AND_HOLIDAYS, "Viajes y vacaciones", colorCategory = R.color.categ_color_leisure_travel_and_holidays),
+            Category(CATEGORY_LEISURE, SUBCATEGORY_CINEMA_AND_THEATER, "Cine y teatro", colorCategory = R.color.categ_color_leisure_cinema_and_theater),
+            Category(CATEGORY_LEISURE, SUBCATEGORY_EDUCATION_AND_DEVELOPMENT, "Educacion y desarrollo", colorCategory = R.color.categ_color_leisure_education_and_development),
+            Category(CATEGORY_LEISURE, SUBCATEGORY_OTHERS, "Otros", colorCategory = R.color.categ_color_leisure_others),
+            Category(CATEGORY_LEISURE, SUBCATEGORY_CHARITY, "Caridad", colorCategory = R.color.categ_color_leisure_charity),
+            Category(CATEGORY_LEISURE, SUBCATEGORY_MUSEAMS_AND_CULTURE, "Museos y cultura", colorCategory = R.color.categ_color_leisure_museams_and_culture),
+            Category(CATEGORY_LEISURE, SUBCATEGORY_ALCOHOL_TOBACCO, "Alcohol y tabaco", colorCategory = R.color.categ_color_leisure_alcohol_tobacco),
+            Category(CATEGORY_DEBT, SUBCATEGORY_LOANS, "Prestamos", colorCategory = R.color.categ_color_debt_loans),
+            Category(CATEGORY_DEBT, SUBCATEGORY_OTHERS, "Otros", colorCategory = R.color.categ_color_debt_others),
+            Category(CATEGORY_SHOPS, SUBCATEGORY_APPLIANCES, "Electrodomesticos", colorCategory = R.color.categ_color_shops_appliances),
+            Category(CATEGORY_SHOPS, SUBCATEGORY_GIFTS, "Regalos", colorCategory = R.color.categ_color_shops_gifts),
+            Category(CATEGORY_SHOPS, SUBCATEGORY_ACCESSORIES, "Accesorios", colorCategory = R.color.categ_color_shops_accessories),
+            Category(CATEGORY_SHOPS, SUBCATEGORY_PERSONAL_CARE, "Perfumeria", colorCategory = R.color.categ_color_shops_personal_care),
+            Category(CATEGORY_SHOPS, SUBCATEGORY_OTHERS, "Otros", colorCategory = R.color.categ_color_shops_others),
+            Category(CATEGORY_SHOPS, SUBCATEGORY_CLOTHES_AND_SHOES, "Ropa y calzado", iconRsc = R.drawable.ic_category_clothes, colorCategory = R.color.categ_color_clothes),
+            Category(CATEGORY_PETS, SUBCATEGORY_OTHERS, "Otros", colorCategory = R.color.categ_color_pets_others),
+            Category(CATEGORY_PETS, SUBCATEGORY_VET, "Veterinario", colorCategory = R.color.categ_color_pets_vet),
+            Category(CATEGORY_PETS, SUBCATEGORY_FOOD, "Alimento", colorCategory = R.color.categ_color_pets_food),
+            Category(CATEGORY_PETS, SUBCATEGORY_DOG_WALKER, "Paseador (perros)", colorCategory = R.color.categ_color_pets_dog_walker),
+            Category(CATEGORY_TRANSPORTATION, SUBCATEGORY_HOLIDAY, "Viajes de vacaciones", colorCategory = R.color.categ_color_transportation_holiday),
+            Category(CATEGORY_TRANSPORTATION, SUBCATEGORY_OTHERS, "Otros", colorCategory = R.color.categ_color_transportation_others),
+            Category(CATEGORY_TRANSPORTATION, SUBCATEGORY_PUBLIC, "Transporte publico", colorCategory = R.color.categ_color_transportation_public),
+            Category(CATEGORY_TRANSPORTATION, SUBCATEGORY_TAXI, "Taxi, remis y otras empresas", colorCategory = R.color.categ_color_transportation_taxi),
+            Category(CATEGORY_HEALTH, SUBCATEGORY_HEALTH_INSURANCE, "Prepaga y obra social", colorCategory = R.color.categ_color_health_health_insurance),
+            Category(CATEGORY_HEALTH, SUBCATEGORY_MEDICAL_SUPPLIES, "Insumos medicos", colorCategory = R.color.categ_color_health_medical_supplies),
+            Category(CATEGORY_HEALTH, SUBCATEGORY_BEAUTY, "Bienestar y belleza", colorCategory = R.color.categ_color_health_beauty),
+            Category(CATEGORY_HEALTH, SUBCATEGORY_STUDIES, "Estudios", iconRsc = R.drawable.ic_category_particular_studies, colorCategory = R.color.categ_color_studies),
+            Category(CATEGORY_HEALTH, SUBCATEGORY_MEDICINE, "Medicación", iconRsc = R.drawable.ic_category_medicine, colorCategory = R.color.categ_color_medicine),
+            Category(CATEGORY_HEALTH, SUBCATEGORY_OTHERS, "Otros", iconRsc = R.drawable.ic_category_health, colorCategory = R.color.categ_color_health),
+            Category(CATEGORY_VEHICLE, SUBCATEGORY_FUEL, "Combustible", colorCategory = R.color.categ_color_vehicle_fuel),
+            Category(CATEGORY_VEHICLE, SUBCATEGORY_INSURANCE, "Seguro del vehiculo", colorCategory = R.color.categ_color_vehicle_insurance),
+            Category(CATEGORY_VEHICLE, SUBCATEGORY_OTHERS, "Otros", iconRsc = R.drawable.ic_category_vehicle, colorCategory = R.color.categ_color_vehicles),
+            Category(CATEGORY_VEHICLE, SUBCATEGORY_PARKING, "Estacionamiento", colorCategory = R.color.categ_color_vehicle_parking),
+            Category(CATEGORY_VEHICLE, SUBCATEGORY_RENTAL, "Alquiler de vehiculos", colorCategory = R.color.categ_color_vehicle_rental),
+            Category(CATEGORY_VEHICLE, SUBCATEGORY_MANTAINANCE, "Mantenimiento del vehiculo", iconRsc = R.drawable.ic_category_vehicle_maintenance, colorCategory = R.color.categ_color_vehicles_maintenance),
+            Category(CATEGORY_VEHICLE, SUBCATEGORY_TOLLS, "Peajes", colorCategory = R.color.categ_color_vehicle_tolls),
             Category(WITHOUT_CATEGORY, "", "Sin categoría")
         )
 
@@ -226,7 +226,7 @@ data class Category(
          * in [ALL_CATEGORIES] (e.g. stale data from a previous taxonomy).
          */
         fun fromCategoryAndSubcategory(category: String, subcategory: String): Category {
-            return ALL_CATEGORIES.find { it.category == category && it.subcategory == subcategory }
+            return ALL_CATEGORIES.find { it.categoryName == category && it.subcategoryName == subcategory }
                 ?: Category(category, subcategory)
         }
     }

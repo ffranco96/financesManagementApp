@@ -15,8 +15,8 @@ fun Record.toEntity(): RecordEntity{
         amount = amount,
         description = description,
         isIncome = isIncome,
-        category = category.category,
-        subcategory = category.subcategory,
+        category = category.categoryName,
+        subcategory = category.subcategoryName,
         date = date,
         currency = currency
     )
