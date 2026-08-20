@@ -14,8 +14,8 @@ fun Record.toEntity(): RecordEntity{
         accountId = accountId,
         amount = amount,
         description = description,
-        category = category.categoryName,
-        subcategory = category.subcategoryName,
+        category = category.categoryName.toString(),
+        subcategory = category.subcategoryName.toString(),
         date = date,
         currency = currency
     )

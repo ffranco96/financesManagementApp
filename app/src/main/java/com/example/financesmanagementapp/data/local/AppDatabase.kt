@@ -8,7 +8,7 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.financesmanagementapp.data.local.dao.RecordsDAO
 import com.example.financesmanagementapp.data.local.entities.RecordEntity
-import com.example.financesmanagementapp.domain.model.Category
+import com.example.financesmanagementapp.domain.model.CategoryName
 
 
 /**
@@ -39,7 +39,7 @@ abstract class AppDatabase : RoomDatabase() {
         /**
          * Replaces the single `categoryName` column with `category`/`subcategory`, matching the
          * new two-level category taxonomy. Existing records can't be mapped to the new taxonomy
-         * automatically, so they're simply reassigned to [Category.WITHOUT_CATEGORY].
+         * automatically, so they're simply reassigned to [CategoryName.WITHOUT_CATEGORY].
          */
         val MIGRATION_2_3 = object : Migration(2, 3) {
             override fun migrate(db: SupportSQLiteDatabase) {
@@ -58,7 +58,7 @@ abstract class AppDatabase : RoomDatabase() {
                 """.trimIndent())
                 db.execSQL("""
                     INSERT INTO records_new (id, accountId, amount, description, isIncome, category, subcategory, date, currency)
-                    SELECT id, accountId, amount, description, isIncome, '${Category.WITHOUT_CATEGORY}', '', date, currency FROM records
+                    SELECT id, accountId, amount, description, isIncome, '${CategoryName.WITHOUT_CATEGORY}', '', date, currency FROM records
                 """.trimIndent())
                 db.execSQL("DROP TABLE records")
                 db.execSQL("ALTER TABLE records_new RENAME TO records")

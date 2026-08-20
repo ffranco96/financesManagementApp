@@ -47,7 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.financesmanagementapp.R
 import com.example.financesmanagementapp.domain.model.Category
-import com.example.financesmanagementapp.domain.model.Category.Companion.WITHOUT_CATEGORY
+import com.example.financesmanagementapp.domain.model.CategoryName
 import com.example.financesmanagementapp.domain.model.Record
 import com.example.financesmanagementapp.navigation.AppScreens
 
@@ -235,7 +235,7 @@ fun BodyContent(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val displayText = if (selectedCategory.categoryName == WITHOUT_CATEGORY) {
+            val displayText = if (selectedCategory.categoryName == CategoryName.WITHOUT_CATEGORY) {
                 "Seleccione categoría"
             } else {
                 selectedCategory.displayLabel
