@@ -1,6 +1,5 @@
 package com.example.financesmanagementapp.ui.addrecordetail.ui
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -46,9 +45,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.financesmanagementapp.domain.model.Category
-import com.example.financesmanagementapp.domain.model.Record
-import com.example.financesmanagementapp.navigation.AppScreens
 import com.example.financesmanagementapp.R
 import com.example.financesmanagementapp.domain.model.Category
 import com.example.financesmanagementapp.domain.model.Category.Companion.WITHOUT_CATEGORY
@@ -116,12 +112,14 @@ fun AddRecordDetailScreen(
                 FloatingActionButton(
                     onClick = {
                         if (!isAmountZero) {
-                            val completeRecord = record?.copy(
-                                description = detailText,
-                                category = categoryList.find { it.categoryName == selectedCategory.categoryName } ?: Category(),
-                                date = selectedDate,
-                                amount = if (selectedCategory.isIncome) it.amount else -it.amount
-                            )
+                            val completeRecord = record?.let { rec ->
+                                rec.copy(
+                                    description = detailText,
+                                    category = categoryList.find { it.categoryName == selectedCategory.categoryName } ?: Category(),
+                                    date = selectedDate,
+                                    amount = if (selectedCategory.isIncome) rec.amount else -rec.amount
+                                )
+                            }
                             viewModel.saveRecord(completeRecord)
                             navController.navigate(AppScreens.HomeStartScreen.route){
                                 popUpTo(AppScreens.HomeStartScreen.route){

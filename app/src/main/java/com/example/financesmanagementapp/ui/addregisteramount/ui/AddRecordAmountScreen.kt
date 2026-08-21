@@ -16,7 +16,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -44,8 +43,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.financesmanagementapp.navigation.AppScreens
 import com.example.financesmanagementapp.domain.model.Record
+import com.example.financesmanagementapp.navigation.AppScreens
 
 /**
  * Screen that allows the user to input the amount for a new financial record.
@@ -174,34 +173,6 @@ fun BodyContent(
         Row(modifier = Modifier
             .fillMaxWidth()
             .height(50.dp)){
-            Text("Gasto", fontSize = 22.sp)
-            Switch(
-                checked = checkedSwitch,
-                onCheckedChange = onCheckedSwitchChange,
-                modifier = Modifier.weight(1f),
-                thumbContent = if(checkedSwitch) {
-                    {
-                        Icon(
-                            imageVector = Icons.Filled.Add,
-                            contentDescription = null,
-                            modifier = Modifier.size(SwitchDefaults.IconSize),
-                            tint = Color.Green
-                        )
-                    }
-                } else {
-                    {
-                        Icon(
-                            imageVector = Icons.Default.Remove,
-                            contentDescription = null,
-                            modifier = Modifier.size(SwitchDefaults.IconSize),
-                            tint = Color.Red
-                        )
-                    }
-                }
-            )
-            Text("Ingreso", fontSize = 22.sp)
-
-            Spacer(Modifier.weight(1f))
 
             Box(
                 modifier = Modifier

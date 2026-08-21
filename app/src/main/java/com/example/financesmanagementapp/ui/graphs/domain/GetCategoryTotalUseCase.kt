@@ -11,11 +11,11 @@ import javax.inject.Inject
 
 /**
  * Use case that retrieves all records for a given account, filters those within
- * the last 'daysToGetTotal' days, groups them by category and computes separate income,
- * expense and net totals per category.
+ * the last 'daysToGetTotal' days, groups them by category/subcategory pair and computes
+ * separate income, expense and net totals per pair.
  *
- * Each category appears exactly once in the result, with income and expense
- * subtotals plus their net (income + expense). Categories with both incomes
+ * Each category/subcategory pair appears exactly once in the result, with income and expense
+ * subtotals plus their net (income + expense). Pairs with both incomes
  * and expenses equal to zero are excluded.
  *
  * @property repository The [RecordsRepository] used to fetch the raw records.
@@ -49,17 +49,18 @@ class GetCategoryTotalUseCase @Inject constructor(
                     }
                     recordDate != null && !recordDate.isBefore(nDaysAgo)
                 }
-                .groupBy { it.categoryName }
-                .map { (categoryName, records) ->
-                    val category = Category.fromName(categoryName)
+                .groupBy { it.category to it.subcategory }
+                .map { (categoryKey, records) ->
+                    val (categoryName, subcategoryName) = categoryKey
+                    val category = Category.fromCategoryAndSubcategory(categoryName, subcategoryName)
                     val incomes = records.filter { it.amount > 0 }.sumOf { it.amount }
                     val expenses = records.filter { it.amount < 0 }.sumOf { it.amount }
                     CategoryTotal(
-                        categoryName = categoryName,
+                        categoryName = category.displayName,
                         incomes = incomes,
                         expenses = expenses,
                         net = incomes + expenses,
-                        colorResId = category.colorIcon
+                        colorResId = category.colorCategory
                     )
                 }
                 .filter { it.incomes != 0.0 || it.expenses != 0.0 }
