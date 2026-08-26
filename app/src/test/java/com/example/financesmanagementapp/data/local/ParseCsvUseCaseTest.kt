@@ -3,7 +3,8 @@ package com.example.financesmanagementapp.data.local
 import android.content.Context
 import android.content.res.Resources
 import android.util.Log
-import com.example.financesmanagementapp.domain.model.Category
+import com.example.financesmanagementapp.domain.model.CategoryName
+import com.example.financesmanagementapp.domain.model.SubcategoryName
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -28,8 +29,8 @@ class ParseCsvUseCaseTest {
     @Test
     fun `given valid csv line when invoke then returns parsed record`() {
         val csvContent = """
-            amount;description;categoryName;date;currency
-            -30000.0;Farmacia;${Category.CATEGORY_MEDICINE};2026-04-09;ARS
+            amount;description;category;subcategory;date;currency
+            -30000.0;Farmacia;${CategoryName.CATEGORY_HEALTH};${SubcategoryName.SUBCATEGORY_MEDICINE};2026-04-09;ARS
         """.trimIndent()
         val inputStream = csvContent.byteInputStream()
         every { resources.getResourceEntryName(any()) } returns "ic_category_medicine"
@@ -39,7 +40,8 @@ class ParseCsvUseCaseTest {
         val record = result.records.first()
         assertEquals("Farmacia", record.description)
         assertEquals(-30000.0, record.amount, 0.001)
-        assertEquals(Category.CATEGORY_MEDICINE, record.category.categoryName)
+        assertEquals(CategoryName.CATEGORY_HEALTH, record.category.categoryName)
+        assertEquals(SubcategoryName.SUBCATEGORY_MEDICINE, record.category.subcategoryName)
         assertEquals("2026-04-09", record.date)
         assertEquals("ARS", record.currency)
         assertEquals(1, result.records.size)
@@ -49,8 +51,8 @@ class ParseCsvUseCaseTest {
     @Test
     fun `given valid csv with reordered columns when invoke then returns parsed record`() {
         val csvContent = """
-            description;amount;categoryName;currency;date
-            Farmacia;-30000.0;${Category.CATEGORY_MEDICINE};ARS;2026-04-09
+            description;amount;category;subcategory;currency;date
+            Farmacia;-30000.0;${CategoryName.CATEGORY_HEALTH};${SubcategoryName.SUBCATEGORY_MEDICINE};ARS;2026-04-09
         """.trimIndent()
         val inputStream = csvContent.byteInputStream()
         every { resources.getResourceEntryName(any()) } returns "ic_category_medicine"
@@ -60,7 +62,8 @@ class ParseCsvUseCaseTest {
         val record = result.records.first()
         assertEquals("Farmacia", record.description)
         assertEquals(-30000.0, record.amount, 0.001)
-        assertEquals(Category.CATEGORY_MEDICINE, record.category.categoryName)
+        assertEquals(CategoryName.CATEGORY_HEALTH, record.category.categoryName)
+        assertEquals(SubcategoryName.SUBCATEGORY_MEDICINE, record.category.subcategoryName)
         assertEquals("2026-04-09", record.date)
         assertEquals("ARS", record.currency)
         assertTrue(result.errors.isEmpty())
@@ -69,8 +72,8 @@ class ParseCsvUseCaseTest {
     @Test
     fun `given csv without description column when invoke then defaults to empty string`() {
         val csvContent = """
-            amount;categoryName;date;currency
-            -30000.0;${Category.CATEGORY_MEDICINE};2026-04-09;ARS
+            amount;category;subcategory;date;currency
+            -30000.0;${CategoryName.CATEGORY_HEALTH};${SubcategoryName.SUBCATEGORY_MEDICINE};2026-04-09;ARS
         """.trimIndent()
         val inputStream = csvContent.byteInputStream()
         every { resources.getResourceEntryName(any()) } returns "ic_category_medicine"
@@ -84,8 +87,8 @@ class ParseCsvUseCaseTest {
     @Test
     fun `given csv without amount column when invoke then returns missing field error`() {
         val csvContent = """
-            description;categoryName;date;currency
-            Farmacia;${Category.CATEGORY_MEDICINE};2026-04-09;ARS
+            description;category;subcategory;date;currency
+            Farmacia;${CategoryName.CATEGORY_HEALTH};${SubcategoryName.SUBCATEGORY_MEDICINE};2026-04-09;ARS
         """.trimIndent()
         val inputStream = csvContent.byteInputStream()
 
@@ -101,8 +104,8 @@ class ParseCsvUseCaseTest {
     @Test
     fun `given csv without category column when invoke then returns missing field error`() {
         val csvContent = """
-            description;amount;date;currency
-            Farmacia;-100.23;2026-04-09;ARS
+            description;amount;subcategory;date;currency
+            Farmacia;-100.23;${SubcategoryName.SUBCATEGORY_MEDICINE};2026-04-09;ARS
         """.trimIndent()
         val inputStream = csvContent.byteInputStream()
 
@@ -112,14 +115,31 @@ class ParseCsvUseCaseTest {
         assertEquals(1, result.errors.size)
         val error = result.errors.first()
         assertTrue(error is ParseError.MissingField)
-        assertEquals("categoryName", (error as ParseError.MissingField).field)
+        assertEquals("category", (error as ParseError.MissingField).field)
+    }
+
+    @Test
+    fun `given csv without subcategory column when invoke then returns missing field error`() {
+        val csvContent = """
+            description;amount;category;date;currency
+            Farmacia;-100.23;${CategoryName.CATEGORY_HEALTH};2026-04-09;ARS
+        """.trimIndent()
+        val inputStream = csvContent.byteInputStream()
+
+        val result = parseCsvUseCase(inputStream)
+
+        assertTrue(result.records.isEmpty())
+        assertEquals(1, result.errors.size)
+        val error = result.errors.first()
+        assertTrue(error is ParseError.MissingField)
+        assertEquals("subcategory", (error as ParseError.MissingField).field)
     }
 
     @Test
     fun `given csv without date column when invoke then returns missing field error`() {
         val csvContent = """
-            amount;description;categoryName;currency
-            -30000.0;Farmacia;${Category.CATEGORY_MEDICINE};ARS
+            amount;description;category;subcategory;currency
+            -30000.0;Farmacia;${CategoryName.CATEGORY_HEALTH};${SubcategoryName.SUBCATEGORY_MEDICINE};ARS
         """.trimIndent()
         val inputStream = csvContent.byteInputStream()
 
@@ -135,8 +155,8 @@ class ParseCsvUseCaseTest {
     @Test
     fun `given csv without currency column when invoke then returns missing field error`() {
         val csvContent = """
-            amount;description;categoryName;date
-            -30000.0;Farmacia;${Category.CATEGORY_MEDICINE};2026-04-09
+            amount;description;category;subcategory;date
+            -30000.0;Farmacia;${CategoryName.CATEGORY_HEALTH};${SubcategoryName.SUBCATEGORY_MEDICINE};2026-04-09
         """.trimIndent()
         val inputStream = csvContent.byteInputStream()
 
@@ -152,8 +172,8 @@ class ParseCsvUseCaseTest {
     @Test
     fun `given csv with non numeric amount when invoke then returns format error`() {
         val csvContent = """
-            amount;description;categoryName;date;currency
-            abc;Farmacia;${Category.CATEGORY_MEDICINE};2026-04-09;ARS
+            amount;description;category;subcategory;date;currency
+            abc;Farmacia;${CategoryName.CATEGORY_HEALTH};${SubcategoryName.SUBCATEGORY_MEDICINE};2026-04-09;ARS
         """.trimIndent()
         val inputStream = csvContent.byteInputStream()
 
@@ -168,10 +188,24 @@ class ParseCsvUseCaseTest {
     }
 
     @Test
-    fun `given csv with blank categoryName when invoke then returns missing field error`() {
+    fun `given csv with blank category when invoke then returns missing field error`() {
         val csvContent = """
-            amount;description;categoryName;date;currency
-            -30000.0;Farmacia;;2026-04-09;ARS
+            amount;description;category;subcategory;date;currency
+            -30000.0;Farmacia;;${SubcategoryName.SUBCATEGORY_MEDICINE};2026-04-09;ARS
+        """.trimIndent()
+        val inputStream = csvContent.byteInputStream()
+
+        val result = parseCsvUseCase(inputStream)
+
+        assertTrue(result.records.isEmpty())
+        assertEquals(1, result.errors.size)
+    }
+
+    @Test
+    fun `given csv with blank subcategory when invoke then returns missing field error`() {
+        val csvContent = """
+            amount;description;category;subcategory;date;currency
+            -30000.0;Farmacia;${CategoryName.CATEGORY_HEALTH};;2026-04-09;ARS
         """.trimIndent()
         val inputStream = csvContent.byteInputStream()
 
@@ -184,8 +218,8 @@ class ParseCsvUseCaseTest {
     @Test
     fun `given csv with blank amount when invoke then returns missing field error`() {
         val csvContent = """
-            amount;description;categoryName;date;currency
-            ;Farmacia;${Category.CATEGORY_MEDICINE};2026-04-09;ARS
+            amount;description;category;subcategory;date;currency
+            ;Farmacia;${CategoryName.CATEGORY_HEALTH};${SubcategoryName.SUBCATEGORY_MEDICINE};2026-04-09;ARS
         """.trimIndent()
         val inputStream = csvContent.byteInputStream()
 
@@ -200,8 +234,8 @@ class ParseCsvUseCaseTest {
     @Test
     fun `given csv with blank date when invoke then returns missing field error`() {
         val csvContent = """
-            amount;description;categoryName;date;currency
-            -30000.0;Farmacia;${Category.CATEGORY_MEDICINE};;ARS
+            amount;description;category;subcategory;date;currency
+            -30000.0;Farmacia;${CategoryName.CATEGORY_HEALTH};${SubcategoryName.SUBCATEGORY_MEDICINE};;ARS
         """.trimIndent()
         val inputStream = csvContent.byteInputStream()
 
@@ -215,8 +249,8 @@ class ParseCsvUseCaseTest {
     @Test
     fun `given csv with blank currency when invoke then returns missing field error`() {
         val csvContent = """
-            amount;description;categoryName;date;currency
-            -30000.0;Farmacia;${Category.CATEGORY_MEDICINE};2026-04-09;
+            amount;description;category;subcategory;date;currency
+            -30000.0;Farmacia;${CategoryName.CATEGORY_HEALTH};${SubcategoryName.SUBCATEGORY_MEDICINE};2026-04-09;
         """.trimIndent()
         val inputStream = csvContent.byteInputStream()
 
@@ -230,7 +264,7 @@ class ParseCsvUseCaseTest {
     @Test
     fun `given csv line with fewer columns than header when invoke then returns missing field error`() {
         val csvContent = """
-            amount;description;categoryName;date;currency
+            amount;description;category;subcategory;date;currency
             -30000.0;Farmacia
         """.trimIndent()
         val inputStream = csvContent.byteInputStream()
@@ -254,7 +288,7 @@ class ParseCsvUseCaseTest {
 
     @Test
     fun `given header only when invoke then returns empty file error`() {
-        val csvContent = "amount;description;categoryName;date;currency"
+        val csvContent = "amount;description;category;subcategory;date;currency"
         val inputStream = csvContent.byteInputStream()
 
         val result = parseCsvUseCase(inputStream)
@@ -267,10 +301,10 @@ class ParseCsvUseCaseTest {
     @Test
     fun `given mix of valid and invalid lines when invoke then returns partial success`() {
         val csvContent = """
-            amount;description;categoryName;date;currency
-            -30000.0;Farmacia;${Category.CATEGORY_MEDICINE};2026-04-09;ARS
-            abc;Farmacia;${Category.CATEGORY_MEDICINE};2026-04-09;ARS
-            -100.0;;${Category.CATEGORY_FOOD};2026-04-10;ARS
+            amount;description;category;subcategory;date;currency
+            -30000.0;Farmacia;${CategoryName.CATEGORY_HEALTH};${SubcategoryName.SUBCATEGORY_MEDICINE};2026-04-09;ARS
+            abc;Farmacia;${CategoryName.CATEGORY_HEALTH};${SubcategoryName.SUBCATEGORY_MEDICINE};2026-04-09;ARS
+            -100.0;;${CategoryName.CATEGORY_FOOD_AND_DRINKS};${SubcategoryName.SUBCATEGORY_MARKET};2026-04-10;ARS
         """.trimIndent()
         val inputStream = csvContent.byteInputStream()
         every { resources.getResourceEntryName(any()) } returns "some_entry"
@@ -286,23 +320,38 @@ class ParseCsvUseCaseTest {
     @Test
     fun `given csv with unknown category when invoke then uses default category`() {
         val csvContent = """
-            amount;description;categoryName;date;currency
-            -100.0;Test;${Category.CATEGORY_MISSING};2026-01-01;ARS
+            amount;description;category;subcategory;date;currency
+            -100.0;Test;CATEGORY_DOES_NOT_EXIST;${SubcategoryName.SUBCATEGORY_MEDICINE};2026-01-01;ARS
         """.trimIndent()
         val inputStream = csvContent.byteInputStream()
         every { resources.getResourceEntryName(any()) } returns "some_entry"
 
         val result = parseCsvUseCase(inputStream)
 
-        assertEquals(Category.CATEGORY_MISSING, result.records.first().category.categoryName)
+        assertEquals(CategoryName.WITHOUT_CATEGORY, result.records.first().category.categoryName)
         assertTrue(result.errors.isEmpty())
     }
 
     @Test
-    fun `given csv line with only 3 columns when invoke then returns missing field error for date`() {
+    fun `given csv line with only 3 columns when invoke then returns missing field error for subcategory`() {
         val csvContent = """
-            amount;description;categoryName;date;currency
-            -30000.0;Test;${Category.CATEGORY_MEDICINE}
+            amount;description;category;subcategory;date;currency
+            -30000.0;Test;${CategoryName.CATEGORY_HEALTH}
+        """.trimIndent()
+        val inputStream = csvContent.byteInputStream()
+
+        val result = parseCsvUseCase(inputStream)
+
+        assertTrue(result.records.isEmpty())
+        assertEquals(1, result.errors.size)
+        assertTrue(result.errors.first() is ParseError.MissingField)
+    }
+
+    @Test
+    fun `given csv line with only 4 columns when invoke then returns missing field error for date`() {
+        val csvContent = """
+            amount;description;category;subcategory;date;currency
+            -30000.0;Test;${CategoryName.CATEGORY_HEALTH};${SubcategoryName.SUBCATEGORY_MEDICINE}
         """.trimIndent()
         val inputStream = csvContent.byteInputStream()
 
@@ -314,10 +363,10 @@ class ParseCsvUseCaseTest {
     }
 
     @Test
-    fun `given csv line with only 4 columns when invoke then returns missing field error for currency`() {
+    fun `given csv line with only 5 columns when invoke then returns missing field error for currency`() {
         val csvContent = """
-            amount;description;categoryName;date;currency
-            -30000.0;Test;${Category.CATEGORY_MEDICINE};2026-04-09
+            amount;description;category;subcategory;date;currency
+            -30000.0;Test;${CategoryName.CATEGORY_HEALTH};${SubcategoryName.SUBCATEGORY_MEDICINE};2026-04-09
         """.trimIndent()
         val inputStream = csvContent.byteInputStream()
 
@@ -331,8 +380,8 @@ class ParseCsvUseCaseTest {
     @Test
     fun `given getResourceEntryName throws when invoke then still parses record`() {
         val csvContent = """
-            amount;description;categoryName;date;currency
-            -100.0;Test;${Category.CATEGORY_FOOD};2026-01-01;ARS
+            amount;description;category;subcategory;date;currency
+            -100.0;Test;${CategoryName.CATEGORY_FOOD_AND_DRINKS};${SubcategoryName.SUBCATEGORY_MARKET};2026-01-01;ARS
         """.trimIndent()
         val inputStream = csvContent.byteInputStream()
         every { resources.getResourceEntryName(any()) } throws Resources.NotFoundException()

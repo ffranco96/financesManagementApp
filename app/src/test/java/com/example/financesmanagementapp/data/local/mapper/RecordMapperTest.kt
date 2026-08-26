@@ -1,9 +1,11 @@
 package com.example.financesmanagementapp.data.local.mapper
 
+import com.example.financesmanagementapp.data.local.entities.RecordEntity
 import com.example.financesmanagementapp.domain.model.Category
+import com.example.financesmanagementapp.domain.model.CategoryName
 import com.example.financesmanagementapp.domain.model.Record
+import com.example.financesmanagementapp.domain.model.SubcategoryName
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class RecordMapperTest {
@@ -47,39 +49,31 @@ class RecordMapperTest {
     }
 
     @Test
-    fun `given Record when toEntity then maps categoryName from category object`() {
+    fun `given Record when toEntity then maps category and subcategory names from category object`() {
         // Given
-        val record = Record(category = Category(Category.CATEGORY_MEDICINE))
+        val record = Record(
+            category = Category(CategoryName.CATEGORY_HEALTH, SubcategoryName.SUBCATEGORY_MEDICINE)
+        )
 
         // When
         val entity = record.toEntity()
 
         // Then
-        assertEquals(Category.CATEGORY_MEDICINE, entity.categoryName)
+        assertEquals("CATEGORY_HEALTH", entity.category)
+        assertEquals("SUBCATEGORY_MEDICINE", entity.subcategory)
     }
 
     @Test
-    fun `given Record of Category that has empty name when toEntity then maps to WITHOUT_CATEGORY`() {
+    fun `given Record with default category when toEntity then maps to WITHOUT_CATEGORY and SUBCATEGORY_NONE`() {
         // Given
-        val record = Record(category = Category(""))
+        val record = Record(category = Category())
 
         // When
         val entity = record.toEntity()
 
         // Then
-        assertEquals(Category.WITHOUT_CATEGORY, entity.categoryName)
-    }
-
-    @Test
-    fun `given Record of Category with invalid name when toEntity then maps to WITHOUT_CATEGORY`() {
-        // Given
-        val record = Record(category = Category("InvalidCategory!@#"))
-
-        // When
-        val entity = record.toEntity()
-
-        // Then
-        assertEquals(Category.WITHOUT_CATEGORY, entity.categoryName)
+        assertEquals("WITHOUT_CATEGORY", entity.category)
+        assertEquals("SUBCATEGORY_NONE", entity.subcategory)
     }
 
     @Test
@@ -135,11 +129,12 @@ class RecordMapperTest {
     @Test
     fun `given RecordEntity when toDomain then maps accountId correctly`() {
         // Given
-        val entity = com.example.financesmanagementapp.data.local.entities.RecordEntity(
+        val entity = RecordEntity(
             accountId = 3, amount = 100.0, description = "Test",
-            categoryName = Category.CATEGORY_FOOD, date = "2026-01-01", currency = "USD"
+            category = "CATEGORY_FOOD_AND_DRINKS", subcategory = "SUBCATEGORY_MARKET",
+            date = "2026-01-01", currency = "USD"
         )
-        val completeCategory = Category(Category.CATEGORY_FOOD)
+        val completeCategory = Category.fromCategoryAndSubcategory("CATEGORY_FOOD_AND_DRINKS", "SUBCATEGORY_MARKET")
 
         // When
         val record = entity.toDomain(completeCategory)
@@ -151,11 +146,12 @@ class RecordMapperTest {
     @Test
     fun `given RecordEntity when toDomain then maps amount correctly`() {
         // Given
-        val entity = com.example.financesmanagementapp.data.local.entities.RecordEntity(
+        val entity = RecordEntity(
             amount = -500.0, description = "Test",
-            categoryName = Category.CATEGORY_FOOD, date = "2026-01-01", currency = "USD"
+            category = "CATEGORY_FOOD_AND_DRINKS", subcategory = "SUBCATEGORY_MARKET",
+            date = "2026-01-01", currency = "USD"
         )
-        val completeCategory = Category(Category.CATEGORY_FOOD)
+        val completeCategory = Category.fromCategoryAndSubcategory("CATEGORY_FOOD_AND_DRINKS", "SUBCATEGORY_MARKET")
 
         // When
         val record = entity.toDomain(completeCategory)
@@ -167,11 +163,12 @@ class RecordMapperTest {
     @Test
     fun `given RecordEntity when toDomain then maps description correctly`() {
         // Given
-        val entity = com.example.financesmanagementapp.data.local.entities.RecordEntity(
+        val entity = RecordEntity(
             amount = 100.0, description = "Almuerzo en la ofi",
-            categoryName = Category.CATEGORY_FOOD, date = "2026-01-01", currency = "USD"
+            category = "CATEGORY_FOOD_AND_DRINKS", subcategory = "SUBCATEGORY_MARKET",
+            date = "2026-01-01", currency = "USD"
         )
-        val completeCategory = Category(Category.CATEGORY_FOOD)
+        val completeCategory = Category.fromCategoryAndSubcategory("CATEGORY_FOOD_AND_DRINKS", "SUBCATEGORY_MARKET")
 
         // When
         val record = entity.toDomain(completeCategory)
@@ -183,27 +180,30 @@ class RecordMapperTest {
     @Test
     fun `given RecordEntity when toDomain then uses provided completeCategory`() {
         // Given
-        val entity = com.example.financesmanagementapp.data.local.entities.RecordEntity(
+        val entity = RecordEntity(
             amount = 100.0, description = "Test",
-            categoryName = Category.CATEGORY_FOOD, date = "2026-01-01", currency = "USD"
+            category = "CATEGORY_FOOD_AND_DRINKS", subcategory = "SUBCATEGORY_MARKET",
+            date = "2026-01-01", currency = "USD"
         )
-        val completeCategory = Category.fromName(Category.CATEGORY_FOOD,)
+        val completeCategory = Category.fromCategoryAndSubcategory("CATEGORY_FOOD_AND_DRINKS", "SUBCATEGORY_MARKET")
 
         // When
         val record = entity.toDomain(completeCategory)
 
         // Then
-        assertEquals(Category.CATEGORY_FOOD, record.category.categoryName)
+        assertEquals(CategoryName.CATEGORY_FOOD_AND_DRINKS, record.category.categoryName)
+        assertEquals(SubcategoryName.SUBCATEGORY_MARKET, record.category.subcategoryName)
     }
 
     @Test
     fun `given RecordEntity when toDomain then maps date correctly`() {
         // Given
-        val entity = com.example.financesmanagementapp.data.local.entities.RecordEntity(
+        val entity = RecordEntity(
             amount = 100.0, description = "Test",
-            categoryName = Category.CATEGORY_FOOD, date = "2026-04-09T12:00:00", currency = "USD"
+            category = "CATEGORY_FOOD_AND_DRINKS", subcategory = "SUBCATEGORY_MARKET",
+            date = "2026-04-09T12:00:00", currency = "USD"
         )
-        val completeCategory = Category(Category.CATEGORY_FOOD)
+        val completeCategory = Category.fromCategoryAndSubcategory("CATEGORY_FOOD_AND_DRINKS", "SUBCATEGORY_MARKET")
 
         // When
         val record = entity.toDomain(completeCategory)
@@ -215,11 +215,12 @@ class RecordMapperTest {
     @Test
     fun `given RecordEntity when toDomain then maps currency correctly`() {
         // Given
-        val entity = com.example.financesmanagementapp.data.local.entities.RecordEntity(
+        val entity = RecordEntity(
             amount = 100.0, description = "Test",
-            categoryName = Category.CATEGORY_FOOD, date = "2026-01-01", currency = "EUR"
+            category = "CATEGORY_FOOD_AND_DRINKS", subcategory = "SUBCATEGORY_MARKET",
+            date = "2026-01-01", currency = "EUR"
         )
-        val completeCategory = Category(Category.CATEGORY_FOOD)
+        val completeCategory = Category.fromCategoryAndSubcategory("CATEGORY_FOOD_AND_DRINKS", "SUBCATEGORY_MARKET")
 
         // When
         val record = entity.toDomain(completeCategory)

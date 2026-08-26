@@ -1,8 +1,9 @@
 package com.example.financesmanagementapp.data.local
 
 import com.example.financesmanagementapp.domain.model.Category
-import com.example.financesmanagementapp.domain.model.Category.Companion.CATEGORY_FOOD
+import com.example.financesmanagementapp.domain.model.CategoryName
 import com.example.financesmanagementapp.domain.model.Record
+import com.example.financesmanagementapp.domain.model.SubcategoryName
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -27,7 +28,7 @@ class ExportCsvUseCaseTest {
     fun `given records when invoke then returns true`() = runTest {
         every { csvFileWriter.writeCsv(any(), any()) } returns true
         val records = listOf(
-            Record(amount = -30000.0, description = "Farmacia", category = Category(Category.CATEGORY_MEDICINE), date = "2026-04-09", currency = "ARS")
+            Record(amount = -30000.0, description = "Farmacia", category = Category(CategoryName.CATEGORY_HEALTH, SubcategoryName.SUBCATEGORY_MEDICINE), date = "2026-04-09", currency = "ARS")
         )
 
         val result = exportCsvUseCase(records)
@@ -43,7 +44,7 @@ class ExportCsvUseCaseTest {
         exportCsvUseCase(emptyList())
 
         val lines = contentSlot.captured.lines()
-        assertEquals("amount; description; categoryName; date; currency", lines[0])
+        assertEquals("amount; description; category; subcategory; date; currency", lines[0])
     }
 
     @Test
@@ -51,14 +52,14 @@ class ExportCsvUseCaseTest {
         val contentSlot = slot<String>()
         every { csvFileWriter.writeCsv(capture(contentSlot), any()) } returns true
         val records = listOf(
-            Record(amount = -30000.0, description = "Farmacia", category = Category(Category.CATEGORY_MEDICINE), date = "2026-04-09", currency = "ARS")
+            Record(amount = -30000.0, description = "Farmacia", category = Category(CategoryName.CATEGORY_HEALTH, SubcategoryName.SUBCATEGORY_MEDICINE), date = "2026-04-09", currency = "ARS")
         )
 
         exportCsvUseCase(records)
 
         val lines = contentSlot.captured.lines().filter { it.isNotBlank() }
         assertEquals(2, lines.size)
-        assertEquals("-30000.0; Farmacia; ${Category.CATEGORY_MEDICINE}; 2026-04-09; ARS", lines[1])
+        assertEquals("-30000.0; Farmacia; ${CategoryName.CATEGORY_HEALTH}; ${SubcategoryName.SUBCATEGORY_MEDICINE}; 2026-04-09; ARS", lines[1])
     }
 
     @Test
@@ -66,18 +67,18 @@ class ExportCsvUseCaseTest {
         val contentSlot = slot<String>()
         every { csvFileWriter.writeCsv(capture(contentSlot), any()) } returns true
         val records = listOf(
-            Record(amount = -30000.0, description = "Farmacia", category = Category(Category.CATEGORY_MEDICINE), date = "2026-04-09", currency = "ARS"),
-            Record(amount = -100.0, description = "Almuerzo", category = Category(Category.CATEGORY_FOOD), date = "2026-04-10", currency = "ARS"),
-            Record(amount = 200.0, description = "Sueldo", category = Category(Category.CATEGORY_SALARY), date = "2026-04-11", currency = "ARS")
+            Record(amount = -30000.0, description = "Farmacia", category = Category(CategoryName.CATEGORY_HEALTH, SubcategoryName.SUBCATEGORY_MEDICINE), date = "2026-04-09", currency = "ARS"),
+            Record(amount = -100.0, description = "Almuerzo", category = Category(CategoryName.CATEGORY_FOOD_AND_DRINKS, SubcategoryName.SUBCATEGORY_MARKET), date = "2026-04-10", currency = "ARS"),
+            Record(amount = 200.0, description = "Sueldo", category = Category(CategoryName.CATEGORY_INCOME, SubcategoryName.SUBCATEGORY_SALARY), date = "2026-04-11", currency = "ARS")
         )
 
         exportCsvUseCase(records)
 
         val lines = contentSlot.captured.lines().filter { it.isNotBlank() }
         assertEquals(4, lines.size)
-        assertEquals("-30000.0; Farmacia; ${Category.CATEGORY_MEDICINE}; 2026-04-09; ARS", lines[1])
-        assertEquals("-100.0; Almuerzo; ${Category.CATEGORY_FOOD}; 2026-04-10; ARS", lines[2])
-        assertEquals("200.0; Sueldo; ${Category.CATEGORY_SALARY}; 2026-04-11; ARS", lines[3])
+        assertEquals("-30000.0; Farmacia; ${CategoryName.CATEGORY_HEALTH}; ${SubcategoryName.SUBCATEGORY_MEDICINE}; 2026-04-09; ARS", lines[1])
+        assertEquals("-100.0; Almuerzo; ${CategoryName.CATEGORY_FOOD_AND_DRINKS}; ${SubcategoryName.SUBCATEGORY_MARKET}; 2026-04-10; ARS", lines[2])
+        assertEquals("200.0; Sueldo; ${CategoryName.CATEGORY_INCOME}; ${SubcategoryName.SUBCATEGORY_SALARY}; 2026-04-11; ARS", lines[3])
     }
 
     @Test
@@ -89,7 +90,7 @@ class ExportCsvUseCaseTest {
 
         val lines = contentSlot.captured.lines().filter { it.isNotBlank() }
         assertEquals(1, lines.size)
-        assertEquals("amount; description; categoryName; date; currency", lines[0])
+        assertEquals("amount; description; category; subcategory; date; currency", lines[0])
     }
 
     @Test
@@ -115,7 +116,7 @@ class ExportCsvUseCaseTest {
         val contentSlot = slot<String>()
         every { csvFileWriter.writeCsv(capture(contentSlot), any()) } returns true
         val records = listOf(
-            Record(amount = 50.0, description = "Test", category = Category(Category.CATEGORY_FOOD), date = "2026-01-01", currency = "USD")
+            Record(amount = 50.0, description = "Test", category = Category(CategoryName.CATEGORY_FOOD_AND_DRINKS, SubcategoryName.SUBCATEGORY_MARKET), date = "2026-01-01", currency = "USD")
         )
 
         exportCsvUseCase(records)
@@ -130,7 +131,7 @@ class ExportCsvUseCaseTest {
         val fileNameSlot = slot<String>()
         every { csvFileWriter.writeCsv(any(), capture(fileNameSlot)) } returns true
         val records = listOf(
-            Record(amount = 50.0, description = "Test", category = Category(CATEGORY_FOOD), date = "2026-01-01", currency = "USD")
+            Record(amount = 50.0, description = "Test", category = Category(CategoryName.CATEGORY_FOOD_AND_DRINKS, SubcategoryName.SUBCATEGORY_MARKET), date = "2026-01-01", currency = "USD")
         )
 
         exportCsvUseCase(records)

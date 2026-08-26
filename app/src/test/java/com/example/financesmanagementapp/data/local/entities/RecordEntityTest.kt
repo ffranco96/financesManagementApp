@@ -9,7 +9,8 @@ class RecordEntityTest {
     private fun buildEntity(date: String) = RecordEntity(
         amount = 0.0,
         description = "",
-        categoryName = "",
+        category = "",
+        subcategory = "",
         date = date,
         currency = "ARS"
     )
