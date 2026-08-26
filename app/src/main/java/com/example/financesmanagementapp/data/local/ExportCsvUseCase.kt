@@ -39,7 +39,7 @@ class ExportCsvUseCase @Inject constructor(
     /**
      * Builds the full CSV content string from the given [records].
      *
-     * The output starts with the header line (`amount; description; categoryName; date; currency`)
+     * The output starts with the header line (`amount; description; category; subcategory; date; currency`)
      * followed by one line per record, using `;` as delimiter.
      *
      * @param records The records to serialize.
@@ -49,7 +49,7 @@ class ExportCsvUseCase @Inject constructor(
         val sb = StringBuilder()
         sb.appendLine("amount; description; category; subcategory; date; currency")
         records.forEach { record ->
-            sb.appendLine("${record.amount}; ${record.description}; ${record.category.categoryName}; ${record.date}; ${record.currency}")
+            sb.appendLine("${record.amount}; ${record.description}; ${record.category.categoryName}; ${record.category.subcategoryName}; ${record.date}; ${record.currency}")
         }
         return sb.toString()
     }
