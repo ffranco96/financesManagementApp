@@ -115,7 +115,9 @@ fun AddRecordDetailScreen(
                             val completeRecord = record?.let { rec ->
                                 rec.copy(
                                     description = detailText,
-                                    category = categoryList.find { it.categoryName == selectedCategory.categoryName } ?: Category(),
+                                    category = categoryList.find {
+                                        it.categoryName == selectedCategory.categoryName && it.subcategoryName == selectedCategory.subcategoryName
+                                    } ?: Category(),
                                     date = selectedDate,
                                     amount = if (selectedCategory.isIncome) rec.amount else -rec.amount
                                 )
@@ -209,7 +211,7 @@ fun BodyContent(
             .fillMaxSize()
             .padding(innerPadding)
             .padding(40.dp),
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text("Ingrese detalle", style = MaterialTheme.typography.titleLarge)
@@ -267,6 +269,18 @@ fun BodyContent(
                 modifier = Modifier.width(24.dp))
         }
 
+        Spacer(Modifier.height(8.dp))
+
+        Text(
+            text = if (selectedCategory.isIncome) "Ingreso" else "Gasto",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            color = colorResource(
+                if (selectedCategory.isIncome) R.color.positive_green else R.color.negative_red
+            ),
+            modifier = Modifier.align(Alignment.Start)
+        )
+
         Spacer(Modifier.height(20.dp))
 
         // Date Selector
@@ -294,16 +308,6 @@ fun BodyContent(
             )
         }
 
-        Spacer(Modifier.weight(1f))
-
-        Text(
-            text = if (selectedCategory.isIncome) "Ingreso" else "Gasto",
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            color = colorResource(
-                if (selectedCategory.isIncome) R.color.positive_green else R.color.negative_red
-            )
-        )
     }
 }
 
