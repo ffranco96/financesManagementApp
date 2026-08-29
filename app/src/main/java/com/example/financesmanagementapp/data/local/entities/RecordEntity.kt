@@ -4,6 +4,9 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.financesmanagementapp.domain.model.Record
 import com.example.financesmanagementapp.domain.model.Record.Companion.DEFAULT_ACCOUNT_ID
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeParseException
 
 /**
  * Entity representing a financial record in the local database.
@@ -23,14 +26,17 @@ data class RecordEntity(
 ): Comparable<RecordEntity>{
     override fun compareTo(other: RecordEntity): Int {
         try {
-            val date1 = java.time.LocalDateTime.parse(date)
-            val date2 = java.time.LocalDateTime.parse(other.date)
+            val date1 = LocalDateTime.parse(date)
+            val date2 = LocalDateTime.parse(other.date)
             return date1.compareTo(date2)
-        } catch (_: Exception) { }
-        val formatter = java.text.SimpleDateFormat("yyyy-MM-dd")
-        val date1 = formatter.parse(date)
-        val date2 = formatter.parse(other.date)
-        return date1.compareTo(date2)
+        } catch (_: DateTimeParseException) { }
+        return try {
+            val date1 = LocalDate.parse(date)
+            val date2 = LocalDate.parse(other.date)
+            date1.compareTo(date2)
+        } catch (_: DateTimeParseException) {
+            date.compareTo(other.date)
+        }
     }
 }
 
