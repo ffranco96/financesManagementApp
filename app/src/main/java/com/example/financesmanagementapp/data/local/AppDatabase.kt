@@ -8,6 +8,7 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.financesmanagementapp.data.local.dao.RecordsDAO
 import com.example.financesmanagementapp.data.local.entities.RecordEntity
+import com.example.financesmanagementapp.domain.model.CategoryName
 
 
 /**
@@ -20,7 +21,7 @@ import com.example.financesmanagementapp.data.local.entities.RecordEntity
  */
 @Database(
     entities = [RecordEntity::class],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -35,24 +36,59 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        /**
+         * Replaces the single `categoryName` column with `category`/`subcategory`, matching the
+         * new two-level category taxonomy. Existing records can't be mapped to the new taxonomy
+         * automatically, so they're simply reassigned to [CategoryName.WITHOUT_CATEGORY].
+         */
         val MIGRATION_2_3 = object : Migration(2, 3) {
             override fun migrate(db: SupportSQLiteDatabase) {
-                db.execSQL("DROP TABLE IF EXISTS records_new")
                 db.execSQL("""
-            CREATE TABLE records_new (
-                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                accountId INTEGER NOT NULL DEFAULT 0,
-                amount REAL NOT NULL,
-                description TEXT NOT NULL,
-                categoryName TEXT NOT NULL,
-                date TEXT NOT NULL,
-                currency TEXT NOT NULL
-            )
-        """.trimIndent())
+                    CREATE TABLE records_new (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        accountId INTEGER NOT NULL DEFAULT 0,
+                        amount REAL NOT NULL,
+                        description TEXT NOT NULL,
+                        isIncome INTEGER NOT NULL,
+                        category TEXT NOT NULL,
+                        subcategory TEXT NOT NULL,
+                        date TEXT NOT NULL,
+                        currency TEXT NOT NULL
+                    )
+                """.trimIndent())
                 db.execSQL("""
-            INSERT INTO records_new (id, accountId, amount, description, categoryName, date, currency)
-            SELECT id, accountId, amount, description, categoryName, date, currency FROM records
-        """.trimIndent())
+                    INSERT INTO records_new (id, accountId, amount, description, isIncome, category, subcategory, date, currency)
+                    SELECT id, accountId, amount, description, isIncome, '${CategoryName.WITHOUT_CATEGORY}', '', date, currency FROM records
+                """.trimIndent())
+                db.execSQL("DROP TABLE records")
+                db.execSQL("ALTER TABLE records_new RENAME TO records")
+            }
+        }
+
+        /**
+         * Drops the `isIncome` column: whether a movement is income or expense is now derived
+         * from the sign of [RecordEntity.amount] instead of being stored separately. Existing
+         * rows had `amount` stored as an unsigned magnitude with `isIncome` as the sign source,
+         * so the sign has to be folded into `amount` here before the column is dropped.
+         */
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("""
+                    CREATE TABLE records_new (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        accountId INTEGER NOT NULL DEFAULT 0,
+                        amount REAL NOT NULL,
+                        description TEXT NOT NULL,
+                        category TEXT NOT NULL,
+                        subcategory TEXT NOT NULL,
+                        date TEXT NOT NULL,
+                        currency TEXT NOT NULL
+                    )
+                """.trimIndent())
+                db.execSQL("""
+                    INSERT INTO records_new (id, accountId, amount, description, category, subcategory, date, currency)
+                    SELECT id, accountId, CASE WHEN isIncome != 0 THEN amount ELSE -amount END, description, category, subcategory, date, currency FROM records
+                """.trimIndent())
                 db.execSQL("DROP TABLE records")
                 db.execSQL("ALTER TABLE records_new RENAME TO records")
             }
@@ -65,7 +101,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     DATABASE_NAME
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
                     .build()
                 INSTANCE = instance
                 return instance

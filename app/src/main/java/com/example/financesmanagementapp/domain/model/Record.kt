@@ -26,7 +26,8 @@ data class Record (
             val date1 = LocalDateTime.parse(this.date)
             val date2 = LocalDateTime.parse(other.date)
             return date1.compareTo(date2)
-        } catch (_: DateTimeParseException) {} // To manage parsing errors in legacy records
+        } catch (_: DateTimeParseException) {
+        } // To manage parsing errors in legacy records
         return try {
             val date1 = LocalDate.parse(this.date)
             val date2 = LocalDate.parse(other.date)

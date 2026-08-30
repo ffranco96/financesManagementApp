@@ -20,6 +20,10 @@ interface RecordsDAO {
     @Query("SELECT * FROM records")
     fun getAllAsFlow(): Flow<List<RecordEntity>>
 
+    /**
+     * [RecordEntity.amount] is stored already signed (negative for expenses, positive for
+     * income), so the total balance is a plain sum.
+     */
     @Query("""
         SELECT 
             SUM(amount)
@@ -33,9 +37,10 @@ interface RecordsDAO {
             SUM(amount) 
         FROM records 
         WHERE accountId = :accId
-        AND categoryName = :categoryName
+        AND category = :category
+        AND subcategory = :subcategory
     """)
-    fun getBalanceByCategoryAndAccount(accId: Int = DEFAULT_ACCOUNT_ID, categoryName: String): Flow<Double?>
+    fun getBalanceByCategoryAndAccount(accId: Int = DEFAULT_ACCOUNT_ID, category: String, subcategory: String): Flow<Double?>
 
     @Query("DELETE FROM records")
     fun deleteAll()

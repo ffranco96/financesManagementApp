@@ -36,8 +36,8 @@ class AddRecordDetailViewModel @Inject constructor(
     private val _expandedCategoryMenu = MutableStateFlow(false)
     val expandedCategoryMenu: StateFlow<Boolean> = _expandedCategoryMenu
 
-    private val _selectedCategory = MutableStateFlow("")
-    val selectedCategory: StateFlow<String> = _selectedCategory
+    private val _selectedCategory = MutableStateFlow(Category())
+    val selectedCategory: StateFlow<Category> = _selectedCategory
 
     private val _selectedDate = MutableStateFlow(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
     val selectedDate: StateFlow<String> = _selectedDate
@@ -67,7 +67,7 @@ class AddRecordDetailViewModel @Inject constructor(
         _expandedCategoryMenu.value = false
     }
 
-    fun onCategorySelected(category: String) {
+    fun onCategorySelected(category: Category) {
         _selectedCategory.value = category
         onDismissRequest()
     }

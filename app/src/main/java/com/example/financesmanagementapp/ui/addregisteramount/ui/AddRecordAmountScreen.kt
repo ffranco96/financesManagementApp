@@ -12,14 +12,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,8 +23,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -49,8 +43,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.financesmanagementapp.navigation.AppScreens
 import com.example.financesmanagementapp.domain.model.Record
+import com.example.financesmanagementapp.navigation.AppScreens
 
 /**
  * Screen that allows the user to input the amount for a new financial record.
@@ -68,7 +62,6 @@ fun AddRecordAmountScreen(
     viewModel: AddRecordAmountViewModel,
 ) {
     val amountText by viewModel.amountText.collectAsState()
-    val checkedSwitch by viewModel.checkedSwitch.collectAsState()
     val expandedCurrencyMenu by viewModel.expandedCurrencyMenu.collectAsState()
     val selectedCurrency by viewModel.selectedCurrency.collectAsState()
 
@@ -91,13 +84,7 @@ fun AddRecordAmountScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    val amount = amountText.toDoubleOrNull()?.let{
-                        if(checkedSwitch)
-                            it
-                        else
-                            -it
-                    } ?: 0.0
-
+                    val amount = amountText.toDoubleOrNull() ?: 0.0
                     val myRecord = Record(amount = amount, currency = selectedCurrency)
                     navController.currentBackStackEntry?.savedStateHandle?.set("record", myRecord)
                     navController.navigate(AppScreens.AddRecordDetailScreen.route)
@@ -113,9 +100,6 @@ fun AddRecordAmountScreen(
             onAmountTextChange = { newValue ->
                 viewModel.onAmountTextChange(newValue)
             },
-            onCheckedSwitchChange = { newValue ->
-                viewModel.onCheckedSwitchChange(newValue) },
-            checkedSwitch = checkedSwitch,
             expanded = expandedCurrencyMenu,
             onDropdownClick = {viewModel.onDropDownClick()},
             onDismissRequest = {viewModel.onDismissRequest()},
@@ -135,8 +119,6 @@ fun AddRecordAmountScreen(
 fun BodyContent(
     valueAmountText: String,
     onAmountTextChange: (String) -> Unit,
-    onCheckedSwitchChange: (Boolean) -> Unit,
-    checkedSwitch: Boolean,
     expanded: Boolean,
     onDropdownClick: () -> Unit,
     onDismissRequest: () -> Unit,
@@ -145,7 +127,7 @@ fun BodyContent(
     currencyList: List<String>,
     innerPadding: PaddingValues
 ) {
-    // Synchonized with the view model valueAmountText
+    // Synchronized with the view model valueAmountText
     var textFieldValue by remember(valueAmountText) {
         mutableStateOf(
             TextFieldValue(
@@ -191,34 +173,6 @@ fun BodyContent(
         Row(modifier = Modifier
             .fillMaxWidth()
             .height(50.dp)){
-            Text("Gasto", fontSize = 22.sp)
-            Switch(
-                checked = checkedSwitch,
-                onCheckedChange = onCheckedSwitchChange,
-                modifier = Modifier.weight(1f),
-                thumbContent = if(checkedSwitch) {
-                    {
-                        Icon(
-                            imageVector = Icons.Filled.Add,
-                            contentDescription = null,
-                            modifier = Modifier.size(SwitchDefaults.IconSize),
-                            tint = Color.Green
-                        )
-                    }
-                } else {
-                    {
-                        Icon(
-                            imageVector = Icons.Default.Remove,
-                            contentDescription = null,
-                            modifier = Modifier.size(SwitchDefaults.IconSize),
-                            tint = Color.Red
-                        )
-                    }
-                }
-            )
-            Text("Ingreso", fontSize = 22.sp)
-
-            Spacer(Modifier.weight(1f))
 
             Box(
                 modifier = Modifier

@@ -14,10 +14,8 @@ fun Record.toEntity(): RecordEntity{
         accountId = accountId,
         amount = amount,
         description = description,
-        categoryName = category.categoryName.let { name ->
-            if (name.isNotEmpty() && name in Category.VALID_CATEGORY_NAMES) name
-            else Category.WITHOUT_CATEGORY
-        },
+        category = category.categoryName.toString(),
+        subcategory = category.subcategoryName.toString(),
         date = date,
         currency = currency
     )

@@ -18,11 +18,12 @@ class GetBalanceByAccountAndCategoryUseCase @Inject constructor(
      * Maps null results to 0.0 to ensure a non-null Double stream.
      *
      * @param accountId The ID of the account.
-     * @param categoryName The name of the category to filter by.
+     * @param category The parent category constant to filter by.
+     * @param subcategory The subcategory constant to filter by.
      * @return A Flow emitting the calculated balance.
      */
-    operator fun invoke(accountId: Int, categoryName: String): Flow<Double> {
-        return repository.getBalanceByAccountAndCategoryFlow(accountId, categoryName)
+    operator fun invoke(accountId: Int, category: String, subcategory: String): Flow<Double> {
+        return repository.getBalanceByAccountAndCategoryFlow(accountId, category, subcategory)
             .map { it ?: 0.0 }
     }
 }

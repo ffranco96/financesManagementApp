@@ -27,11 +27,12 @@ interface RecordsRepository {
     /**
      * Retrieves the balance for a specific account and category as a Flow.
      * @param accountId The ID of the account.
-     * @param categoryName The name of the category.
+     * @param category The parent category constant.
+     * @param subcategory The subcategory constant.
      * @return A flow emitting the balance whenever the database changes (insertion or
      * update of records).
      */
-    fun getBalanceByAccountAndCategoryFlow(accountId: Int, categoryName: String): Flow<Double?>
+    fun getBalanceByAccountAndCategoryFlow(accountId: Int, category: String, subcategory: String): Flow<Double?>
 
     /**
      * Adds and persists a new financial record to the database.

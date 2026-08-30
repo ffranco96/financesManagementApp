@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.financesmanagementapp.domain.model.Category
@@ -29,6 +30,7 @@ class ConfigRepositoryImpl @Inject constructor(
         val FIAT_CURRENCIES = stringSetPreferencesKey("fiat_currencies")
         val CRYPTO_CURRENCIES = stringSetPreferencesKey("crypto_currencies")
         val CATEGORIES = stringSetPreferencesKey("categories")
+        val CATEGORIES_VERSION = intPreferencesKey("categories_version")
     }
 
     override fun getFiatCurrencies(): Flow<List<FiatCurrency>> = context.dataStore.data.map { preferences ->
@@ -61,6 +63,10 @@ class ConfigRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun getCategoriesVersion(): Flow<Int> = context.dataStore.data.map { preferences ->
+        preferences[PreferencesKeys.CATEGORIES_VERSION] ?: 0
+    }
+
     override suspend fun saveFiatCurrencies(currencies: List<FiatCurrency>) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.FIAT_CURRENCIES] = currencies.map { gson.toJson(it) }.toSet()
@@ -76,6 +82,12 @@ class ConfigRepositoryImpl @Inject constructor(
     override suspend fun saveCategories(categories: List<Category>) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.CATEGORIES] = categories.map { gson.toJson(it) }.toSet()
+        }
+    }
+
+    override suspend fun saveCategoriesVersion(version: Int) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.CATEGORIES_VERSION] = version
         }
     }
 }

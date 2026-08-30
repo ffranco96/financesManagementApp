@@ -22,9 +22,6 @@ class AddRecordAmountViewModel @Inject constructor(
         formatCentsToAmountText(cents)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "0.00")
 
-    private val _checkedSwitch = MutableStateFlow(false)
-    val checkedSwitch: StateFlow<Boolean> = _checkedSwitch
-
     private val _expandedCurrencyMenu = MutableStateFlow(false)
     val expandedCurrencyMenu: StateFlow<Boolean> = _expandedCurrencyMenu
 
@@ -53,10 +50,6 @@ class AddRecordAmountViewModel @Inject constructor(
     private fun formatCentsToAmountText(cents: Long): String {
         val doubleValue = cents / 100.0
         return "%.2f".format(Locale.US, doubleValue)
-    }
-
-    fun onCheckedSwitchChange(newValue: Boolean){
-        _checkedSwitch.value = newValue
     }
 
     fun onDropDownClick(){

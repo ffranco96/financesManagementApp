@@ -30,26 +30,26 @@ class GetCategoryTotalUseCaseTest {
     fun `given records from different categories in last 30 days then returns grouped totals of incomes and expenses`() = runTest {
         val today = LocalDate.now()
         val records = listOf(
-            RecordEntity(amount = -100.0, categoryName = "Comida y alimentos", date = today.toString(), currency = "ARS", description = ""),
-            RecordEntity(amount = -50.0, categoryName = "Salud", date = today.toString(), currency = "ARS", description = ""),
-            RecordEntity(amount = 200.0, categoryName = "Salario", date = today.toString(), currency = "ARS", description = "")
+            RecordEntity(amount = -100.0, category = "CATEGORY_FOOD_AND_DRINKS", subcategory = "SUBCATEGORY_MARKET", date = today.toString(), currency = "ARS", description = ""),
+            RecordEntity(amount = -50.0, category = "CATEGORY_HEALTH", subcategory = "SUBCATEGORY_MEDICINE", date = today.toString(), currency = "ARS", description = ""),
+            RecordEntity(amount = 200.0, category = "CATEGORY_INCOME", subcategory = "SUBCATEGORY_SALARY", date = today.toString(), currency = "ARS", description = "")
         )
         every { mockRepository.getAllRecordsFlow() } returns flowOf(records)
 
         val result: List<CategoryTotal> = getCategoryTotalUseCase(DEFAULT_ACCOUNT_ID, THIRTY_DAYS_TO_LOOK_BACKWARDS).first()
 
         assertEquals(3, result.size)
-        val food = result.find { it.categoryName == "Comida y alimentos" }!!
+        val food = result.find { it.categoryName == "Supermercado y almacén" }!!
         assertEquals(0.0, food.incomes, 0.001)
         assertEquals(-100.0, food.expenses, 0.001)
         assertEquals(-100.0, food.net, 0.001)
 
-        val health = result.find { it.categoryName == "Salud" }!!
+        val health = result.find { it.categoryName == "Medicación" }!!
         assertEquals(0.0, health.incomes, 0.001)
         assertEquals(-50.0, health.expenses, 0.001)
         assertEquals(-50.0, health.net, 0.001)
 
-        val salary = result.find { it.categoryName == "Salario" }!!
+        val salary = result.find { it.categoryName == "Sueldo" }!!
         assertEquals(200.0, salary.incomes, 0.001)
         assertEquals(0.0, salary.expenses, 0.001)
         assertEquals(200.0, salary.net, 0.001)
@@ -58,8 +58,8 @@ class GetCategoryTotalUseCaseTest {
     @Test
     fun `given records older than 30 days then filters them out`() = runTest {
         val today = LocalDate.now()
-        val oldRecord = RecordEntity(amount = -100.0, categoryName = "Comida y alimentos", date = today.minusDays(45).toString(), currency = "ARS", description = "")
-        val recentRecord = RecordEntity(amount = -50.0, categoryName = "Comida y alimentos", date = today.minusDays(10).toString(), currency = "ARS", description = "")
+        val oldRecord = RecordEntity(amount = -100.0, category = "CATEGORY_FOOD_AND_DRINKS", subcategory = "SUBCATEGORY_MARKET", date = today.minusDays(45).toString(), currency = "ARS", description = "")
+        val recentRecord = RecordEntity(amount = -50.0, category = "CATEGORY_FOOD_AND_DRINKS", subcategory = "SUBCATEGORY_MARKET", date = today.minusDays(10).toString(), currency = "ARS", description = "")
         every { mockRepository.getAllRecordsFlow() } returns flowOf(listOf(oldRecord, recentRecord))
 
         val result = getCategoryTotalUseCase(DEFAULT_ACCOUNT_ID, THIRTY_DAYS_TO_LOOK_BACKWARDS).first()
@@ -73,7 +73,7 @@ class GetCategoryTotalUseCaseTest {
     @Test
     fun `given record exactly 30 days ago then includes it`() = runTest {
         val today = LocalDate.now()
-        val record = RecordEntity(amount = -100.0, categoryName = "Comida y alimentos", date = today.minusDays(30).toString(), currency = "ARS", description = "")
+        val record = RecordEntity(amount = -100.0, category = "CATEGORY_FOOD_AND_DRINKS", subcategory = "SUBCATEGORY_MARKET", date = today.minusDays(30).toString(), currency = "ARS", description = "")
         every { mockRepository.getAllRecordsFlow() } returns flowOf(listOf(record))
 
         val result = getCategoryTotalUseCase(DEFAULT_ACCOUNT_ID, THIRTY_DAYS_TO_LOOK_BACKWARDS).first()
@@ -97,8 +97,8 @@ class GetCategoryTotalUseCaseTest {
     fun `given multiple records in same category then sums them`() = runTest {
         val today = LocalDate.now()
         val records = listOf(
-            RecordEntity(amount = -30.0, categoryName = "Comida y alimentos", date = today.toString(), currency = "ARS", description = ""),
-            RecordEntity(amount = -50.0, categoryName = "Comida y alimentos", date = today.toString(), currency = "ARS", description = "")
+            RecordEntity(amount = -30.0, category = "CATEGORY_FOOD_AND_DRINKS", subcategory = "SUBCATEGORY_MARKET", date = today.toString(), currency = "ARS", description = ""),
+            RecordEntity(amount = -50.0, category = "CATEGORY_FOOD_AND_DRINKS", subcategory = "SUBCATEGORY_MARKET", date = today.toString(), currency = "ARS", description = "")
         )
         every { mockRepository.getAllRecordsFlow() } returns flowOf(records)
 
@@ -114,8 +114,8 @@ class GetCategoryTotalUseCaseTest {
     fun `given income and expense in same category then returns single entry with correct incomes, expenses and net`() = runTest {
         val today = LocalDate.now()
         val records = listOf(
-            RecordEntity(amount = -100.0, categoryName = "Comida y alimentos", date = today.toString(), currency = "ARS", description = ""),
-            RecordEntity(amount = 50.0, categoryName = "Comida y alimentos", date = today.toString(), currency = "ARS", description = "")
+            RecordEntity(amount = -100.0, category = "CATEGORY_FOOD_AND_DRINKS", subcategory = "SUBCATEGORY_MARKET", date = today.toString(), currency = "ARS", description = ""),
+            RecordEntity(amount = 50.0, category = "CATEGORY_FOOD_AND_DRINKS", subcategory = "SUBCATEGORY_MARKET", date = today.toString(), currency = "ARS", description = "")
         )
         every { mockRepository.getAllRecordsFlow() } returns flowOf(records)
 
@@ -131,8 +131,8 @@ class GetCategoryTotalUseCaseTest {
     fun `given category with matching incomes and expenses then includes it`() = runTest {
         val today = LocalDate.now()
         val records = listOf(
-            RecordEntity(amount = 100.0, categoryName = "Comida y alimentos", date = today.toString(), currency = "ARS", description = ""),
-            RecordEntity(amount = -100.0, categoryName = "Comida y alimentos", date = today.toString(), currency = "ARS", description = "")
+            RecordEntity(amount = 100.0, category = "CATEGORY_FOOD_AND_DRINKS", subcategory = "SUBCATEGORY_MARKET", date = today.toString(), currency = "ARS", description = ""),
+            RecordEntity(amount = -100.0, category = "CATEGORY_FOOD_AND_DRINKS", subcategory = "SUBCATEGORY_MARKET", date = today.toString(), currency = "ARS", description = "")
         )
         every { mockRepository.getAllRecordsFlow() } returns flowOf(records)
 
@@ -148,14 +148,14 @@ class GetCategoryTotalUseCaseTest {
     fun `given records from single category then returns single entry`() = runTest {
         val today = LocalDate.now()
         val records = listOf(
-            RecordEntity(amount = 50.0, categoryName = "Comida y alimentos", date = today.toString(), currency = "ARS", description = "")
+            RecordEntity(amount = 50.0, category = "CATEGORY_FOOD_AND_DRINKS", subcategory = "SUBCATEGORY_MARKET", date = today.toString(), currency = "ARS", description = "")
         )
         every { mockRepository.getAllRecordsFlow() } returns flowOf(records)
 
         val result = getCategoryTotalUseCase(DEFAULT_ACCOUNT_ID, THIRTY_DAYS_TO_LOOK_BACKWARDS).first()
 
         assertEquals(1, result.size)
-        assertEquals("Comida y alimentos", result[0].categoryName)
+        assertEquals("Supermercado y almacén", result[0].categoryName)
         assertEquals(50.0, result[0].incomes, 0.001)
         assertEquals(0.0, result[0].expenses, 0.001)
         assertEquals(50.0, result[0].net, 0.001)
@@ -165,15 +165,15 @@ class GetCategoryTotalUseCaseTest {
     fun `given records for different accountId then filters by account`() = runTest {
         val today = LocalDate.now()
         val records = listOf(
-            RecordEntity(amount = 50.0, categoryName = "Comida y alimentos", date = today.toString(), currency = "ARS", description = "", accountId = 0),
-            RecordEntity(amount = 100.0, categoryName = "Salud", date = today.toString(), currency = "ARS", description = "", accountId = 1)
+            RecordEntity(amount = 50.0, category = "CATEGORY_FOOD_AND_DRINKS", subcategory = "SUBCATEGORY_MARKET", date = today.toString(), currency = "ARS", description = "", accountId = 0),
+            RecordEntity(amount = 100.0, category = "CATEGORY_HEALTH", subcategory = "SUBCATEGORY_MEDICINE", date = today.toString(), currency = "ARS", description = "", accountId = 1)
         )
         every { mockRepository.getAllRecordsFlow() } returns flowOf(records)
 
         val result = getCategoryTotalUseCase(0, THIRTY_DAYS_TO_LOOK_BACKWARDS).first()
 
         assertEquals(1, result.size)
-        assertEquals("Comida y alimentos", result[0].categoryName)
+        assertEquals("Supermercado y almacén", result[0].categoryName)
         assertEquals(50.0, result[0].incomes, 0.001)
     }
 
@@ -181,13 +181,13 @@ class GetCategoryTotalUseCaseTest {
     fun `maps category to CategoryTotal with correct colorResId`() = runTest {
         val today = LocalDate.now()
         val records = listOf(
-            RecordEntity(amount = 50.0, categoryName = "Comida y alimentos", date = today.toString(), currency = "ARS", description = "")
+            RecordEntity(amount = 50.0, category = "CATEGORY_FOOD_AND_DRINKS", subcategory = "SUBCATEGORY_MARKET", date = today.toString(), currency = "ARS", description = "")
         )
         every { mockRepository.getAllRecordsFlow() } returns flowOf(records)
 
         val result = getCategoryTotalUseCase(DEFAULT_ACCOUNT_ID, THIRTY_DAYS_TO_LOOK_BACKWARDS).first()
 
-        assertEquals(R.color.categ_color_food, result[0].colorResId)
+        assertEquals(R.color.categ_color_food_and_drinks_market, result[0].colorResId)
     }
 
     companion object {

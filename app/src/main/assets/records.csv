@@ -1,31 +1,31 @@
-description;amount;categoryName;currency;date
-Cafe y medialunas;-35000.00;Restaurant y comida rapida;ARS;2026-05-17
-Bono anual;250000.00;Salario;ARS;2026-05-18
-Camara Fujifilm X100V. Cuotas sin interes;-67000.00;Pintura, dibujo y fotografia;ARS;2026-05-19
-Analgesicos y vitaminas farmacia del centro;-80000.00;Medicamentos e insumos;ARS;2026-05-20
-Empanadas para el partido;-45000.00;Comida y alimentos;ARS;2026-05-21
-Neumatico trasero moto. Pinchadura en autopista;-28000.00;Mantenimiento vehiculos;ARS;2026-05-22
-Jeans y remera outlet;-155000.00;Ropa;ARS;2026-05-23
-Sueldo mayo;950000.00;Salario;ARS;2026-05-24
-Sandwich y gaseosa almuerzo trabajo;-75000.00;Restaurant y comida rapida;ARS;2026-05-25
-Inversion plazo fijo 30 dias;-320000.00;Inversiones y finanzas;ARS;2026-05-26
-Pelo. Corte y barba;-50000.00;Hobbies;ARS;2026-05-27
-Entradas Luna Park. Show tributo Pink Floyd;-145000.00;Recitales y eventos;ARS;2026-05-28
-Vencimiento plazo fijo con intereses;370000.00;Inversiones y finanzas;ARS;2026-05-29
-Cinta y pinceles para repintar el cuarto;-89000.00;Pintura, dibujo y fotografia;ARS;2026-05-30
-Sueldo junio;950000.00;Salario;ARS;2026-05-31
-Service completo auto. Cambio correa distribucion;-430000.00;Mantenimiento vehiculos;ARS;2026-06-01
-Zapatillas running Nike;-68000.00;Ropa;ARS;2026-06-02
-Turno oftalmologico y compra de lentes;-1800.00;Salud;ARS;2026-06-03
-Curso programacion Android. Pago mensual;-9200.00;Estudios particulares;ARS;2026-06-04
-Sueldo julio;950000.00;Salario;ARS;2026-06-05
-Facturas panaderia;-28000.00;Comida y alimentos;ARS;2026-06-06
-Bicicleta de ruta usada. Comprada a un conocido;-550000.00;Hobbies;ARS;2026-06-07
-Medicamentos para el viaje. Antiparasitarios y protector solar;-34000.00;Medicamentos e insumos;ARS;2026-06-08
-Venta bici vieja;250000.00;Hobbies;ARS;2026-06-09
-Cena cumpleaños. Restaurante La Cabrera;-12000.00;Restaurant y comida rapida;ARS;2026-06-10
-Aceite de oliva y especias importadas;-1100.00;Comida y alimentos;ARS;2026-06-11
-Sueldo septiembre;95000.00;Salario;ARS;2026-06-12
-Estacionamiento y peajes fin de semana;-500.00;Vehiculos;ARS;2026-06-13
-Campera de cuero. Liquidacion invierno;-18700.00;Ropa;ARS;2026-06-14
-Consulta nutricionista. Plan alimentario 3 meses, incluyendo alimentación, suplementos, rutinas de entrenamiento y control diario de calorías. Pesado cada 2 semanas;-4100.00;Salud;ARS;2026-06-15
+amount;description;category;subcategory;date;currency
+-35000.00;Cafe y medialunas;CATEGORY_FOOD_AND_DRINKS;SUBCATEGORY_COFFEE_RESTAURANT;2024-03-22;ARS
+250000.00;Bono anual;CATEGORY_INCOME;SUBCATEGORY_SALARY;2024-03-28;ARS
+-67000.00;Camara Fujifilm X100V. Cuotas sin interes;CATEGORY_LEISURE;SUBCATEGORY_OTHERS;2024-04-02;ARS
+-80000.00;Analgesicos y vitaminas farmacia del centro;CATEGORY_HEALTH;SUBCATEGORY_MEDICINE;2024-04-07;ARS
+-45000.00;Empanadas para el partido;CATEGORY_FOOD_AND_DRINKS;SUBCATEGORY_OTHERS;2024-04-14;ARS
+-28000.00;Neumatico trasero moto. Pinchadura en autopista;CATEGORY_VEHICLE;SUBCATEGORY_MANTAINANCE;2024-04-25;ARS
+-155000.00;Jeans y remera outlet;CATEGORY_SHOPS;SUBCATEGORY_CLOTHES_AND_SHOES;2024-05-03;ARS
+950000.00;Sueldo mayo;CATEGORY_INCOME;SUBCATEGORY_SALARY;2024-05-20;ARS
+-75000.00;Sandwich y gaseosa almuerzo trabajo;CATEGORY_FOOD_AND_DRINKS;SUBCATEGORY_FAST_FOOD;2024-05-28;ARS
+-320000.00;Inversion plazo fijo 30 dias;CATEGORY_FINANCIAL_EXPENSES;SUBCATEGORY_OTHERS;2024-06-01;ARS
+-50000.00;Pelo. Corte y barba;CATEGORY_LEISURE;SUBCATEGORY_HOBBIES;2024-06-10;ARS
+-145000.00;Entradas Luna Park. Show tributo Pink Floyd;CATEGORY_LEISURE;SUBCATEGORY_CONCERTS;2024-06-18;ARS
+370000.00;Vencimiento plazo fijo con intereses;CATEGORY_INCOME;SUBCATEGORY_INTERESTS_AND_INCOMES;2024-07-01;ARS
+-89000.00;Cinta y pinceles para repintar el cuarto;CATEGORY_LEISURE;SUBCATEGORY_OTHERS;2024-07-08;ARS
+950000.00;Sueldo junio;CATEGORY_INCOME;SUBCATEGORY_SALARY;2024-06-20;ARS
+-430000.00;Service completo auto. Cambio correa distribucion;CATEGORY_VEHICLE;SUBCATEGORY_MANTAINANCE;2024-07-19;ARS
+-68000.00;Zapatillas running Nike;CATEGORY_SHOPS;SUBCATEGORY_CLOTHES_AND_SHOES;2024-07-30;ARS
+-1800.00;Turno oftalmologico y compra de lentes;CATEGORY_HEALTH;SUBCATEGORY_OTHERS;2024-08-05;ARS
+-9200.00;Curso programacion Android. Pago mensual;CATEGORY_HEALTH;SUBCATEGORY_STUDIES;2024-08-12;ARS
+950000.00;Sueldo julio;CATEGORY_INCOME;SUBCATEGORY_SALARY;2024-07-20;ARS
+-28000.00;Facturas panaderia;CATEGORY_FOOD_AND_DRINKS;SUBCATEGORY_OTHERS;2024-08-20;ARS
+-550000.00;Bicicleta de ruta usada. Comprada a un conocido;CATEGORY_LEISURE;SUBCATEGORY_HOBBIES;2024-09-03;ARS
+-34000.00;Medicamentos para el viaje. Antiparasitarios y protector solar;CATEGORY_HEALTH;SUBCATEGORY_MEDICINE;2024-09-10;ARS
+250000.00;Venta bici vieja;CATEGORY_INCOME;SUBCATEGORY_PRODUCTS_SALE;2024-09-15;ARS
+-12000.00;Cena cumpleaños. Restaurante La Cabrera;CATEGORY_FOOD_AND_DRINKS;SUBCATEGORY_FAST_FOOD;2024-10-04;ARS
+-1100.00;Aceite de oliva y especias importadas;CATEGORY_FOOD_AND_DRINKS;SUBCATEGORY_OTHERS;2024-10-18;ARS
+95000.00;Sueldo septiembre;CATEGORY_INCOME;SUBCATEGORY_SALARY;2024-09-20;ARS
+-500.00;Estacionamiento y peajes fin de semana;CATEGORY_VEHICLE;SUBCATEGORY_OTHERS;2024-11-22;ARS
+-18700.00;Campera de cuero. Liquidacion invierno;CATEGORY_SHOPS;SUBCATEGORY_CLOTHES_AND_SHOES;2024-12-05;ARS
+-4100.00;Consulta nutricionista. Plan alimentario 3 meses, incluyendo alimentación, suplementos, rutinas de entrenamiento y control diario de calorías. Pesado cada 2 semanas;CATEGORY_HEALTH;SUBCATEGORY_OTHERS;2025-01-08;ARS

@@ -44,7 +44,8 @@ class RecordsDAOTest {
         accountId: Int = 0,
         amount: Double = 100.0,
         description: String = "Registro de prueba",
-        categoryName: String = "Comida y alimentos",
+        category: String = "CATEGORY_FOOD_AND_DRINKS",
+        subcategory: String = "SUBCATEGORY_MARKET",
         date: String = "2026-01-15T10:30:00",
         currency: String = "ARS"
     ) = RecordEntity(
@@ -52,7 +53,8 @@ class RecordsDAOTest {
         accountId = accountId,
         amount = amount,
         description = description,
-        categoryName = categoryName,
+        category = category,
+        subcategory = subcategory,
         date = date,
         currency = currency
     )
@@ -160,19 +162,26 @@ class RecordsDAOTest {
 
     @Test
     fun givenNoMatchingRecords_whenGetBalanceByCategoryAndAccount_thenEmitsNull() = runTest {
-        val result = dao.getBalanceByCategoryAndAccount(categoryName = "Comida y alimentos").first()
+        val result = dao.getBalanceByCategoryAndAccount(
+            category = "CATEGORY_FOOD_AND_DRINKS",
+            subcategory = "SUBCATEGORY_MARKET"
+        ).first()
         assertNull(result)
     }
 
     @Test
     fun givenMatchingCategory_whenGetBalanceByCategoryAndAccount_thenEmitsFilteredSum() = runTest {
         dao.insert(
-            buildRecord(amount = 50.0, categoryName = "Comida y alimentos", accountId = 1),
-            buildRecord(amount = 80.0, categoryName = "Transporte", accountId = 1),
-            buildRecord(amount = 30.0, categoryName = "Comida y alimentos", accountId = 1)
+            buildRecord(amount = 50.0, category = "CATEGORY_FOOD_AND_DRINKS", subcategory = "SUBCATEGORY_MARKET", accountId = 1),
+            buildRecord(amount = 80.0, category = "CATEGORY_TRANSPORTATION", subcategory = "SUBCATEGORY_PUBLIC", accountId = 1),
+            buildRecord(amount = 30.0, category = "CATEGORY_FOOD_AND_DRINKS", subcategory = "SUBCATEGORY_MARKET", accountId = 1)
         )
 
-        val result = dao.getBalanceByCategoryAndAccount(accId = 1, categoryName = "Comida y alimentos").first()
+        val result = dao.getBalanceByCategoryAndAccount(
+            accId = 1,
+            category = "CATEGORY_FOOD_AND_DRINKS",
+            subcategory = "SUBCATEGORY_MARKET"
+        ).first()
         assertNotNull(result)
         assertEquals(80.0, result!!, 0.001)
     }
@@ -180,11 +189,15 @@ class RecordsDAOTest {
     @Test
     fun givenDifferentAccounts_whenGetBalanceByCategoryAndAccount_thenFiltersByAccount() = runTest {
         dao.insert(
-            buildRecord(amount = 100.0, categoryName = "Comida y alimentos", accountId = 1),
-            buildRecord(amount = 200.0, categoryName = "Comida y alimentos", accountId = 2)
+            buildRecord(amount = 100.0, category = "CATEGORY_FOOD_AND_DRINKS", subcategory = "SUBCATEGORY_MARKET", accountId = 1),
+            buildRecord(amount = 200.0, category = "CATEGORY_FOOD_AND_DRINKS", subcategory = "SUBCATEGORY_MARKET", accountId = 2)
         )
 
-        val result = dao.getBalanceByCategoryAndAccount(accId = 2, categoryName = "Comida y alimentos").first()
+        val result = dao.getBalanceByCategoryAndAccount(
+            accId = 2,
+            category = "CATEGORY_FOOD_AND_DRINKS",
+            subcategory = "SUBCATEGORY_MARKET"
+        ).first()
         assertNotNull(result)
         assertEquals(200.0, result!!, 0.001)
     }

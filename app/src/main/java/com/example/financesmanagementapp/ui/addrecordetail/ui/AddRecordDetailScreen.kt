@@ -1,6 +1,5 @@
 package com.example.financesmanagementapp.ui.addrecordetail.ui
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -40,11 +39,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.financesmanagementapp.R
 import com.example.financesmanagementapp.domain.model.Category
+import com.example.financesmanagementapp.domain.model.CategoryName
 import com.example.financesmanagementapp.domain.model.Record
 import com.example.financesmanagementapp.navigation.AppScreens
 
@@ -71,8 +75,6 @@ fun AddRecordDetailScreen(
 
     val record by (navController.previousBackStackEntry?.savedStateHandle?.getStateFlow<Record?>("record", null)
         ?.collectAsState() ?: remember { mutableStateOf<Record?>(null) })
-
-    Log.d("franco","Valor actual del Record desde RecordDetailScreen: $record")
 
     val isAmountZero = record?.amount == 0.0
 
@@ -111,11 +113,16 @@ fun AddRecordDetailScreen(
                 FloatingActionButton(
                     onClick = {
                         if (!isAmountZero) {
-                            val completeRecord = record?.copy(
-                                description = detailText,
-                                category = categoryList.find { it.categoryName == selectedCategory } ?: Category(),
-                                date = selectedDate
-                            )
+                            val completeRecord = record?.let { rec ->
+                                rec.copy(
+                                    description = detailText,
+                                    category = categoryList.find {
+                                        it.categoryName == selectedCategory.categoryName && it.subcategoryName == selectedCategory.subcategoryName
+                                    } ?: Category(),
+                                    date = selectedDate,
+                                    amount = if (selectedCategory.isIncome) rec.amount else -rec.amount
+                                )
+                            }
                             viewModel.saveRecord(completeRecord)
                             navController.navigate(AppScreens.HomeStartScreen.route){
                                 popUpTo(AppScreens.HomeStartScreen.route){
@@ -141,7 +148,9 @@ fun AddRecordDetailScreen(
             onDropdownClick = {viewModel.onDropdownMenuClick()},
             onDismissRequest = {viewModel.onDismissRequest()},
             selectedCategory = selectedCategory,
-            onCategorySelected = {newValue -> viewModel.onCategorySelected(newValue)},
+            onCategorySelected = { newValue ->
+                viewModel.onCategorySelected(newValue)
+            },
             categoryList = categoryList,
             selectedDate = selectedDate,
             showDatePicker = showDatePicker,
@@ -165,8 +174,8 @@ fun BodyContent(
     expanded: Boolean,
     onDropdownClick: () -> Unit,
     onDismissRequest: () -> Unit,
-    selectedCategory: String,
-    onCategorySelected: (String) -> Unit,
+    selectedCategory: Category,
+    onCategorySelected: (Category) -> Unit,
     categoryList: List<Category>,
     selectedDate: String,
     showDatePicker: Boolean,
@@ -199,8 +208,11 @@ fun BodyContent(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(innerPadding).padding(40.dp),
-        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(innerPadding)
+            .padding(40.dp),
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text("Ingrese detalle", style = MaterialTheme.typography.titleLarge)
@@ -210,26 +222,37 @@ fun BodyContent(
             placeholder = {Text("" )},
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
             singleLine = false,
-            modifier = Modifier.height(80.dp).fillMaxWidth()
+            modifier = Modifier
+                .height(80.dp)
+                .fillMaxWidth()
         )
         Spacer(Modifier.height(40.dp))
 
         Row(
-            modifier = Modifier.align(Alignment.Start).clickable(onClick = onDropdownClick).fillMaxWidth().height(50.dp).padding(5.dp),
+            modifier = Modifier
+                .align(Alignment.Start)
+                .clickable(onClick = onDropdownClick)
+                .fillMaxWidth()
+                .height(50.dp)
+                .padding(5.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val displayText = if (selectedCategory.isEmpty()) {
+            val displayText = if (selectedCategory.categoryName == CategoryName.WITHOUT_CATEGORY) {
                 "Seleccione categoría"
             } else {
-                selectedCategory
+                selectedCategory.displayLabel
             }
 
             Text(
                 text = displayText,
                 style = MaterialTheme.typography.titleLarge,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
-                    .height(50.dp).padding(5.dp)
+                    .weight(1f)
+                    .height(50.dp)
+                    .padding(5.dp)
             )
 
             DropdownMenu(
@@ -238,8 +261,8 @@ fun BodyContent(
             ) {
                 categoryList.forEach { category ->
                     DropdownMenuItem(
-                        text = { Text(text = category.categoryName) },
-                        onClick = { onCategorySelected(category.categoryName) }
+                        text = { Text(text = category.displayLabel) },
+                        onClick = { onCategorySelected(category) }
                     )
                 }
             }
@@ -249,6 +272,18 @@ fun BodyContent(
                 contentDescription = "Desplegar menu de categorias",
                 modifier = Modifier.width(24.dp))
         }
+
+        Spacer(Modifier.height(8.dp))
+
+        Text(
+            text = if (selectedCategory.isIncome) "Ingreso" else "Gasto",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            color = colorResource(
+                if (selectedCategory.isIncome) R.color.positive_green else R.color.negative_red
+            ),
+            modifier = Modifier.align(Alignment.Start)
+        )
 
         Spacer(Modifier.height(20.dp))
 
@@ -276,9 +311,6 @@ fun BodyContent(
                 modifier = Modifier.width(24.dp)
             )
         }
-
-        Spacer(Modifier.weight(1f))
-
 
     }
 }

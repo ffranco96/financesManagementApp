@@ -9,7 +9,9 @@ interface ConfigRepository {
     fun getFiatCurrencies(): Flow<List<FiatCurrency>>
     fun getCryptoCurrencies(): Flow<List<CryptoCurrency>>
     fun getCategories(): Flow<List<Category>>
+    fun getCategoriesVersion(): Flow<Int>
     suspend fun saveFiatCurrencies(currencies: List<FiatCurrency>)
     suspend fun saveCryptoCurrencies(currencies: List<CryptoCurrency>)
     suspend fun saveCategories(categories: List<Category>)
+    suspend fun saveCategoriesVersion(version: Int)
 }

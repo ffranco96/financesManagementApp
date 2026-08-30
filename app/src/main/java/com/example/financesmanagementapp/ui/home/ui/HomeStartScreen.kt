@@ -374,7 +374,7 @@ fun RecordContent(record: Record) {
                 .padding(start = 8.dp)
                 .clickable { expanded = !expanded }
         ) {
-            RecordTitle(record.category.categoryName, MaterialTheme.typography.labelLarge)
+            RecordTitle(record.category.displayLabel, MaterialTheme.typography.labelLarge)
             RecordDescription(
                 record.description,
                 MaterialTheme.typography.labelMedium,
