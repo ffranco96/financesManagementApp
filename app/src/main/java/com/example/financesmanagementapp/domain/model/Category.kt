@@ -16,6 +16,9 @@ enum class CategoryName(val label: String) {
     CATEGORY_INCOME("Ingresos"),
     CATEGORY_INVESTMENTS("Inversiones"),
     CATEGORY_LEISURE("Ocio"),
+    CATEGORY_EDUCATION_AND_DEVELOPMENT("Educación y desarrollo"),
+    CATEGORY_SPORTS("Deporte"),
+    CATEGORY_TRAVEL("Viajes"),
     CATEGORY_DEBT("Deudas"),
     CATEGORY_SHOPS("Compras"),
     CATEGORY_PETS("Mascotas"),
@@ -35,9 +38,10 @@ enum class CategoryName(val label: String) {
  * persistence; [label] is the Spanish label shown in the UI — the single source of truth for
  * [Category.displayName] when [Category.ALL_CATEGORIES] is built.
  *
- * [SUBCATEGORY_INSURANCE] is shared by two categories (house and vehicle insurance) with a single
- * generic label since a subcategory can only carry one label; the parent category's own
- * [CategoryName.label] (via [Category.displayLabel]) is what makes the difference between the two in the UI.
+ * Several subcategories are shared by more than one parent category (e.g. [SUBCATEGORY_INSURANCE],
+ * [SUBCATEGORY_MAINTENANCE], [SUBCATEGORY_HOTELS].
+ * A shared subcategory carries a single generic label; the parent category's own [CategoryName.label]
+ * (via [Category.displayLabel]) is what will make the difference when showing the labels in the UI.
  */
 enum class SubcategoryName(val label: String) {
     SUBCATEGORY_INSURANCE("Seguro"),
@@ -58,11 +62,13 @@ enum class SubcategoryName(val label: String) {
     SUBCATEGORY_MAIL_AND_SHIPMENTS("Correo y envíos"),
     SUBCATEGORY_LOTERY_CASINO("Lotería y casino"),
     SUBCATEGORY_MISSING("Faltantes"),
+    SUBCATEGORY_ADMINISTRATIVE("Trámites y gestiones"),
     SUBCATEGORY_ASSESMENT("Asesoría financiera"),
     SUBCATEGORY_CHARGES("Cargos y comisiones"),
     SUBCATEGORY_FINES("Multas"),
     SUBCATEGORY_INSURANCES("Seguros"),
     SUBCATEGORY_LOAN_INTERESTS("Intereses de préstamos"),
+    SUBCATEGORY_LOAN("Préstamos"),
     SUBCATEGORY_COFFEE_RESTAURANT("Cafetería y restaurant"),
     SUBCATEGORY_MARKET("Supermercado y almacén"),
     SUBCATEGORY_FAST_FOOD("Comida rápida y delivery"),
@@ -74,18 +80,21 @@ enum class SubcategoryName(val label: String) {
     SUBCATEGORY_SALARY("Sueldo"),
     SUBCATEGORY_SOCIAL_BENEFITS("Plan estatal"),
     SUBCATEGORY_BONUS("Bonos, aguinaldo"),
+    SUBCATEGORY_REFUND_SHARED_EXPENSES("Devolución de gastos compartidos"),
+    SUBCATEGORY_EXCHANGE("Cambio de divisas"),
     SUBCATEGORY_TRADITIONAL("Inversiones financieras tradicionales"),
     SUBCATEGORY_CRYPTOCURRENCY("Inversiones criptomonedas"),
     SUBCATEGORY_REAL_STATE("Bienes inmuebles"),
     SUBCATEGORY_FOREIGN_CURRENCY("Moneda extranjera"),
     SUBCATEGORY_MOVABLE_ASSETS("Bienes muebles"),
     SUBCATEGORY_HARD_ASSETS("Activos duros"),
-    SUBCATEGORY_SPORT("Deporte"),
     SUBCATEGORY_BOOKS("Libros"),
     SUBCATEGORY_CONCERTS("Recitales"),
-    SUBCATEGORY_TRAVEL_AND_HOLIDAYS("Viajes y vacaciones"),
+    SUBCATEGORY_EVENTS("Eventos y salidas"),
+    SUBCATEGORY_HOTELS("Hoteles y alojamiento"),
+    SUBCATEGORY_TRAVEL_TICKETS("Pasajes"),
+    SUBCATEGORY_EXCURSIONS("Excursiones y tours"),
     SUBCATEGORY_CINEMA_AND_THEATER("Cine y teatro"),
-    SUBCATEGORY_EDUCATION_AND_DEVELOPMENT("Educación y desarrollo"),
     SUBCATEGORY_CHARITY("Caridad"),
     SUBCATEGORY_MUSEAMS_AND_CULTURE("Museos y cultura"),
     SUBCATEGORY_ALCOHOL_TOBACCO("Alcohol y tabaco"),
@@ -95,10 +104,11 @@ enum class SubcategoryName(val label: String) {
     SUBCATEGORY_ACCESSORIES("Accesorios"),
     SUBCATEGORY_PERSONAL_CARE("Perfumería"),
     SUBCATEGORY_CLOTHES_AND_SHOES("Ropa y calzado"),
+    SUBCATEGORY_DRUGSTORE("Kiosco (golosinas y otros)"),
+    SUBCATEGORY_ELECTRONICS("Dispositivos y electrónica"),
     SUBCATEGORY_VET("Veterinario"),
-    SUBCATEGORY_FOOD("Alimento"),
+    SUBCATEGORY_FOOD("Comida"),
     SUBCATEGORY_DOG_WALKER("Paseador (perros)"),
-    SUBCATEGORY_HOLIDAY("Viajes de vacaciones"),
     SUBCATEGORY_PUBLIC("Transporte público"),
     SUBCATEGORY_TAXI("Taxi, remis y otras empresas"),
     SUBCATEGORY_HEALTH_INSURANCE("Prepaga y obra social"),
@@ -109,7 +119,6 @@ enum class SubcategoryName(val label: String) {
     SUBCATEGORY_FUEL("Combustible"),
     SUBCATEGORY_PARKING("Estacionamiento"),
     SUBCATEGORY_RENTAL("Alquiler de vehículos"),
-    SUBCATEGORY_MANTAINANCE("Mantenimiento del vehículo"),
     SUBCATEGORY_TOLLS("Peajes"),
     SUBCATEGORY_NONE("");
 
@@ -151,7 +160,7 @@ data class Category(
          * [com.example.financesmanagementapp.domain.usecase.InitializeConfigUseCase] knows to
          * reseed the categories stored in DataStore.
          */
-        const val CATEGORIES_VERSION = 6
+        const val CATEGORIES_VERSION = 7
 
         val ALL_CATEGORIES: List<Category> = listOf(
             Category(CategoryName.CATEGORY_HOUSE_AND_HOME, SubcategoryName.SUBCATEGORY_INSURANCE, SubcategoryName.SUBCATEGORY_INSURANCE.label, iconRsc = R.drawable.ic_subcategory_house_insurance, colorCategory = R.color.categ_color_house_and_home_insurance),
@@ -170,14 +179,20 @@ data class Category(
             Category(CategoryName.CATEGORY_SERVICES, SubcategoryName.SUBCATEGORY_EXPENSES, SubcategoryName.SUBCATEGORY_EXPENSES.label, iconRsc = R.drawable.ic_subcategory_expenses, colorCategory = R.color.categ_color_services_expenses),
             Category(CategoryName.CATEGORY_SERVICES, SubcategoryName.SUBCATEGORY_MOBILE_TELEPHONY, SubcategoryName.SUBCATEGORY_MOBILE_TELEPHONY.label, iconRsc = R.drawable.ic_subcategory_telephony, colorCategory = R.color.categ_color_services_mobile_telephony),
             Category(CategoryName.CATEGORY_TECHNOLOGY, SubcategoryName.SUBCATEGORY_SOFTWARE_AND_GAMES, SubcategoryName.SUBCATEGORY_SOFTWARE_AND_GAMES.label, iconRsc = R.drawable.ic_subcategory_software_games, colorCategory = R.color.categ_color_technology_software),
+            // TODO icono: falta ic_category_technology (icono principal de la categoría Tecnología); usa ic_other_generic como placeholder
+            Category(CategoryName.CATEGORY_TECHNOLOGY, SubcategoryName.SUBCATEGORY_MAINTENANCE, SubcategoryName.SUBCATEGORY_MAINTENANCE.label, iconRsc = R.drawable.ic_other_generic, colorCategory = R.color.categ_color_technology_software),
             Category(CategoryName.CATEGORY_OTHERS, SubcategoryName.SUBCATEGORY_MAIL_AND_SHIPMENTS, SubcategoryName.SUBCATEGORY_MAIL_AND_SHIPMENTS.label, iconRsc = R.drawable.ic_subcategory_mail_and_shipments, colorCategory = R.color.categ_color_others_mail_and_shipments),
             Category(CategoryName.CATEGORY_OTHERS, SubcategoryName.SUBCATEGORY_LOTERY_CASINO, SubcategoryName.SUBCATEGORY_LOTERY_CASINO.label, iconRsc = R.drawable.ic_subcategory_lottery_casino, colorCategory = R.color.categ_color_others_lotery_casino),
             Category(CategoryName.CATEGORY_OTHERS, SubcategoryName.SUBCATEGORY_MISSING, SubcategoryName.SUBCATEGORY_MISSING.label, iconRsc = R.drawable.ic_other_generic, colorCategory = R.color.categ_color_other),
+            // TODO icono/color: falta ic_subcategory_administrative y categ_color_others_administrative; placeholder = ic_other_generic / categ_color_other
+            Category(CategoryName.CATEGORY_OTHERS, SubcategoryName.SUBCATEGORY_ADMINISTRATIVE, SubcategoryName.SUBCATEGORY_ADMINISTRATIVE.label, iconRsc = R.drawable.ic_other_generic, colorCategory = R.color.categ_color_other),
             Category(CategoryName.CATEGORY_FINANCIAL_EXPENSES, SubcategoryName.SUBCATEGORY_ASSESMENT, SubcategoryName.SUBCATEGORY_ASSESMENT.label, iconRsc = R.drawable.ic_subcategory_financial_assesment, colorCategory = R.color.categ_color_financial_expenses_assesment),
             Category(CategoryName.CATEGORY_FINANCIAL_EXPENSES, SubcategoryName.SUBCATEGORY_CHARGES, SubcategoryName.SUBCATEGORY_CHARGES.label, iconRsc = R.drawable.ic_subcategory_charges, colorCategory = R.color.categ_color_financial_expenses_charges),
             Category(CategoryName.CATEGORY_FINANCIAL_EXPENSES, SubcategoryName.SUBCATEGORY_FINES, SubcategoryName.SUBCATEGORY_FINES.label, iconRsc = R.drawable.ic_subcategory_fines, colorCategory = R.color.categ_color_financial_expenses_fines),
             Category(CategoryName.CATEGORY_FINANCIAL_EXPENSES, SubcategoryName.SUBCATEGORY_INSURANCES, SubcategoryName.SUBCATEGORY_INSURANCES.label, iconRsc = R.drawable.ic_subcategory_financial_insurance, colorCategory = R.color.categ_color_financial_expenses_insurances),
             Category(CategoryName.CATEGORY_FINANCIAL_EXPENSES, SubcategoryName.SUBCATEGORY_LOAN_INTERESTS, SubcategoryName.SUBCATEGORY_LOAN_INTERESTS.label, iconRsc = R.drawable.ic_subcategory_loan_interest, colorCategory = R.color.categ_color_financial_expenses_loan_interests),
+            // TODO icono/color: falta ic_subcategory_loan y categ_color_financial_expenses_loan; placeholder = icono/color de Gastos Financieros · Otros
+            Category(CategoryName.CATEGORY_FINANCIAL_EXPENSES, SubcategoryName.SUBCATEGORY_LOAN, SubcategoryName.SUBCATEGORY_LOAN.label, iconRsc = R.drawable.ic_category_investment_and_finances, colorCategory = R.color.categ_color_investment_and_finances),
             Category(CategoryName.CATEGORY_FINANCIAL_EXPENSES, SubcategoryName.SUBCATEGORY_OTHERS, SubcategoryName.SUBCATEGORY_OTHERS.label, iconRsc = R.drawable.ic_category_investment_and_finances, colorCategory = R.color.categ_color_investment_and_finances),
             Category(CategoryName.CATEGORY_FOOD_AND_DRINKS, SubcategoryName.SUBCATEGORY_COFFEE_RESTAURANT, SubcategoryName.SUBCATEGORY_COFFEE_RESTAURANT.label, iconRsc = R.drawable.ic_subcategory_coffee_restaurants, colorCategory = R.color.categ_color_food_and_drinks_cofee_restaurant),
             Category(CategoryName.CATEGORY_FOOD_AND_DRINKS, SubcategoryName.SUBCATEGORY_MARKET, SubcategoryName.SUBCATEGORY_MARKET.label, iconRsc = R.drawable.ic_subcategory_food_markets, colorCategory = R.color.categ_color_food_and_drinks_market),
@@ -192,6 +207,9 @@ data class Category(
             Category(CategoryName.CATEGORY_INCOME, SubcategoryName.SUBCATEGORY_SALARY, SubcategoryName.SUBCATEGORY_SALARY.label, iconRsc = R.drawable.ic_subcategory_salary, colorCategory = R.color.categ_color_salary, isIncome = true),
             Category(CategoryName.CATEGORY_INCOME, SubcategoryName.SUBCATEGORY_SOCIAL_BENEFITS, SubcategoryName.SUBCATEGORY_SOCIAL_BENEFITS.label, iconRsc = R.drawable.ic_subcategory_social_benefit, colorCategory = R.color.categ_color_income_social_benefits, isIncome = true),
             Category(CategoryName.CATEGORY_INCOME, SubcategoryName.SUBCATEGORY_BONUS, SubcategoryName.SUBCATEGORY_BONUS.label, iconRsc = R.drawable.ic_subcategory_bonus, colorCategory = R.color.categ_color_income_bonus, isIncome = true),
+            Category(CategoryName.CATEGORY_INCOME, SubcategoryName.SUBCATEGORY_REFUND_SHARED_EXPENSES, SubcategoryName.SUBCATEGORY_REFUND_SHARED_EXPENSES.label, iconRsc = R.drawable.ic_category_income, colorCategory = R.color.categ_color_income_others, isIncome = true),
+            // TODO icono/color: falta ic_subcategory_exchange y categ_color_income_exchange; placeholder = icono/color de Ingresos · Otros
+            Category(CategoryName.CATEGORY_INCOME, SubcategoryName.SUBCATEGORY_EXCHANGE, SubcategoryName.SUBCATEGORY_EXCHANGE.label, iconRsc = R.drawable.ic_category_income, colorCategory = R.color.categ_color_income_others, isIncome = true),
             Category(CategoryName.CATEGORY_INVESTMENTS, SubcategoryName.SUBCATEGORY_TRADITIONAL, SubcategoryName.SUBCATEGORY_TRADITIONAL.label, iconRsc = R.drawable.ic_subcategory_tradit_investment, colorCategory = R.color.categ_color_investments_traditional),
             Category(CategoryName.CATEGORY_INVESTMENTS, SubcategoryName.SUBCATEGORY_CRYPTOCURRENCY, SubcategoryName.SUBCATEGORY_CRYPTOCURRENCY.label, iconRsc = R.drawable.ic_subcategory_cryptocurrency, colorCategory = R.color.categ_color_investments_cryptocurrency),
             Category(CategoryName.CATEGORY_INVESTMENTS, SubcategoryName.SUBCATEGORY_REAL_STATE, SubcategoryName.SUBCATEGORY_REAL_STATE.label, iconRsc = R.drawable.ic_subcategory_real_state, colorCategory = R.color.categ_color_investments_real_state),
@@ -199,17 +217,29 @@ data class Category(
             Category(CategoryName.CATEGORY_INVESTMENTS, SubcategoryName.SUBCATEGORY_MOVABLE_ASSETS, SubcategoryName.SUBCATEGORY_MOVABLE_ASSETS.label, iconRsc = R.drawable.ic_subcategory_movable_assets, colorCategory = R.color.categ_color_investments_movable_assets),
             Category(CategoryName.CATEGORY_INVESTMENTS, SubcategoryName.SUBCATEGORY_OTHERS, SubcategoryName.SUBCATEGORY_OTHERS.label, iconRsc = R.drawable.ic_category_investment_and_finances, colorCategory = R.color.categ_color_investments_others),
             Category(CategoryName.CATEGORY_INVESTMENTS, SubcategoryName.SUBCATEGORY_HARD_ASSETS, SubcategoryName.SUBCATEGORY_HARD_ASSETS.label, iconRsc = R.drawable.ic_subcategory_hard_assets, colorCategory = R.color.categ_color_investments_hard_assets),
-            Category(CategoryName.CATEGORY_LEISURE, SubcategoryName.SUBCATEGORY_SPORT, SubcategoryName.SUBCATEGORY_SPORT.label, iconRsc = R.drawable.ic_subcategory_sports, colorCategory = R.color.categ_color_leisure_sport),
             Category(CategoryName.CATEGORY_LEISURE, SubcategoryName.SUBCATEGORY_BOOKS, SubcategoryName.SUBCATEGORY_BOOKS.label, iconRsc = R.drawable.ic_subcategory_books, colorCategory = R.color.categ_color_leisure_books),
             Category(CategoryName.CATEGORY_LEISURE, SubcategoryName.SUBCATEGORY_CONCERTS, SubcategoryName.SUBCATEGORY_CONCERTS.label, iconRsc = R.drawable.ic_subcategory_concerts, colorCategory = R.color.categ_color_concerts),
-            Category(CategoryName.CATEGORY_LEISURE, SubcategoryName.SUBCATEGORY_TRAVEL_AND_HOLIDAYS, SubcategoryName.SUBCATEGORY_TRAVEL_AND_HOLIDAYS.label, iconRsc = R.drawable.ic_subcategory_holidays, colorCategory = R.color.categ_color_leisure_travel_and_holidays),
+            // TODO icono/color: falta ic_subcategory_events y categ_color_leisure_events; placeholder = icono/color de Ocio · Otros
+            Category(CategoryName.CATEGORY_LEISURE, SubcategoryName.SUBCATEGORY_EVENTS, SubcategoryName.SUBCATEGORY_EVENTS.label, iconRsc = R.drawable.ic_category_leisure, colorCategory = R.color.categ_color_leisure_others),
+            // TODO icono/color: falta ic_subcategory_hotels y categ_color_leisure_hotels; placeholder = icono/color de Ocio · Otros. SUBCATEGORY_HOTELS es compartida con CATEGORY_TRAVEL.
+            Category(CategoryName.CATEGORY_LEISURE, SubcategoryName.SUBCATEGORY_HOTELS, SubcategoryName.SUBCATEGORY_HOTELS.label, iconRsc = R.drawable.ic_category_leisure, colorCategory = R.color.categ_color_leisure_others),
             Category(CategoryName.CATEGORY_LEISURE, SubcategoryName.SUBCATEGORY_CINEMA_AND_THEATER, SubcategoryName.SUBCATEGORY_CINEMA_AND_THEATER.label, iconRsc = R.drawable.ic_subcategory_cinema_theater, colorCategory = R.color.categ_color_leisure_cinema_and_theater),
-            Category(CategoryName.CATEGORY_LEISURE, SubcategoryName.SUBCATEGORY_EDUCATION_AND_DEVELOPMENT, SubcategoryName.SUBCATEGORY_EDUCATION_AND_DEVELOPMENT.label, iconRsc = R.drawable.ic_subcategory_education, colorCategory = R.color.categ_color_leisure_education_and_development),
             Category(CategoryName.CATEGORY_LEISURE, SubcategoryName.SUBCATEGORY_OTHERS, SubcategoryName.SUBCATEGORY_OTHERS.label, iconRsc = R.drawable.ic_category_leisure, colorCategory = R.color.categ_color_leisure_others),
             Category(CategoryName.CATEGORY_LEISURE, SubcategoryName.SUBCATEGORY_CHARITY, SubcategoryName.SUBCATEGORY_CHARITY.label, iconRsc = R.drawable.ic_subcategory_charity, colorCategory = R.color.categ_color_leisure_charity),
             Category(CategoryName.CATEGORY_LEISURE, SubcategoryName.SUBCATEGORY_MUSEAMS_AND_CULTURE, SubcategoryName.SUBCATEGORY_MUSEAMS_AND_CULTURE.label, iconRsc = R.drawable.ic_subcategory_culture, colorCategory = R.color.categ_color_leisure_museams_and_culture),
             Category(CategoryName.CATEGORY_LEISURE, SubcategoryName.SUBCATEGORY_ALCOHOL_TOBACCO, SubcategoryName.SUBCATEGORY_ALCOHOL_TOBACCO.label, iconRsc = R.drawable.ic_subcategory_alcohol_tobacco, colorCategory = R.color.categ_color_leisure_alcohol_tobacco),
             Category(CategoryName.CATEGORY_LEISURE, SubcategoryName.SUBCATEGORY_PAINTING_DRAWING_AND_PHOTOGRAPHY, SubcategoryName.SUBCATEGORY_PAINTING_DRAWING_AND_PHOTOGRAPHY.label, iconRsc = R.drawable.ic_subcategory_painting_drawing_and_photography, colorCategory = R.color.categ_color_hobbies),
+            // TODO color: falta un categ_color_education_and_development propio; se reusa categ_color_leisure_education_and_development como placeholder
+            Category(CategoryName.CATEGORY_EDUCATION_AND_DEVELOPMENT, SubcategoryName.SUBCATEGORY_OTHERS, SubcategoryName.SUBCATEGORY_OTHERS.label, iconRsc = R.drawable.ic_category_education, colorCategory = R.color.categ_color_leisure_education_and_development),
+            // TODO color: falta un categ_color_sports propio; se reusa categ_color_leisure_sport como placeholder
+            Category(CategoryName.CATEGORY_SPORTS, SubcategoryName.SUBCATEGORY_OTHERS, SubcategoryName.SUBCATEGORY_OTHERS.label, iconRsc = R.drawable.ic_category_sports, colorCategory = R.color.categ_color_leisure_sport),
+            // TODO CATEGORY_TRAVEL: faltan iconos dedicados ic_subcategory_hotels / ic_subcategory_excursions (el resto usa ic_category_travel = icono del padre) y un categ_color_travel_* por entrada (hoy todas reusan categ_color_leisure_travel_and_holidays). INSURANCE / FOOD / HOTELS / OTHERS se comparten con otras categorías.
+            Category(CategoryName.CATEGORY_TRAVEL, SubcategoryName.SUBCATEGORY_TRAVEL_TICKETS, SubcategoryName.SUBCATEGORY_TRAVEL_TICKETS.label, iconRsc = R.drawable.ic_subcategory_travel_tickets, colorCategory = R.color.categ_color_leisure_travel_and_holidays),
+            Category(CategoryName.CATEGORY_TRAVEL, SubcategoryName.SUBCATEGORY_HOTELS, SubcategoryName.SUBCATEGORY_HOTELS.label, iconRsc = R.drawable.ic_category_travel, colorCategory = R.color.categ_color_leisure_travel_and_holidays),
+            Category(CategoryName.CATEGORY_TRAVEL, SubcategoryName.SUBCATEGORY_INSURANCE, SubcategoryName.SUBCATEGORY_INSURANCE.label, iconRsc = R.drawable.ic_category_travel, colorCategory = R.color.categ_color_leisure_travel_and_holidays),
+            Category(CategoryName.CATEGORY_TRAVEL, SubcategoryName.SUBCATEGORY_FOOD, SubcategoryName.SUBCATEGORY_FOOD.label, iconRsc = R.drawable.ic_category_travel, colorCategory = R.color.categ_color_leisure_travel_and_holidays),
+            Category(CategoryName.CATEGORY_TRAVEL, SubcategoryName.SUBCATEGORY_EXCURSIONS, SubcategoryName.SUBCATEGORY_EXCURSIONS.label, iconRsc = R.drawable.ic_category_travel, colorCategory = R.color.categ_color_leisure_travel_and_holidays),
+            Category(CategoryName.CATEGORY_TRAVEL, SubcategoryName.SUBCATEGORY_OTHERS, SubcategoryName.SUBCATEGORY_OTHERS.label, iconRsc = R.drawable.ic_category_travel, colorCategory = R.color.categ_color_leisure_travel_and_holidays),
             Category(CategoryName.CATEGORY_DEBT, SubcategoryName.SUBCATEGORY_OTHERS, SubcategoryName.SUBCATEGORY_OTHERS.label, iconRsc = R.drawable.ic_subcategory_debt, colorCategory = R.color.categ_color_debt_others),
             Category(CategoryName.CATEGORY_SHOPS, SubcategoryName.SUBCATEGORY_APPLIANCES, SubcategoryName.SUBCATEGORY_APPLIANCES.label, iconRsc = R.drawable.ic_subcategory_appliances, colorCategory = R.color.categ_color_shops_appliances),
             Category(CategoryName.CATEGORY_SHOPS, SubcategoryName.SUBCATEGORY_GIFTS, SubcategoryName.SUBCATEGORY_GIFTS.label, iconRsc = R.drawable.ic_subcategory_gifts, colorCategory = R.color.categ_color_shops_gifts),
@@ -217,11 +247,14 @@ data class Category(
             Category(CategoryName.CATEGORY_SHOPS, SubcategoryName.SUBCATEGORY_PERSONAL_CARE, SubcategoryName.SUBCATEGORY_PERSONAL_CARE.label, iconRsc = R.drawable.ic_subcategory_personal_care, colorCategory = R.color.categ_color_shops_personal_care),
             Category(CategoryName.CATEGORY_SHOPS, SubcategoryName.SUBCATEGORY_OTHERS, SubcategoryName.SUBCATEGORY_OTHERS.label, iconRsc = R.drawable.ic_category_shops, colorCategory = R.color.categ_color_shops_others),
             Category(CategoryName.CATEGORY_SHOPS, SubcategoryName.SUBCATEGORY_CLOTHES_AND_SHOES, SubcategoryName.SUBCATEGORY_CLOTHES_AND_SHOES.label, iconRsc = R.drawable.ic_subcategory_clothes_and_shoes, colorCategory = R.color.categ_color_clothes),
+            // TODO icono/color: falta ic_subcategory_drugstore y categ_color_shops_drugstore; placeholder = icono/color de Compras · Otros
+            Category(CategoryName.CATEGORY_SHOPS, SubcategoryName.SUBCATEGORY_DRUGSTORE, SubcategoryName.SUBCATEGORY_DRUGSTORE.label, iconRsc = R.drawable.ic_category_shops, colorCategory = R.color.categ_color_shops_others),
+            // TODO icono/color: falta ic_subcategory_electronics y categ_color_shops_electronics; placeholder = icono/color de Compras · Otros
+            Category(CategoryName.CATEGORY_SHOPS, SubcategoryName.SUBCATEGORY_ELECTRONICS, SubcategoryName.SUBCATEGORY_ELECTRONICS.label, iconRsc = R.drawable.ic_category_shops, colorCategory = R.color.categ_color_shops_others),
             Category(CategoryName.CATEGORY_PETS, SubcategoryName.SUBCATEGORY_OTHERS, SubcategoryName.SUBCATEGORY_OTHERS.label, iconRsc = R.drawable.ic_category_pets, colorCategory = R.color.categ_color_pets_others),
             Category(CategoryName.CATEGORY_PETS, SubcategoryName.SUBCATEGORY_VET, SubcategoryName.SUBCATEGORY_VET.label, iconRsc = R.drawable.ic_subcategory_vet, colorCategory = R.color.categ_color_pets_vet),
             Category(CategoryName.CATEGORY_PETS, SubcategoryName.SUBCATEGORY_FOOD, SubcategoryName.SUBCATEGORY_FOOD.label, iconRsc = R.drawable.ic_subcategory_pet_food, colorCategory = R.color.categ_color_pets_food),
             Category(CategoryName.CATEGORY_PETS, SubcategoryName.SUBCATEGORY_DOG_WALKER, SubcategoryName.SUBCATEGORY_DOG_WALKER.label, iconRsc = R.drawable.ic_subcategory_dog_walker, colorCategory = R.color.categ_color_pets_dog_walker),
-            Category(CategoryName.CATEGORY_TRANSPORTATION, SubcategoryName.SUBCATEGORY_HOLIDAY, SubcategoryName.SUBCATEGORY_HOLIDAY.label, iconRsc = R.drawable.ic_subcategory_transrpot_holidays, colorCategory = R.color.categ_color_transportation_holiday),
             Category(CategoryName.CATEGORY_TRANSPORTATION, SubcategoryName.SUBCATEGORY_OTHERS, SubcategoryName.SUBCATEGORY_OTHERS.label, iconRsc = R.drawable.ic_category_transportation, colorCategory = R.color.categ_color_transportation_others),
             Category(CategoryName.CATEGORY_TRANSPORTATION, SubcategoryName.SUBCATEGORY_PUBLIC, SubcategoryName.SUBCATEGORY_PUBLIC.label, iconRsc = R.drawable.ic_subcategory_public_transport, colorCategory = R.color.categ_color_transportation_public),
             Category(CategoryName.CATEGORY_TRANSPORTATION, SubcategoryName.SUBCATEGORY_TAXI, SubcategoryName.SUBCATEGORY_TAXI.label, iconRsc = R.drawable.ic_subcategory_taxi, colorCategory = R.color.categ_color_transportation_taxi),
@@ -236,7 +269,7 @@ data class Category(
             Category(CategoryName.CATEGORY_VEHICLE, SubcategoryName.SUBCATEGORY_OTHERS, SubcategoryName.SUBCATEGORY_OTHERS.label, iconRsc = R.drawable.ic_category_vehicle, colorCategory = R.color.categ_color_vehicles),
             Category(CategoryName.CATEGORY_VEHICLE, SubcategoryName.SUBCATEGORY_PARKING, SubcategoryName.SUBCATEGORY_PARKING.label, iconRsc = R.drawable.ic_subcategory_parking, colorCategory = R.color.categ_color_vehicle_parking),
             Category(CategoryName.CATEGORY_VEHICLE, SubcategoryName.SUBCATEGORY_RENTAL, SubcategoryName.SUBCATEGORY_RENTAL.label, iconRsc = R.drawable.ic_subcategory_vehicle_rental, colorCategory = R.color.categ_color_vehicle_rental),
-            Category(CategoryName.CATEGORY_VEHICLE, SubcategoryName.SUBCATEGORY_MANTAINANCE, SubcategoryName.SUBCATEGORY_MANTAINANCE.label, iconRsc = R.drawable.ic_subcategory_vehicle_maintenance, colorCategory = R.color.categ_color_vehicles_maintenance),
+            Category(CategoryName.CATEGORY_VEHICLE, SubcategoryName.SUBCATEGORY_MAINTENANCE, SubcategoryName.SUBCATEGORY_MAINTENANCE.label, iconRsc = R.drawable.ic_subcategory_vehicle_maintenance, colorCategory = R.color.categ_color_vehicles_maintenance),
             Category(CategoryName.CATEGORY_VEHICLE, SubcategoryName.SUBCATEGORY_TOLLS, SubcategoryName.SUBCATEGORY_TOLLS.label, iconRsc = R.drawable.ic_subcategory_tolls, colorCategory = R.color.categ_color_vehicle_tolls),
             Category(CategoryName.WITHOUT_CATEGORY, SubcategoryName.SUBCATEGORY_NONE, CategoryName.WITHOUT_CATEGORY.label)
         )
