@@ -25,6 +25,13 @@ Use the Gradle wrapper (`gradlew.bat` on this Windows machine). The Gradle daemo
 | Single test method | `./gradlew testDebugUnitTest --tests "*.ParseCsvUseCaseTest.parses valid line"` |
 | Instrumented tests (needs device/emulator) | `./gradlew connectedDebugAndroidTest` |
 | Android Lint | `./gradlew lintDebug` |
+| Build release APK | `./gradlew assembleRelease` |
+
+`NullSafeMutableLiveData` is disabled in `app/build.gradle.kts` (`android { lint { ... } }`):
+AGP/lint's `NonNullableMutableLiveDataDetector` hits an `IncompatibleClassChangeError` against the
+Kotlin Analysis API on this toolchain (unrelated to project code) and otherwise crashes
+`lintVitalAnalyzeRelease`, which runs automatically before any release build/bundle and would
+block it.
 
 There is no ktlint/detekt/spotless config — no separate format step.
 
@@ -109,6 +116,25 @@ Semicolon-delimited (`;`), not comma. Two independent paths:
   keys degrade to `WITHOUT_CATEGORY` rather than failing the row).
 
 Header/value escaping for `;` inside fields is a known gap — do not assume fields are quoted.
+
+## Firebase / Crashlytics
+
+- Crash reporting goes through the `CrashReporter` interface (`domain/crash/`), implemented by
+  `FirebaseCrashReporter` (`data/crash/`) and bound in `di/CrashModule`. Inject `CrashReporter`
+  rather than calling `FirebaseCrashlytics.getInstance()` directly; use `recordException(e, msg)`
+  in `catch` blocks that would otherwise swallow the error (already wired in `ConfigRepositoryImpl`,
+  `ExportCsvUseCase`, `ReadCsvUseCase`). Tests pass `mockk(relaxed = true)`.
+- Crashlytics + Analytics auto-initialize via their manifest-merged ContentProviders — no code in
+  `Application.onCreate`. Collection is gated by the `firebase_crashlytics_collection_enabled`
+  manifest meta-data, driven by `manifestPlaceholders["crashlyticsCollectionEnabled"]` per build
+  type: **false on `debug`, true on `release`**. `mappingFileUploadEnabled` is off for `debug`.
+- `app/google-services.json` is the real config for Firebase project `financesapp-967a1`, app
+  package `com.example.financesmanagementapp`. It's committed — the Android API key in it is
+  restricted by package + signing cert, not a secret. Re-download from the Firebase console
+  (console.firebase.google.com) after adding build variants, SHA-1 certs, or new Firebase
+  products. A `release` build uploads the Crashlytics mapping file and needs network.
+- Versions live in `gradle/libs.versions.toml` (`firebaseBom`, `googleServices`,
+  `firebaseCrashlyticsPlugin`); Firebase artifacts are unversioned (BoM-managed).
 
 ## Git / workflow
 
