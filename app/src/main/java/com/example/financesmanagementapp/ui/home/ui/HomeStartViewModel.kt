@@ -69,6 +69,13 @@ open class HomeViewModel @Inject constructor(
     val exportedCsvEvent = _exportedCsvEvent.asSharedFlow()
 
     /**
+     * Whether a CSV import is currently in progress. The UI observes this to block
+     * interaction (e.g. show a blocking spinner) while records are being read/saved.
+     */
+    private val _isImporting = MutableStateFlow(false)
+    val isImporting: StateFlow<Boolean> = _isImporting
+
+    /**
      * A stateFlow, obtained from a flow that contains the updated list of records
      * present in the DB.
      */
@@ -120,20 +127,25 @@ open class HomeViewModel @Inject constructor(
 
     fun importCsv(uri: Uri) {
         viewModelScope.launch(Dispatchers.IO) {
-            val readCsv = readCsvUseCase(uri)
-            if (readCsv == null) {
-                _exportedCsvEvent.emit(HomeUiEvent.ShowToast("Error al leer el archivo CSV"))
-                return@launch
-            }
+            _isImporting.value = true
+            try {
+                val readCsv = readCsvUseCase(uri)
+                if (readCsv == null) {
+                    _exportedCsvEvent.emit(HomeUiEvent.ShowToast("Error al leer el archivo CSV"))
+                    return@launch
+                }
 
-            val parseResult = parseCsvUseCase(readCsv)
-            val recordsList = parseResult.records
-            val errorsList = parseResult.errors
-            recordsList.forEach { record ->
-                saveRecordUseCase(record)
-            }
-            errorsList.forEach { error ->
-                Log.d(TAG, "No se pudo agregar $error")
+                val parseResult = parseCsvUseCase(readCsv)
+                val recordsList = parseResult.records
+                val errorsList = parseResult.errors
+                recordsList.forEach { record ->
+                    saveRecordUseCase(record)
+                }
+                errorsList.forEach { error ->
+                    Log.d(TAG, "No se pudo agregar $error")
+                }
+            } finally {
+                _isImporting.value = false
             }
         }
     }
