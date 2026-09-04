@@ -40,7 +40,7 @@ class ParseCsvUseCase @Inject constructor(
     }
 
     private fun parseHeader(header: String): Map<String, Int> {
-        return header.split(";")
+        return header.removePrefix(BOM).split(";")
             .mapIndexed { i, col -> col.trim().lowercase() to i }
             .filter { (name, _) -> name.isNotBlank() }
             .toMap()
@@ -117,5 +117,10 @@ class ParseCsvUseCase @Inject constructor(
     private sealed class ParseLineResult {
         data class Success(val record: Record) : ParseLineResult()
         data class Error(val error: ParseError) : ParseLineResult()
+    }
+
+    private companion object {
+        /** UTF-8 byte-order mark some CSV exporters (Excel, banking/wallet apps) prepend to the file. */
+        const val BOM = "\uFEFF"
     }
 }
