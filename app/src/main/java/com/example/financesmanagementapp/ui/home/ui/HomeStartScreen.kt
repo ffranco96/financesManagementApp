@@ -10,10 +10,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -27,6 +30,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -95,6 +99,7 @@ fun HomeStartScreen(
     }
 
     val recordsList by viewModel.recordsList.collectAsState(initial = emptyList())
+    val isImporting by viewModel.isImporting.collectAsState()
 
     observeValuesUpdatedByWorker(context, viewModel)
 
@@ -109,91 +114,116 @@ fun HomeStartScreen(
             }
         }
     }
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            ModalDrawerSheet {
-                Text("Mis Finanzas", modifier = Modifier.padding(18.dp))
-                HorizontalDivider()
-                NavigationDrawerItem(
-                    label = { Text("Importar registros") },
-                    selected = false,
-                    icon = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.import_icon),
-                            contentDescription = "Importar registros",
-                            Modifier
-                                .width(36.dp)
-                                .height(36.dp)
-                        )
-                    },
-                    onClick = {
-                        scope.launch {
-                            csvSelectorLauncher.launch(arrayOf("*/*"))
-                            scope.launch { drawerState.close() }
+    Box(modifier = Modifier.fillMaxSize()) {
+        ModalNavigationDrawer(
+            drawerState = drawerState,
+            drawerContent = {
+                ModalDrawerSheet {
+                    Text("Mis Finanzas", modifier = Modifier.padding(18.dp))
+                    HorizontalDivider()
+                    NavigationDrawerItem(
+                        label = { Text("Importar registros") },
+                        selected = false,
+                        icon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.import_icon),
+                                contentDescription = "Importar registros",
+                                Modifier
+                                    .width(36.dp)
+                                    .height(36.dp)
+                            )
+                        },
+                        onClick = {
+                            scope.launch {
+                                csvSelectorLauncher.launch(arrayOf("*/*"))
+                                scope.launch { drawerState.close() }
+                            }
                         }
-                    }
-                )
-                NavigationDrawerItem(
-                    label = { Text("Exportar registros") },
-                    selected = false,
-                    icon = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.export_icon),
-                            contentDescription = "Exportar registros",
-                            Modifier
-                                .width(30.dp)
-                                .height(30.dp)
-                        )
-                    },
-                    onClick = {
-                        scope.launch {
-                            Log.d("franco", "recordList: $recordsList")
-                            viewModel.exportCsv()
-                            scope.launch { drawerState.close() }
+                    )
+                    NavigationDrawerItem(
+                        label = { Text("Exportar registros") },
+                        selected = false,
+                        icon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.export_icon),
+                                contentDescription = "Exportar registros",
+                                Modifier
+                                    .width(30.dp)
+                                    .height(30.dp)
+                            )
+                        },
+                        onClick = {
+                            scope.launch {
+                                Log.d("franco", "recordList: $recordsList")
+                                viewModel.exportCsv()
+                                scope.launch { drawerState.close() }
+                            }
                         }
-                    }
-                )
-            }
-        }
-    ) {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text("Home") },
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            scope.launch { drawerState.open() }
-                        }) {
-                            Icon(Icons.Default.Menu, contentDescription = "Mis Finanzas")
-                        }
-                    }
-                )
-            },
-            floatingActionButton = {
-                FloatingActionButton(
-                    onClick = {
-                        navController.navigate(route = AppScreens.AddRecordAmountScreen.route)
-                        //recordsDetailList
-                    },
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Icon(Icons.Default.Add, contentDescription = "Agregar")
+                    )
                 }
             }
-        ) { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(paddingValues)
-            ) {
-                BodyContent(
-                    viewModel,
-                    recordsList,
-                    onNavigateToCharts = { navController.navigate(AppScreens.ChartsScreen.route) }
-                )
+        ) {
+            Scaffold(
+                topBar = {
+                    TopAppBar(
+                        title = { Text("Home") },
+                        navigationIcon = {
+                            IconButton(onClick = {
+                                scope.launch { drawerState.open() }
+                            }) {
+                                Icon(Icons.Default.Menu, contentDescription = "Mis Finanzas")
+                            }
+                        }
+                    )
+                },
+                floatingActionButton = {
+                    FloatingActionButton(
+                        onClick = {
+                            navController.navigate(route = AppScreens.AddRecordAmountScreen.route)
+                            //recordsDetailList
+                        },
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = "Agregar")
+                    }
+                }
+            ) { paddingValues ->
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(paddingValues)
+                ) {
+                    BodyContent(
+                        viewModel,
+                        recordsList,
+                        onNavigateToCharts = { navController.navigate(AppScreens.ChartsScreen.route) }
+                    )
+                }
+                val a = paddingValues // To avoid error
             }
-            val a = paddingValues // To avoid error
+        }
+
+        if (isImporting) {
+            // TODO not a fluent experience
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    // Opaque: fully hides HomeStartScreen while records get inserted one by one,
+                    // instead of just dimming it, so the user doesn't see the list filling in live.
+                    .background(MaterialTheme.colorScheme.background)
+                    // Consumes taps so nothing underneath reacts while the import is running.
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) {},
+                contentAlignment = Alignment.Center
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    CircularProgressIndicator()
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text("Importando registros...", style = MaterialTheme.typography.bodyMedium)
+                }
+            }
         }
     }
 }

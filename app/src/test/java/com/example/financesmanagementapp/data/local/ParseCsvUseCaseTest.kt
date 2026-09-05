@@ -49,6 +49,24 @@ class ParseCsvUseCaseTest {
     }
 
     @Test
+    fun `given csv with utf-8 BOM before header when invoke then returns parsed record`() {
+        val csvContent = "\uFEFF" + """
+            amount;description;category;subcategory;date;currency
+            -30000.0;Farmacia;${CategoryName.CATEGORY_HEALTH};${SubcategoryName.SUBCATEGORY_MEDICINE};2026-04-09;ARS
+        """.trimIndent()
+        val inputStream = csvContent.byteInputStream()
+        every { resources.getResourceEntryName(any()) } returns "ic_category_medicine"
+
+        val result = parseCsvUseCase(inputStream)
+
+        val record = result.records.first()
+        assertEquals(-30000.0, record.amount, 0.001)
+        assertEquals(CategoryName.CATEGORY_HEALTH, record.category.categoryName)
+        assertEquals(1, result.records.size)
+        assertTrue(result.errors.isEmpty())
+    }
+
+    @Test
     fun `given valid csv with reordered columns when invoke then returns parsed record`() {
         val csvContent = """
             description;amount;category;subcategory;currency;date
