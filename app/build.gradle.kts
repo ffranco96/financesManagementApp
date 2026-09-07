@@ -60,8 +60,7 @@ android {
             isMinifyEnabled = false
             // TODO - TEMPORARY: signs release with the auto-generated debug keystore so it's
             // installable for local testing (e.g. verifying Crashlytics). There is no real
-            // release signing config yet — do NOT ship a Play Store build signed like this;
-            // replace with a proper release keystore before shipping.
+            // release signing config yet
             signingConfig = signingConfigs.getByName("debug")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
