@@ -43,7 +43,10 @@ class ChartsViewModel @Inject constructor(
         viewModelScope.launch {
             combine(
                 getCategoryTotalUseCase(Record.DEFAULT_ACCOUNT_ID, DAYS_TO_LOOK_BACK)
-                    .catch { _uiState.value = ChartsUiState(isEmpty = true) },
+                    .catch {
+                        crashReporter.recordException(it, "Error loading category totals for Charts")
+                        _uiState.value = ChartsUiState(isEmpty = true)
+                    },
                 getAllRecordsFlowUseCase()
             ) { totals, records ->
                 ChartsUiState(categoryTotals = totals, isEmpty = totals.isEmpty()) to records
