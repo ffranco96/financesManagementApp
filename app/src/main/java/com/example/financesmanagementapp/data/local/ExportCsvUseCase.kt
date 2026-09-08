@@ -33,7 +33,8 @@ class ExportCsvUseCase @Inject constructor(
             val fileName = generateFileNameAutomaticallyWithDateTime()
             csvFileWriter.writeCsv(csvContent, fileName)
         } catch (e: Exception) {
-            crashReporter.recordException(e, "CSV export failed")
+            if(e !is FileAlreadyExistsException)
+                crashReporter.recordException(e, "CSV export failed")
             false
         }
     }

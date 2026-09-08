@@ -125,9 +125,11 @@ Header/value escaping for `;` inside fields is a known gap — do not assume fie
   in `catch` blocks that would otherwise swallow the error (already wired in `ConfigRepositoryImpl`,
   `ExportCsvUseCase`, `ReadCsvUseCase`). Tests pass `mockk(relaxed = true)`.
 - Crashlytics + Analytics auto-initialize via their manifest-merged ContentProviders — no code in
-  `Application.onCreate`. Collection is gated by the `firebase_crashlytics_collection_enabled`
-  manifest meta-data, driven by `manifestPlaceholders["crashlyticsCollectionEnabled"]` per build
-  type: **false on `debug`, true on `release`**. `mappingFileUploadEnabled` is off for `debug`.
+  `Application.onCreate`. Both `firebase_crashlytics_collection_enabled` and
+  `firebase_analytics_collection_enabled` manifest meta-data are driven by the same
+  `manifestPlaceholders["crashlyticsCollectionEnabled"]` (default `true` in `defaultConfig`,
+  overridden to `false` in `debug`): **all Firebase telemetry off on `debug`, on for `release`**.
+  `mappingFileUploadEnabled` is off for `debug`.
 - `app/google-services.json` is the real config for Firebase project `financesapp-967a1`, app
   package `com.example.financesmanagementapp`. It's committed — the Android API key in it is
   restricted by package + signing cert, not a secret. Re-download from the Firebase console

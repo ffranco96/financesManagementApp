@@ -36,6 +36,11 @@ android {
         }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Default for the firebase_crashlytics_collection_enabled / firebase_analytics_collection_enabled
+        // manifest meta-data. Any build type without an explicit override inherits this (true);
+        // `debug` overrides it to false below.
+        manifestPlaceholders["crashlyticsCollectionEnabled"] = true
     }
 
     packaging {
@@ -66,7 +71,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            manifestPlaceholders["crashlyticsCollectionEnabled"] = true
+            // crashlyticsCollectionEnabled inherits true from defaultConfig.
         }
         debug {
             manifestPlaceholders["crashlyticsCollectionEnabled"] = false
