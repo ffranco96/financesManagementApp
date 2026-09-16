@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.example.financesmanagementapp.domain.crash.CrashReporter
 import com.example.financesmanagementapp.domain.model.Category
 import com.example.financesmanagementapp.domain.model.CryptoCurrency
 import com.example.financesmanagementapp.domain.model.FiatCurrency
@@ -23,7 +24,8 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
 @Singleton
 class ConfigRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val gson: Gson
+    private val gson: Gson,
+    private val crashReporter: CrashReporter
 ) : ConfigRepository {
 
     private object PreferencesKeys {
@@ -39,6 +41,7 @@ class ConfigRepositoryImpl @Inject constructor(
             set.map { gson.fromJson(it, FiatCurrency::class.java) }
         } catch (e: Exception) {
             Log.e("ConfigRepository", "Error parsing FiatCurrencies, returning empty list to trigger re-initialization", e)
+            crashReporter.recordException(e, "Error parsing FiatCurrencies from DataStore")
             emptyList()
         }
     }
@@ -49,6 +52,7 @@ class ConfigRepositoryImpl @Inject constructor(
             set.map { gson.fromJson(it, CryptoCurrency::class.java) }
         } catch (e: Exception) {
             Log.e("ConfigRepository", "Error parsing CryptoCurrencies, returning empty list to trigger re-initialization", e)
+            crashReporter.recordException(e, "Error parsing CryptoCurrencies from DataStore")
             emptyList()
         }
     }
@@ -59,6 +63,7 @@ class ConfigRepositoryImpl @Inject constructor(
             set.map { gson.fromJson(it, Category::class.java) }
         } catch (e: Exception) {
             Log.e("ConfigRepository", "Error parsing Categories, returning empty list to trigger re-initialization", e)
+            crashReporter.recordException(e, "Error parsing Categories from DataStore")
             emptyList()
         }
     }

@@ -1,5 +1,6 @@
 package com.example.financesmanagementapp.data.local
 
+import com.example.financesmanagementapp.domain.crash.CrashReporter
 import com.example.financesmanagementapp.domain.model.Record
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -17,7 +18,8 @@ import javax.inject.Inject
  * @param csvFileWriter Abstraction for file I/O, injected by Hilt.
  */
 class ExportCsvUseCase @Inject constructor(
-    private val csvFileWriter: CsvFileWriter
+    private val csvFileWriter: CsvFileWriter,
+    private val crashReporter: CrashReporter
 ) {
     /**
      * Exports [records] to a CSV file.
@@ -31,7 +33,8 @@ class ExportCsvUseCase @Inject constructor(
             val fileName = generateFileNameAutomaticallyWithDateTime()
             csvFileWriter.writeCsv(csvContent, fileName)
         } catch (e: Exception) {
-            e.printStackTrace()
+            if(e !is FileAlreadyExistsException)
+                crashReporter.recordException(e, "CSV export failed")
             false
         }
     }

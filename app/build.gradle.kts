@@ -1,9 +1,13 @@
+import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 android {
@@ -32,6 +36,11 @@ android {
         }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Default for the firebase_crashlytics_collection_enabled / firebase_analytics_collection_enabled
+        // manifest meta-data. Any build type without an explicit override inherits this (true);
+        // `debug` overrides it to false below.
+        manifestPlaceholders["crashlyticsCollectionEnabled"] = true
     }
 
     packaging {
@@ -46,13 +55,32 @@ android {
         }
     }
 
+    lint {
+        // NonNullableMutableLiveDataDetector throws IncompatibleClassChangeError against the Kotlin
+        // Analysis API on this toolchain (AGP 8.7.3 / Kotlin 2.0) and aborts the whole lint task —
+        // both `lintDebug` and the `lintVitalRelease` that gates release builds. It's a bug in lint,
+        // not in this project's code. Re-enable after an AGP/lint upgrade.
+        disable += "NullSafeMutableLiveData"
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
+            // TODO - TEMPORARY: signs release with the auto-generated debug keystore so it's
+            // installable for local testing (e.g. verifying Crashlytics). There is no real
+            // release signing config yet
+            signingConfig = signingConfigs.getByName("debug")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // crashlyticsCollectionEnabled inherits true from defaultConfig.
+        }
+        debug {
+            manifestPlaceholders["crashlyticsCollectionEnabled"] = false
+            configure<CrashlyticsExtension> {
+                mappingFileUploadEnabled = false
+            }
         }
     }
     compileOptions {
@@ -92,6 +120,11 @@ dependencies {
     implementation(libs.hilt.navigation)
     implementation(libs.androidx.compose.material.icons.extended)
     kapt(libs.hilt.compiler)
+
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.analytics)
 
     // Room
     implementation(libs.room.runtime)

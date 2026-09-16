@@ -3,6 +3,7 @@ package com.example.financesmanagementapp.data.local
 import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
+import com.example.financesmanagementapp.domain.crash.CrashReporter
 import io.mockk.every
 import io.mockk.mockk
 import okio.FileNotFoundException
@@ -15,13 +16,15 @@ class ReadCsvUseCaseTest {
     private val context: Context = mockk()
     private val contentResolver: ContentResolver = mockk()
     private val uri: Uri = mockk()
+    private val crashReporter: CrashReporter = mockk(relaxed = true)
     private lateinit var readCsvUseCase: ReadCsvUseCase
     private val inputStream: InputStream = mockk()
 
     @Before
     fun setUp() {
-        readCsvUseCase = ReadCsvUseCase(context)
+        readCsvUseCase = ReadCsvUseCase(context, crashReporter)
         every { context.contentResolver } returns contentResolver
+        every { uri.authority } returns "com.test.provider"
     }
 
     @Test

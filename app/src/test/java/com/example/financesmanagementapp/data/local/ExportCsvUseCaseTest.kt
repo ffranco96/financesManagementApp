@@ -1,5 +1,6 @@
 package com.example.financesmanagementapp.data.local
 
+import com.example.financesmanagementapp.domain.crash.CrashReporter
 import com.example.financesmanagementapp.domain.model.Category
 import com.example.financesmanagementapp.domain.model.CategoryName
 import com.example.financesmanagementapp.domain.model.Record
@@ -17,11 +18,12 @@ import org.junit.Test
 class ExportCsvUseCaseTest {
 
     private val csvFileWriter: CsvFileWriter = mockk()
+    private val crashReporter: CrashReporter = mockk(relaxed = true)
     private lateinit var exportCsvUseCase: ExportCsvUseCase
 
     @Before
     fun setUp() {
-        exportCsvUseCase = ExportCsvUseCase(csvFileWriter)
+        exportCsvUseCase = ExportCsvUseCase(csvFileWriter, crashReporter)
     }
 
     @Test
