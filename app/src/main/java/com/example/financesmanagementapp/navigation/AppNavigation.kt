@@ -2,12 +2,15 @@ package com.example.financesmanagementapp.navigation
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.financesmanagementapp.domain.crash.CrashReporter
 import com.example.financesmanagementapp.ui.addrecordetail.ui.AddRecordDetailScreen
 import com.example.financesmanagementapp.ui.addrecordetail.ui.AddRecordDetailViewModel
 import com.example.financesmanagementapp.ui.addregisteramount.ui.AddRecordAmountScreen
@@ -22,12 +25,23 @@ import com.example.financesmanagementapp.ui.login.ui.LoginViewModel
 
 /**
  * Composable element that will orchestrate navigation.
+ *
+ * @param crashReporter used to log a breadcrumb on every destination change, so Crashlytics
+ * reports show the screen the user was on. Registering it here covers every route in one place.
  */
 @Composable
-fun AppNavigation() {
+fun AppNavigation(crashReporter: CrashReporter) {
     val navController = rememberNavController()
 
     val context: Context = LocalContext.current
+
+    DisposableEffect(navController) {
+        val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
+            crashReporter.log("screen: ${destination.route}")
+        }
+        navController.addOnDestinationChangedListener(listener)
+        onDispose { navController.removeOnDestinationChangedListener(listener) }
+    }
 
     val startDestinationState = produceState(initialValue = AppScreens.LoginScreen.route) {
         val prefs = context.getSharedPreferences("financesMgmtAppPrefs", Context.MODE_PRIVATE)

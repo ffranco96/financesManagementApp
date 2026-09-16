@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -39,16 +40,17 @@ class ChartsViewModel @Inject constructor(
     val allRecords: StateFlow<List<Record>> = _allRecords.asStateFlow()
 
     init {
-        crashReporter.log("screen: Charts")
         viewModelScope.launch {
             combine( // It doesn't restart the values, keeps last value
                 getCategoryTotalUseCase(Record.DEFAULT_ACCOUNT_ID, DAYS_TO_LOOK_BACK)
+                    .retry(2)
                     .catch {
                         crashReporter.recordException(it, "Error loading category totals for Charts")
                         _uiState.value = ChartsUiState(isEmpty = true)
                     },
                 getAllRecordsFlowUseCase()
-                    .catch{
+                    .retry(2)
+                    .catch {
                         crashReporter.recordException(it, "Error loading records for Charts")
                         _uiState.value = ChartsUiState(isEmpty = true)
                     }

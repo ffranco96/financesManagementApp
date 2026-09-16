@@ -24,6 +24,7 @@ class ReadCsvUseCaseTest {
     fun setUp() {
         readCsvUseCase = ReadCsvUseCase(context, crashReporter)
         every { context.contentResolver } returns contentResolver
+        every { uri.authority } returns "com.test.provider"
     }
 
     @Test

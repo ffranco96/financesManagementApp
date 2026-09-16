@@ -11,7 +11,6 @@ import androidx.work.WorkManager
 import com.example.financesmanagementapp.data.local.ExportCsvUseCase
 import com.example.financesmanagementapp.data.local.ParseCsvUseCase
 import com.example.financesmanagementapp.data.local.ReadCsvUseCase
-import com.example.financesmanagementapp.domain.crash.CrashReporter
 import com.example.financesmanagementapp.domain.model.Record
 import com.example.financesmanagementapp.domain.model.Record.Companion.DEFAULT_ACCOUNT_ID
 import com.example.financesmanagementapp.ui.addrecordetail.domain.SaveRecordUseCase
@@ -55,7 +54,6 @@ open class HomeViewModel @Inject constructor(
     private val saveRecordUseCase: SaveRecordUseCase,
     private val exportCsvUseCase: ExportCsvUseCase,
     private val getTotalBalanceUseCase: GetTotalBalanceByAccountUseCase,
-    private val crashReporter: CrashReporter,
 ) : ViewModel(){
     private val _currentBtcValue = MutableStateFlow(0.0)
     val currentBtcValue: StateFlow<Double> = _currentBtcValue
@@ -92,7 +90,6 @@ open class HomeViewModel @Inject constructor(
     open val btcPrice: StateFlow<String> = _btcPrice
 
     init {
-        crashReporter.log("screen: HomeStart")
         if (ServiceLocator.getBtcPriceUseCase == null) {
             ServiceLocator.getBtcPriceUseCase = getBtcPriceUseCase
         }

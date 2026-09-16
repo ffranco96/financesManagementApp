@@ -23,7 +23,7 @@ class ReadCsvUseCase @Inject constructor(
         return try {
             context.contentResolver.openInputStream(uri)
         } catch(e: Exception){
-            crashReporter.recordException(e, "No se pudo abrir el CSV: $uri")
+            crashReporter.recordException(e, "No se pudo abrir el CSV (provider: ${uri.authority})")
             return null
         }
     }

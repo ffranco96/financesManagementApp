@@ -56,7 +56,10 @@ android {
     }
 
     lint {
-        // Disabling the specific check avoids crash on release builds.
+        // NonNullableMutableLiveDataDetector throws IncompatibleClassChangeError against the Kotlin
+        // Analysis API on this toolchain (AGP 8.7.3 / Kotlin 2.0) and aborts the whole lint task —
+        // both `lintDebug` and the `lintVitalRelease` that gates release builds. It's a bug in lint,
+        // not in this project's code. Re-enable after an AGP/lint upgrade.
         disable += "NullSafeMutableLiveData"
     }
 
