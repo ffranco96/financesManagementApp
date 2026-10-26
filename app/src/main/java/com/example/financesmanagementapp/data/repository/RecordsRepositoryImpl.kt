@@ -36,4 +36,12 @@ class RecordsRepositoryImpl @Inject constructor(
     override suspend fun deleteAllRecords() {
         recordsDao.deleteAll()
     }
+
+    override suspend fun deleteRecord(record: RecordEntity) {
+        recordsDao.delete(record)
+    }
+
+    override suspend fun deleteRecordById(id: Int) {
+        recordsDao.deleteById(id)
+    }
 }

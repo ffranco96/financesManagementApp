@@ -9,6 +9,7 @@ import java.time.format.DateTimeParseException
  * Data class representing a financial record, which is a movement that can be an income or an expense.
  */
 data class Record (
+    var id: Int = 0,
     var accountId: Int = 0,
     var amount: Double = 0.0,
     var description: String = "",
