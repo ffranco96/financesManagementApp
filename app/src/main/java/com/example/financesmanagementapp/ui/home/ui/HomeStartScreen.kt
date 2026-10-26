@@ -346,12 +346,21 @@ fun observeWorker(context: Context){
  */
 @Composable
 fun RecordsList(recordsList: List<Record>, viewModel: HomeViewModel) {
+    var expandedId by remember { mutableStateOf<Int?>(null) }
+
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.Start
     ) {
         items(recordsList) { recordObject ->
-            RecordItem(recordObject, viewModel)
+            RecordItem(
+                record = recordObject,
+                viewModel = viewModel,
+                isExpanded = expandedId == recordObject.id,
+                onToggleExpand = {
+                    expandedId = if (expandedId == recordObject.id) null else recordObject.id
+                }
+            )
             HorizontalDivider()
         }
     }
@@ -361,7 +370,12 @@ fun RecordsList(recordsList: List<Record>, viewModel: HomeViewModel) {
  * Individual record item component.
  */
 @Composable
-fun RecordItem(record: Record, viewModel: HomeViewModel) {
+fun RecordItem(
+    record: Record,
+    viewModel: HomeViewModel,
+    isExpanded: Boolean,
+    onToggleExpand: () -> Unit
+) {
     Row(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.background) // Background of the Row
@@ -371,7 +385,7 @@ fun RecordItem(record: Record, viewModel: HomeViewModel) {
     {
         MyImage(record.category.iconRsc)
         Spacer(modifier = Modifier.width(12.dp))
-        RecordContent(record, viewModel)
+        RecordContent(record, viewModel, isExpanded, onToggleExpand)
     }
 }
 
@@ -393,8 +407,12 @@ fun MyImage(rscId: Int) {
  * Content of a record item, handles expansion of the detail of the item.
  */
 @Composable
-fun RecordContent(record: Record, viewModel: HomeViewModel) {
-    var expanded by remember { mutableStateOf(false) }
+fun RecordContent(
+    record: Record,
+    viewModel: HomeViewModel,
+    isExpanded: Boolean,
+    onToggleExpand: () -> Unit
+) {
     var showDeleteDialog by remember { mutableStateOf(false) }
 
     if (showDeleteDialog) {
@@ -429,13 +447,13 @@ fun RecordContent(record: Record, viewModel: HomeViewModel) {
             modifier = Modifier
                 .weight(1f) // Avoids the amount to be compressed
                 .padding(start = 8.dp)
-                .clickable { expanded = !expanded }
+                .clickable { onToggleExpand() }
         ) {
             RecordTitle(record.category.displayLabel, MaterialTheme.typography.labelLarge)
             RecordDescription(
                 record.description,
                 MaterialTheme.typography.labelMedium,
-                if (expanded) Int.MAX_VALUE else 2
+                if (isExpanded) Int.MAX_VALUE else 2
             )
             RecordDate(
                 date = record.date,
@@ -445,7 +463,7 @@ fun RecordContent(record: Record, viewModel: HomeViewModel) {
         }
 
         Row(verticalAlignment = Alignment.CenterVertically) {
-            if (expanded) {
+            if (isExpanded) {
                 IconButton(onClick = { showDeleteDialog = true }) {
                     Icon(
                         imageVector = Icons.Rounded.Delete,
