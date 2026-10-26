@@ -72,7 +72,7 @@ subclass and override the flows); the screen is `HomeStartScreen`.
 ## Domain invariants — read before touching records or categories
 
 - **`amount` is signed.** Negative = expense, positive = income. Balances are plain `SUM(amount)`.
-  There is no `isIncome` column (dropped in `MIGRATION_3_4`, which folded the old sign into `amount`).
+  There is no `isIncome` column (dropped in `MIGRATION_2_3`, which folded the old sign into `amount`).
   `Category.isIncome` still exists as taxonomy metadata but the record's sign is the source of truth.
 
 - **Category identity is the enum `name`, not the label.** `CategoryName` / `SubcategoryName`
