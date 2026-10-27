@@ -45,4 +45,14 @@ interface RecordsRepository {
      * Deletes all financial records from the database.
      */
     suspend fun deleteAllRecords()
+
+    /**
+     * Deletes a single financial record from the database.
+     */
+    suspend fun deleteRecord(record: RecordEntity)
+
+    /**
+     * Deletes a single financial record by its id.
+     */
+    suspend fun deleteRecordById(id: Int)
 }

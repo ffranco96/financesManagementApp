@@ -51,6 +51,9 @@ interface RecordsDAO {
     @Delete
     fun delete(rec: RecordEntity)
 
+    @Query("DELETE FROM records WHERE id = :id")
+    fun deleteById(id: Int)
+
     @Update
     fun update(rec: RecordEntity)
 }

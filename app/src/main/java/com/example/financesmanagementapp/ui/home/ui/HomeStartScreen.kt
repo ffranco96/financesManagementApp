@@ -29,6 +29,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
@@ -43,6 +44,7 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -302,7 +304,7 @@ fun BodyContent(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-       RecordsList(sortedRecords)
+       RecordsList(sortedRecords, viewModel)
     }
 }
 
@@ -343,13 +345,22 @@ fun observeWorker(context: Context){
  * Displays a list of financial records.
  */
 @Composable
-fun RecordsList(recordsList: List<Record>) {
+fun RecordsList(recordsList: List<Record>, viewModel: HomeViewModel) {
+    var expandedId by remember { mutableStateOf<Int?>(null) }
+
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.Start
     ) {
         items(recordsList) { recordObject ->
-            RecordItem(recordObject)
+            RecordItem(
+                record = recordObject,
+                viewModel = viewModel,
+                isExpanded = expandedId == recordObject.id,
+                onToggleExpand = {
+                    expandedId = if (expandedId == recordObject.id) null else recordObject.id
+                }
+            )
             HorizontalDivider()
         }
     }
@@ -359,7 +370,12 @@ fun RecordsList(recordsList: List<Record>) {
  * Individual record item component.
  */
 @Composable
-fun RecordItem(record: Record) {
+fun RecordItem(
+    record: Record,
+    viewModel: HomeViewModel,
+    isExpanded: Boolean,
+    onToggleExpand: () -> Unit
+) {
     Row(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.background) // Background of the Row
@@ -369,7 +385,7 @@ fun RecordItem(record: Record) {
     {
         MyImage(record.category.iconRsc)
         Spacer(modifier = Modifier.width(12.dp))
-        RecordContent(record)
+        RecordContent(record, viewModel, isExpanded, onToggleExpand)
     }
 }
 
@@ -391,8 +407,37 @@ fun MyImage(rscId: Int) {
  * Content of a record item, handles expansion of the detail of the item.
  */
 @Composable
-fun RecordContent(record: Record) {
-    var expanded by remember { mutableStateOf(false) }
+fun RecordContent(
+    record: Record,
+    viewModel: HomeViewModel,
+    isExpanded: Boolean,
+    onToggleExpand: () -> Unit
+) {
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("Borrar registro") },
+            text = { Text("¿Estás seguro de que deseas borrar este registro?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.deleteRecord(record.id)
+                        showDeleteDialog = false
+                    }
+                ) {
+                    Text("Sí")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text("No")
+                }
+            }
+        )
+    }
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -402,13 +447,13 @@ fun RecordContent(record: Record) {
             modifier = Modifier
                 .weight(1f) // Avoids the amount to be compressed
                 .padding(start = 8.dp)
-                .clickable { expanded = !expanded }
+                .clickable { onToggleExpand() }
         ) {
             RecordTitle(record.category.displayLabel, MaterialTheme.typography.labelLarge)
             RecordDescription(
                 record.description,
                 MaterialTheme.typography.labelMedium,
-                if (expanded) Int.MAX_VALUE else 2
+                if (isExpanded) Int.MAX_VALUE else 2
             )
             RecordDate(
                 date = record.date,
@@ -417,7 +462,17 @@ fun RecordContent(record: Record) {
             )
         }
 
-        RecordAmount(record.currency, record.amount)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            if (isExpanded) {
+                IconButton(onClick = { showDeleteDialog = true }) {
+                    Icon(
+                        imageVector = Icons.Rounded.Delete,
+                        contentDescription = "Borrar registro"
+                    )
+                }
+            }
+            RecordAmount(record.currency, record.amount)
+        }
     }
 }
 

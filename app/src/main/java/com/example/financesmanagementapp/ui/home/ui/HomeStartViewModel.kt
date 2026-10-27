@@ -17,6 +17,7 @@ import com.example.financesmanagementapp.ui.addrecordetail.domain.SaveRecordUseC
 import com.example.financesmanagementapp.ui.home.data.worker.UpdateCryptoactivesWorker
 import com.example.financesmanagementapp.ui.home.di.ServiceLocator
 import com.example.financesmanagementapp.ui.home.domain.DeleteAllRecordsUseCase
+import com.example.financesmanagementapp.ui.home.domain.DeleteRecordUseCase
 import com.example.financesmanagementapp.ui.home.domain.GetAllCryptoPricesUseCase
 import com.example.financesmanagementapp.ui.home.domain.GetAllRecordsFlowUseCase
 import com.example.financesmanagementapp.ui.home.domain.GetCryptoPriceByTickerUseCase
@@ -49,6 +50,7 @@ open class HomeViewModel @Inject constructor(
     private val getAllCryptoPricesUseCase: GetAllCryptoPricesUseCase,
     private val getAllRecordsFlowUseCase: GetAllRecordsFlowUseCase,
     private val deleteAllRecordsUseCase: DeleteAllRecordsUseCase,
+    private val deleteRecordUseCase: DeleteRecordUseCase,
     private val readCsvUseCase: ReadCsvUseCase,
     private val parseCsvUseCase: ParseCsvUseCase,
     private val saveRecordUseCase: SaveRecordUseCase,
@@ -98,6 +100,12 @@ open class HomeViewModel @Inject constructor(
     fun clearRecordsList() {
         viewModelScope.launch(Dispatchers.IO) {
             deleteAllRecordsUseCase()
+        }
+    }
+
+    fun deleteRecord(id: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            deleteRecordUseCase(id)
         }
     }
 
