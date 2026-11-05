@@ -35,6 +35,13 @@ interface RecordsRepository {
     fun getBalanceByAccountAndCategoryFlow(accountId: Int, category: String, subcategory: String): Flow<Double?>
 
     /**
+     * Retrieves a single record by its id.
+     * @param id The id of the record to retrieve.
+     * @return The matching [RecordEntity], or null if no record has that id.
+     */
+    suspend fun getRecordById(id: Int): RecordEntity?
+
+    /**
      * Adds and persists a new financial record to the database.
      * @param record The entity representing the record to be saved.
      * @return The ID of the inserted record.

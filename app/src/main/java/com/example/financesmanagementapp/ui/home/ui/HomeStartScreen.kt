@@ -182,7 +182,7 @@ fun HomeStartScreen(
                 floatingActionButton = {
                     FloatingActionButton(
                         onClick = {
-                            navController.navigate(route = AppScreens.AddRecordAmountScreen.route)
+                            navController.navigate(route = AppScreens.AddRecordAmountScreen.createRoute())
                             //recordsDetailList
                         },
                         modifier = Modifier.padding(16.dp)
@@ -201,8 +201,7 @@ fun HomeStartScreen(
                         recordsList,
                         onNavigateToCharts = { navController.navigate(AppScreens.ChartsScreen.route) },
                         onEditRecord = { record ->
-                            navController.currentBackStackEntry?.savedStateHandle?.set("record", record)
-                            navController.navigate(AppScreens.AddRecordDetailScreen.route)
+                            navController.navigate(AppScreens.AddRecordAmountScreen.createRoute(record.id))
                         }
                     )
                 }

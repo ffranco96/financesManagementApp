@@ -64,6 +64,7 @@ fun AddRecordAmountScreen(
     val amountText by viewModel.amountText.collectAsState()
     val expandedCurrencyMenu by viewModel.expandedCurrencyMenu.collectAsState()
     val selectedCurrency by viewModel.selectedCurrency.collectAsState()
+    val editingRecord by viewModel.editingRecord.collectAsState()
 
     val currencyList by viewModel.currencyList.collectAsState()
 
@@ -78,16 +79,22 @@ fun AddRecordAmountScreen(
                             navController.popBackStack()
                         })
                 },
-                title = { Text("Agregar registro") }
+                title = { Text(if (viewModel.isEditing) "Editar registro" else "Agregar registro") }
             )
         },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    val amount = amountText.toDoubleOrNull() ?: 0.0
-                    val myRecord = Record(amount = amount, currency = selectedCurrency)
-                    navController.currentBackStackEntry?.savedStateHandle?.set("record", myRecord)
-                    navController.navigate(AppScreens.AddRecordDetailScreen.route)
+                    val base = editingRecord
+                    // Avoid continuing before the record to edit has loaded, and never
+                    // replace an existing record with a fresh one when editing.
+                    if (!viewModel.isEditing || base != null) {
+                        val amount = amountText.toDoubleOrNull() ?: 0.0
+                        val myRecord = base?.copy(amount = amount, currency = selectedCurrency)
+                            ?: Record(amount = amount, currency = selectedCurrency)
+                        navController.currentBackStackEntry?.savedStateHandle?.set("record", myRecord)
+                        navController.navigate(AppScreens.AddRecordDetailScreen.route)
+                    }
                 },
                 modifier = Modifier.padding(16.dp)
             ) {

@@ -3,6 +3,7 @@ package com.example.financesmanagementapp.data.repository
 import com.example.financesmanagementapp.data.local.AppDatabase
 import com.example.financesmanagementapp.data.local.entities.RecordEntity
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import kotlin.Int
 
@@ -27,6 +28,10 @@ class RecordsRepositoryImpl @Inject constructor(
 
     override fun getBalanceByAccountAndCategoryFlow(accountId: Int, category: String, subcategory: String): Flow<Double?> {
         return recordsDao.getBalanceByCategoryAndAccount(accountId, category, subcategory)
+    }
+
+    override suspend fun getRecordById(id: Int): RecordEntity? {
+        return recordsDao.getById(id).first()
     }
 
     override suspend fun addRecord(record: RecordEntity) {

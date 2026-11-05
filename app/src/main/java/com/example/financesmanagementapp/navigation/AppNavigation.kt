@@ -7,9 +7,11 @@ import androidx.compose.runtime.produceState
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.financesmanagementapp.domain.crash.CrashReporter
 import com.example.financesmanagementapp.ui.addrecordetail.ui.AddRecordDetailScreen
 import com.example.financesmanagementapp.ui.addrecordetail.ui.AddRecordDetailViewModel
@@ -69,6 +71,10 @@ fun AppNavigation(crashReporter: CrashReporter) {
         }
         composable(
             route = AppScreens.AddRecordAmountScreen.route,
+            arguments = listOf(navArgument(AppScreens.AddRecordAmountScreen.RECORD_ID_ARG) {
+                type = NavType.IntType
+                defaultValue = AppScreens.AddRecordAmountScreen.NO_RECORD_ID
+            })
         ) {
             val addRecordAmountViewModel: AddRecordAmountViewModel = hiltViewModel()
             AddRecordAmountScreen(

@@ -21,6 +21,15 @@ interface RecordsDAO {
     fun getAllAsFlow(): Flow<List<RecordEntity>>
 
     /**
+     * Retrieves a single record by its id as a [Flow]. Exposed as a Flow (rather than a suspend
+     * query) because Room 2.6.1's kapt processor cannot read the Kotlin 2.1 metadata that a
+     * suspend return type pulls in from kotlin-stdlib (resolved to 2.1.10 by Hilt 2.56.1).
+     * Collecting it with `first()` keeps the read off the main thread.
+     */
+    @Query("SELECT * FROM records WHERE id = :id")
+    fun getById(id: Int): Flow<RecordEntity?>
+
+    /**
      * [RecordEntity.amount] is stored already signed (negative for expenses, positive for
      * income), so the total balance is a plain sum.
      */
