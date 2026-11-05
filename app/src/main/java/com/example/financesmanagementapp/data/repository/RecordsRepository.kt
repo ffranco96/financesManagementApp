@@ -42,6 +42,12 @@ interface RecordsRepository {
     suspend fun addRecord(record: RecordEntity)
 
     /**
+     * Updates an existing financial record in the database.
+     * @param record The entity representing the record to be updated.
+     */
+    suspend fun updateRecord(record: RecordEntity)
+
+    /**
      * Deletes all financial records from the database.
      */
     suspend fun deleteAllRecords()

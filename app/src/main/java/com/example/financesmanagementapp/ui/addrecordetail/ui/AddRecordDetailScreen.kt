@@ -33,8 +33,10 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -51,6 +53,7 @@ import com.example.financesmanagementapp.domain.model.Category
 import com.example.financesmanagementapp.domain.model.CategoryName
 import com.example.financesmanagementapp.domain.model.Record
 import com.example.financesmanagementapp.navigation.AppScreens
+import kotlin.math.abs
 
 /**
  * Screen that allows adding more details to a financial record, such as description and category.
@@ -76,11 +79,24 @@ fun AddRecordDetailScreen(
     val record by (navController.previousBackStackEntry?.savedStateHandle?.getStateFlow<Record?>("record", null)
         ?.collectAsState() ?: remember { mutableStateOf<Record?>(null) })
 
+    // When an existing record is received, preload the form with its values.
+    LaunchedEffect(record?.id) {
+        record?.let { currentRecord ->
+            if (currentRecord.id != 0) {
+                viewModel.initializeFromRecord(currentRecord)
+            }
+        }
+    }
+
+    val isEditing = record?.id?.let { it != 0 } ?: false
+
     val isAmountZero = record?.amount == 0.0
 
-    val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = lastSelectedDateMillis
-    )
+    val datePickerState = key(lastSelectedDateMillis) {
+        rememberDatePickerState(
+            initialSelectedDateMillis = lastSelectedDateMillis
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -93,7 +109,7 @@ fun AddRecordDetailScreen(
                             navController.popBackStack()
                         })
                 },
-                title = {Text("Detalle")}
+                title = { Text(if (isEditing) "Editar registro" else "Detalle") }
             )
         },
         floatingActionButton = {
@@ -120,7 +136,9 @@ fun AddRecordDetailScreen(
                                         it.categoryName == selectedCategory.categoryName && it.subcategoryName == selectedCategory.subcategoryName
                                     } ?: Category(),
                                     date = selectedDate,
-                                    amount = if (selectedCategory.isIncome) rec.amount else -rec.amount
+                                    // Seems redundant but we are getting the signed amount out of the db and applying a new sign
+                                    // to it, depending on the new category selected. So we need to normalize first with abs.
+                                    amount = if (selectedCategory.isIncome) abs(rec.amount) else -abs(rec.amount)
                                 )
                             }
                             viewModel.saveRecord(completeRecord)

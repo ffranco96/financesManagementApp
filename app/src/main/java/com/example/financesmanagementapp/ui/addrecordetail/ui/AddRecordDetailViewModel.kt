@@ -7,6 +7,7 @@ import com.example.financesmanagementapp.domain.model.Category
 import com.example.financesmanagementapp.domain.model.Record
 import com.example.financesmanagementapp.domain.usecase.GetCategoriesUseCase
 import com.example.financesmanagementapp.ui.addrecordetail.domain.SaveRecordUseCase
+import com.example.financesmanagementapp.ui.addrecordetail.domain.UpdateRecordUseCase
 import com.example.financesmanagementapp.ui.home.ui.HomeViewModel.Companion.TAG
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -16,10 +17,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.Instant
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 import javax.inject.Inject
 
 /**
@@ -28,6 +31,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AddRecordDetailViewModel @Inject constructor(
     private val saveRecordUseCase: SaveRecordUseCase,
+    private val updateRecordUseCase: UpdateRecordUseCase,
     getCategoriesUseCase: GetCategoriesUseCase,
 ): ViewModel() {
     private val _detail = MutableStateFlow("")
@@ -54,6 +58,19 @@ class AddRecordDetailViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
         )
+
+    /**
+     * Preloads the form with an existing record so it can be edited.
+     * Only meaningful for records already persisted (id != 0).
+     */
+    fun initializeFromRecord(record: Record) {
+        _detail.value = record.description
+        _selectedCategory.value = record.category
+        if (record.date.isNotBlank()) {
+            _selectedDate.value = record.date
+            _lastSelectedDateMillis.value = parseDateToMillis(record.date)
+        }
+    }
 
     fun onDetailChange(newValue: String){
         _detail.value = newValue
@@ -92,8 +109,25 @@ class AddRecordDetailViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             record?.let{
                 Log.d(TAG, "Record to save: $record")
-                saveRecordUseCase(record)
+                if (it.id == 0) {
+                    saveRecordUseCase(it)
+                } else {
+                    updateRecordUseCase(it)
+                }
             }
         }
+    }
+
+    /**
+     * Parses a record date (ISO date-time or legacy ISO date) into epoch millis at UTC,
+     * matching the timezone used when [onDateSelected] converts the picker value back.
+     */
+    private fun parseDateToMillis(date: String): Long? = try {
+        LocalDate.parse(date.take(10))
+            .atStartOfDay(ZoneId.of("UTC"))
+            .toInstant()
+            .toEpochMilli()
+    } catch (_: DateTimeParseException) {
+        null
     }
 }
