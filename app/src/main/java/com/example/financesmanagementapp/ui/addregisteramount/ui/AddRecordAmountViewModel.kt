@@ -30,12 +30,12 @@ class AddRecordAmountViewModel @Inject constructor(
         savedStateHandle.get<Int>(AppScreens.AddRecordAmountScreen.RECORD_ID_ARG)
             ?: AppScreens.AddRecordAmountScreen.NO_RECORD_ID
 
-    /** True when the screen was opened to edit an existing record. */
+    /** True when the screen was opened to edit an existing record. Navigation intent */
     val isEditing: Boolean = recordId != AppScreens.AddRecordAmountScreen.NO_RECORD_ID
 
     private val _editingRecord = MutableStateFlow<Record?>(null)
 
-    /** The record being edited, or null while creating a new one (or before it loads). */
+    /** The record being edited. Can be null while creating a new one or before it loads. */
     val editingRecord: StateFlow<Record?> = _editingRecord
 
     private val _amountInCents = MutableStateFlow(0L)
