@@ -95,6 +95,40 @@ class RecordsDAOTest {
         assertEquals("Flow record", result[0].description)
     }
 
+    // ── getById ──────────────────────────────────────────────────────────
+
+    @Test
+    fun givenExistingRecord_whenGetById_thenEmitsIt() = runTest {
+        dao.insert(buildRecord(description = "Buscado"))
+        val inserted = dao.getAll().single()
+
+        val result = dao.getById(inserted.id).first()
+
+        assertNotNull(result)
+        assertEquals(inserted, result)
+    }
+
+    @Test
+    fun givenNoRecordWithId_whenGetById_thenEmitsNull() = runTest {
+        val result = dao.getById(999).first()
+
+        assertNull(result)
+    }
+
+    @Test
+    fun givenMultipleRecords_whenGetById_thenEmitsOnlyTheMatchingOne() = runTest {
+        dao.insert(
+            buildRecord(description = "Primero"),
+            buildRecord(description = "Segundo")
+        )
+        val second = dao.getAll().first { it.description == "Segundo" }
+
+        val result = dao.getById(second.id).first()
+
+        assertNotNull(result)
+        assertEquals("Segundo", result!!.description)
+    }
+
     // ── getTotalBalanceByAccount ─────────────────────────────────────────
 
     @Test
@@ -223,6 +257,26 @@ class RecordsDAOTest {
 
         val result = dao.getAll()
         assertEquals(3, result.size)
+    }
+
+    @Test
+    fun givenRecordWithIdZero_whenInsert_thenGeneratedIdIsGreaterThanZero() = runTest {
+        dao.insert(buildRecord(id = 0, description = "Primer registro"))
+
+        val stored = dao.getAll().single()
+
+        assertTrue(stored.id > 0)
+    }
+
+    @Test
+    fun givenInsertedRecord_whenGetByIdWithGeneratedId_thenReturnsIt() = runTest {
+        dao.insert(buildRecord(id = 0, description = "Editable"))
+        val generatedId = dao.getAll().single().id
+
+        val result = dao.getById(generatedId).first()
+
+        assertNotNull(result)
+        assertEquals(generatedId, result!!.id)
     }
 
     // ── delete ───────────────────────────────────────────────────────────

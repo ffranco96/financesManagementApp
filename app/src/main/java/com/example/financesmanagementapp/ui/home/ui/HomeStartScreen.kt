@@ -29,6 +29,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -181,7 +182,7 @@ fun HomeStartScreen(
                 floatingActionButton = {
                     FloatingActionButton(
                         onClick = {
-                            navController.navigate(route = AppScreens.AddRecordAmountScreen.route)
+                            navController.navigate(route = AppScreens.AddRecordAmountScreen.createRoute())
                             //recordsDetailList
                         },
                         modifier = Modifier.padding(16.dp)
@@ -198,7 +199,10 @@ fun HomeStartScreen(
                     BodyContent(
                         viewModel,
                         recordsList,
-                        onNavigateToCharts = { navController.navigate(AppScreens.ChartsScreen.route) }
+                        onNavigateToCharts = { navController.navigate(AppScreens.ChartsScreen.route) },
+                        onEditRecord = { record ->
+                            navController.navigate(AppScreens.AddRecordAmountScreen.createRoute(record.id))
+                        }
                     )
                 }
                 val a = paddingValues // To avoid error
@@ -238,6 +242,7 @@ fun BodyContent(
     viewModel: HomeViewModel,
     recordsList: List<Record>,
     onNavigateToCharts: () -> Unit = {},
+    onEditRecord: (Record) -> Unit = {},
 ) {
     val currentBalance by viewModel.currentBalance.collectAsState(initial = 0.0)
     val currentBtcValueDouble by viewModel.btcPrice.collectAsState(initial = 0.0)
@@ -291,7 +296,7 @@ fun BodyContent(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = "Ultimos movimientos", style = MaterialTheme.typography.titleMedium)
+            Text(text = "Últimos movimientos", style = MaterialTheme.typography.titleMedium)
             Button(
                 onClick = { viewModel.clearRecordsList() }
             ) {
@@ -304,7 +309,7 @@ fun BodyContent(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-       RecordsList(sortedRecords, viewModel)
+       RecordsList(sortedRecords, viewModel, onEditRecord)
     }
 }
 
@@ -345,7 +350,11 @@ fun observeWorker(context: Context){
  * Displays a list of financial records.
  */
 @Composable
-fun RecordsList(recordsList: List<Record>, viewModel: HomeViewModel) {
+fun RecordsList(
+    recordsList: List<Record>,
+    viewModel: HomeViewModel,
+    onEditRecord: (Record) -> Unit
+) {
     var expandedId by remember { mutableStateOf<Int?>(null) }
 
     LazyColumn(
@@ -359,7 +368,8 @@ fun RecordsList(recordsList: List<Record>, viewModel: HomeViewModel) {
                 isExpanded = expandedId == recordObject.id,
                 onToggleExpand = {
                     expandedId = if (expandedId == recordObject.id) null else recordObject.id
-                }
+                },
+                onEditRecord = { onEditRecord(recordObject) }
             )
             HorizontalDivider()
         }
@@ -374,7 +384,8 @@ fun RecordItem(
     record: Record,
     viewModel: HomeViewModel,
     isExpanded: Boolean,
-    onToggleExpand: () -> Unit
+    onToggleExpand: () -> Unit,
+    onEditRecord: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -385,7 +396,7 @@ fun RecordItem(
     {
         MyImage(record.category.iconRsc)
         Spacer(modifier = Modifier.width(12.dp))
-        RecordContent(record, viewModel, isExpanded, onToggleExpand)
+        RecordContent(record, viewModel, isExpanded, onToggleExpand, onEditRecord)
     }
 }
 
@@ -411,7 +422,8 @@ fun RecordContent(
     record: Record,
     viewModel: HomeViewModel,
     isExpanded: Boolean,
-    onToggleExpand: () -> Unit
+    onToggleExpand: () -> Unit,
+    onEditRecord: () -> Unit
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
 
@@ -464,6 +476,12 @@ fun RecordContent(
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (isExpanded) {
+                IconButton(onClick = onEditRecord) {
+                    Icon(
+                        imageVector = Icons.Rounded.Edit,
+                        contentDescription = "Editar registro"
+                    )
+                }
                 IconButton(onClick = { showDeleteDialog = true }) {
                     Icon(
                         imageVector = Icons.Rounded.Delete,
