@@ -288,6 +288,36 @@ fun BodyContent(
     ) {
         Text("Gráficos")
     }
+    var showDeleteAllDialog by remember { mutableStateOf(false) }
+
+    if (showDeleteAllDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteAllDialog = false },
+            title = { Text("Borrar todos los registros") },
+            text = {
+                Text(
+                    "¿Estás seguro de que deseas borrar todos los registros? " +
+                        "Si no exportó los registros con sus gastos, los perderá."
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.clearRecordsList()
+                        showDeleteAllDialog = false
+                    }
+                ) {
+                    Text("Sí, borrar todo")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteAllDialog = false }) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
+
     Column (
         modifier = Modifier
             .fillMaxWidth()
@@ -298,9 +328,9 @@ fun BodyContent(
         ) {
             Text(text = "Últimos movimientos", style = MaterialTheme.typography.titleMedium)
             Button(
-                onClick = { viewModel.clearRecordsList() }
+                onClick = { showDeleteAllDialog = true }
             ) {
-                Icon(Icons.Rounded.Delete, contentDescription = "Borrar todos los regs")
+                Icon(Icons.Rounded.Delete, contentDescription = "Borrar todos los registros")
             }
         }
     }
