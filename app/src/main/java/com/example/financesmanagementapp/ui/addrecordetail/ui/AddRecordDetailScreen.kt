@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DatePickerState
@@ -39,6 +40,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -98,6 +100,55 @@ fun AddRecordDetailScreen(
         )
     }
 
+    var showWithoutCategoryDialog by remember { mutableStateOf(false) } // When true, shows dialog asking if the record without category is correct
+
+    // Saving is shared by the direct path and the "keep it without category" confirmation,
+    // so the dialog cannot drift from what the button actually does.
+    val saveRecordAndGoHome: () -> Unit = {
+        val completeRecord = record?.let { rec ->
+            rec.copy(
+                description = detailText,
+                category = categoryList.find {
+                    it.categoryName == selectedCategory.categoryName && it.subcategoryName == selectedCategory.subcategoryName
+                } ?: Category(),
+                date = selectedDate,
+                // Seems redundant but when editing a record, we are getting the signed amount out of the db
+                // and applying a new sign to it, depending on the new category selected. So we need to
+                // normalize first with abs.
+                amount = if (selectedCategory.isIncome) abs(rec.amount) else -abs(rec.amount)
+            )
+        }
+        viewModel.saveRecord(completeRecord)
+        navController.navigate(AppScreens.HomeStartScreen.route){
+            popUpTo(AppScreens.HomeStartScreen.route){
+                inclusive = true
+            }
+        }
+    }
+
+    if (showWithoutCategoryDialog) {
+        AlertDialog(
+            onDismissRequest = { showWithoutCategoryDialog = false },
+            title = { Text("Registro sin categoría") },
+            text = { Text("¿Seguro que querés dejarlo sin categoría?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showWithoutCategoryDialog = false
+                        saveRecordAndGoHome()
+                    }
+                ) {
+                    Text("Guardar")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showWithoutCategoryDialog = false }) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -129,23 +180,10 @@ fun AddRecordDetailScreen(
                 FloatingActionButton(
                     onClick = {
                         if (!isAmountZero) {
-                            val completeRecord = record?.let { rec ->
-                                rec.copy(
-                                    description = detailText,
-                                    category = categoryList.find {
-                                        it.categoryName == selectedCategory.categoryName && it.subcategoryName == selectedCategory.subcategoryName
-                                    } ?: Category(),
-                                    date = selectedDate,
-                                    // Seems redundant but we are getting the signed amount out of the db and applying a new sign
-                                    // to it, depending on the new category selected. So we need to normalize first with abs.
-                                    amount = if (selectedCategory.isIncome) abs(rec.amount) else -abs(rec.amount)
-                                )
-                            }
-                            viewModel.saveRecord(completeRecord)
-                            navController.navigate(AppScreens.HomeStartScreen.route){
-                                popUpTo(AppScreens.HomeStartScreen.route){
-                                    inclusive = true
-                                }
+                            if (selectedCategory.categoryName == CategoryName.WITHOUT_CATEGORY) {
+                                showWithoutCategoryDialog = true
+                            } else {
+                                saveRecordAndGoHome()
                             }
                         }
                     },
