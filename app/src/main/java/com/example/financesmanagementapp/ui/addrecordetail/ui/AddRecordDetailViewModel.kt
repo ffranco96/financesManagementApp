@@ -1,16 +1,16 @@
 package com.example.financesmanagementapp.ui.addrecordetail.ui
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.financesmanagementapp.di.IoDispatcher
 import com.example.financesmanagementapp.domain.model.Category
+import com.example.financesmanagementapp.domain.model.CategoryName
 import com.example.financesmanagementapp.domain.model.Record
 import com.example.financesmanagementapp.domain.usecase.GetCategoriesUseCase
 import com.example.financesmanagementapp.ui.addrecordetail.domain.SaveRecordUseCase
 import com.example.financesmanagementapp.ui.addrecordetail.domain.UpdateRecordUseCase
-import com.example.financesmanagementapp.ui.home.ui.HomeViewModel.Companion.TAG
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -33,6 +33,7 @@ class AddRecordDetailViewModel @Inject constructor(
     private val saveRecordUseCase: SaveRecordUseCase,
     private val updateRecordUseCase: UpdateRecordUseCase,
     getCategoriesUseCase: GetCategoriesUseCase,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ): ViewModel() {
     private val _detail = MutableStateFlow("")
     val detail: StateFlow<String> = _detail
@@ -51,6 +52,16 @@ class AddRecordDetailViewModel @Inject constructor(
 
     private val _showDatePicker = MutableStateFlow(false)
     val showDatePicker: StateFlow<Boolean> = _showDatePicker
+
+    private var pendingWithoutCategoryRecord: Record? = null
+
+    private val _pendingCategoryConfirmation = MutableStateFlow(false)
+
+    /**
+     * True while the "save without category" confirmation is being shown. The record
+     * awaiting confirmation is held privately so the screen cannot save a different one.
+     */
+    val pendingCategoryConfirmation: StateFlow<Boolean> = _pendingCategoryConfirmation
 
     val categories: StateFlow<List<Category>> = getCategoriesUseCase()
         .stateIn(
@@ -105,15 +116,54 @@ class AddRecordDetailViewModel @Inject constructor(
         _showDatePicker.value = show
     }
 
-    fun saveRecord(record: Record?) {
-        viewModelScope.launch(Dispatchers.IO) {
-            record?.let{
-                Log.d(TAG, "Record to save: $record")
-                if (it.id == 0) {
-                    saveRecordUseCase(it)
-                } else {
-                    updateRecordUseCase(it)
-                }
+    /**
+     * Handles the save action, warning first when the record would be persisted without a category.
+     *
+     * @param record The record to persist, or null when there is nothing to save.
+     * @return [SaveOutcome.SAVED] when it was persisted, [SaveOutcome.CONFIRMATION_REQUIRED] when
+     * the user must confirm saving without a category first, or [SaveOutcome.IGNORED] when
+     * [record] is null.
+     */
+    fun onSaveClicked(record: Record?): SaveOutcome {
+        if (record == null) return SaveOutcome.IGNORED
+
+        if (record.category.categoryName != CategoryName.WITHOUT_CATEGORY) {
+            persist(record)
+            return SaveOutcome.SAVED
+        }
+
+        pendingWithoutCategoryRecord = record
+        _pendingCategoryConfirmation.value = true
+        return SaveOutcome.CONFIRMATION_REQUIRED
+    }
+
+    /**
+     * Persists the record that was waiting for the "without category" confirmation.
+     */
+    fun onSaveConfirmed() {
+        val record = pendingWithoutCategoryRecord
+        clearPendingConfirmation()
+        record?.let { persist(it) }
+    }
+
+    /**
+     * Discards the record that was waiting for the "without category" confirmation.
+     */
+    fun onSaveDismissed() {
+        clearPendingConfirmation()
+    }
+
+    private fun clearPendingConfirmation() {
+        pendingWithoutCategoryRecord = null
+        _pendingCategoryConfirmation.value = false
+    }
+
+    private fun persist(record: Record) {
+        viewModelScope.launch(ioDispatcher) {
+            if (record.id == 0) {
+                saveRecordUseCase(record)
+            } else {
+                updateRecordUseCase(record)
             }
         }
     }
@@ -130,4 +180,19 @@ class AddRecordDetailViewModel @Inject constructor(
     } catch (_: DateTimeParseException) {
         null
     }
+}
+
+/**
+ * Outcome of a save request, so the screen knows whether it must navigate away,
+ * show the confirmation dialog, or do nothing.
+ */
+enum class SaveOutcome {
+    /** The record was persisted and the screen can leave. */
+    SAVED,
+
+    /** A "without category" confirmation is pending; nothing was persisted yet. */
+    CONFIRMATION_REQUIRED,
+
+    /** There was no record to persist. */
+    IGNORED,
 }
