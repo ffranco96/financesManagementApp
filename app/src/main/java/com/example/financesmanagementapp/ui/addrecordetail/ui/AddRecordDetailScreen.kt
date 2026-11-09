@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DatePickerState
@@ -74,6 +75,7 @@ fun AddRecordDetailScreen(
     val selectedDate by viewModel.selectedDate.collectAsState()
     val showDatePicker by viewModel.showDatePicker.collectAsState()
     val lastSelectedDateMillis by viewModel.lastSelectedDateMillis.collectAsState()
+    val pendingCategoryConfirmation by viewModel.pendingCategoryConfirmation.collectAsState()
 
 
     val record by (navController.previousBackStackEntry?.savedStateHandle?.getStateFlow<Record?>("record", null)
@@ -95,6 +97,56 @@ fun AddRecordDetailScreen(
     val datePickerState = key(lastSelectedDateMillis) {
         rememberDatePickerState(
             initialSelectedDateMillis = lastSelectedDateMillis
+        )
+    }
+
+    val goHome: () -> Unit = {
+        navController.navigate(AppScreens.HomeStartScreen.route) {
+            popUpTo(AppScreens.HomeStartScreen.route) {
+                inclusive = true
+            }
+        }
+    }
+
+    // Builds the record from the current form state. The ViewModel decides whether it can be saved
+    // right away or needs the "without category" confirmation first.
+    val buildCompleteRecord: () -> Record? = {
+        record?.let { rec ->
+            rec.copy(
+                description = detailText,
+                category = categoryList.find {
+                    it.categoryName == selectedCategory.categoryName && it.subcategoryName == selectedCategory.subcategoryName
+                } ?: Category(),
+                date = selectedDate,
+                // Seems redundant but when editing a record, we are getting the signed amount out of the db
+                // and applying a new sign to it, depending on the new category selected. So we need to
+                // normalize first with abs.
+                amount = if (selectedCategory.isIncome) abs(rec.amount) else -abs(rec.amount)
+            )
+        }
+    }
+
+    // Shown when the ViewModel reports that the record would be saved without a category.
+    if (pendingCategoryConfirmation) {
+        AlertDialog(
+            onDismissRequest = { viewModel.onSaveDismissed() },
+            title = { Text("Registro sin categoría") },
+            text = { Text("¿Seguro que querés dejarlo sin categoría?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.onSaveConfirmed()
+                        goHome()
+                    }
+                ) {
+                    Text("Guardar")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { viewModel.onSaveDismissed() }) {
+                    Text("Cancelar")
+                }
+            }
         )
     }
 
@@ -128,25 +180,10 @@ fun AddRecordDetailScreen(
                 }
                 FloatingActionButton(
                     onClick = {
-                        if (!isAmountZero) {
-                            val completeRecord = record?.let { rec ->
-                                rec.copy(
-                                    description = detailText,
-                                    category = categoryList.find {
-                                        it.categoryName == selectedCategory.categoryName && it.subcategoryName == selectedCategory.subcategoryName
-                                    } ?: Category(),
-                                    date = selectedDate,
-                                    // Seems redundant but we are getting the signed amount out of the db and applying a new sign
-                                    // to it, depending on the new category selected. So we need to normalize first with abs.
-                                    amount = if (selectedCategory.isIncome) abs(rec.amount) else -abs(rec.amount)
-                                )
-                            }
-                            viewModel.saveRecord(completeRecord)
-                            navController.navigate(AppScreens.HomeStartScreen.route){
-                                popUpTo(AppScreens.HomeStartScreen.route){
-                                    inclusive = true
-                                }
-                            }
+                        if (!isAmountZero &&
+                            viewModel.onSaveClicked(buildCompleteRecord()) == SaveOutcome.SAVED
+                        ) {
+                            goHome()
                         }
                     },
                     containerColor = if (isAmountZero) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.primaryContainer,
