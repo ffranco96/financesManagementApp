@@ -13,6 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.financesmanagementapp.domain.crash.CrashReporter
+import com.example.financesmanagementapp.domain.featureflags.FeatureFlagsRepository
 import com.example.financesmanagementapp.ui.addrecordetail.ui.AddRecordDetailScreen
 import com.example.financesmanagementapp.ui.addrecordetail.ui.AddRecordDetailViewModel
 import com.example.financesmanagementapp.ui.addregisteramount.ui.AddRecordAmountScreen
@@ -26,13 +27,28 @@ import com.example.financesmanagementapp.ui.login.ui.LoginViewModel
 
 
 /**
+ * Resolves the initial route: the login screen is skipped entirely (straight to Home) whenever
+ * the `login_enabled` remote feature flag is off, since login is currently a no-op stub.
+ */
+internal fun resolveStartDestination(loginEnabled: Boolean, isLoggedIn: Boolean): String =
+    if (!loginEnabled) {
+        AppScreens.HomeStartScreen.route
+    } else if (isLoggedIn) {
+        AppScreens.HomeStartScreen.route
+    } else {
+        AppScreens.LoginScreen.route
+    }
+
+/**
  * Composable element that will orchestrate navigation.
  *
  * @param crashReporter used to log a breadcrumb on every destination change, so Crashlytics
  * reports show the screen the user was on. Registering it here covers every route in one place.
+ * @param featureFlagsRepository used to decide whether the login screen should be part of the
+ * initial navigation at all (see [resolveStartDestination]).
  */
 @Composable
-fun AppNavigation(crashReporter: CrashReporter) {
+fun AppNavigation(crashReporter: CrashReporter, featureFlagsRepository: FeatureFlagsRepository) {
     val navController = rememberNavController()
 
     val context: Context = LocalContext.current
@@ -47,11 +63,10 @@ fun AppNavigation(crashReporter: CrashReporter) {
 
     val startDestinationState = produceState(initialValue = AppScreens.LoginScreen.route) {
         val prefs = context.getSharedPreferences("financesMgmtAppPrefs", Context.MODE_PRIVATE)
-        value = if (prefs.getBoolean("isLoggedIn", false)) {
-            AppScreens.HomeStartScreen.route
-        } else {
-            AppScreens.LoginScreen.route
-        }
+        value = resolveStartDestination(
+            loginEnabled = featureFlagsRepository.isLoginEnabled(),
+            isLoggedIn = prefs.getBoolean("isLoggedIn", false)
+        )
     }
 
     NavHost(navController = navController, startDestination = startDestinationState.value) {
