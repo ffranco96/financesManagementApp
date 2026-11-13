@@ -1,10 +1,8 @@
 package com.example.financesmanagementapp.navigation
 
-import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.produceState
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.remember
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavType
@@ -27,16 +25,15 @@ import com.example.financesmanagementapp.ui.login.ui.LoginViewModel
 
 
 /**
- * Resolves the initial route: the login screen is skipped entirely (straight to Home) whenever
- * the `login_enabled` remote feature flag is off, since login is currently a no-op stub.
+ * Resolves the initial route: Home when the `login_enabled` remote feature flag is off (login is
+ * bypassed), Login when it is on. There is no persisted session yet, so when login is enabled the
+ * screen is always shown on a cold start.
  */
-internal fun resolveStartDestination(loginEnabled: Boolean, isLoggedIn: Boolean): String =
-    if (!loginEnabled) {
-        AppScreens.HomeStartScreen.route
-    } else if (isLoggedIn) {
-        AppScreens.HomeStartScreen.route
-    } else {
+internal fun resolveStartDestination(loginEnabled: Boolean): String =
+    if (loginEnabled) {
         AppScreens.LoginScreen.route
+    } else {
+        AppScreens.HomeStartScreen.route
     }
 
 /**
@@ -51,8 +48,6 @@ internal fun resolveStartDestination(loginEnabled: Boolean, isLoggedIn: Boolean)
 fun AppNavigation(crashReporter: CrashReporter, featureFlagsRepository: FeatureFlagsRepository) {
     val navController = rememberNavController()
 
-    val context: Context = LocalContext.current
-
     DisposableEffect(navController) {
         val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
             crashReporter.log("screen: ${destination.route}")
@@ -61,15 +56,13 @@ fun AppNavigation(crashReporter: CrashReporter, featureFlagsRepository: FeatureF
         onDispose { navController.removeOnDestinationChangedListener(listener) }
     }
 
-    val startDestinationState = produceState(initialValue = AppScreens.LoginScreen.route) {
-        val prefs = context.getSharedPreferences("financesMgmtAppPrefs", Context.MODE_PRIVATE)
-        value = resolveStartDestination(
-            loginEnabled = featureFlagsRepository.isLoginEnabled(),
-            isLoggedIn = prefs.getBoolean("isLoggedIn", false)
-        )
+    // isLoginEnabled() reads the cached Remote Config value synchronously, so the destination is
+    // resolved before the NavHost is built. It is remembered so the read happens only once.
+    val startDestination = remember {
+        resolveStartDestination(featureFlagsRepository.isLoginEnabled())
     }
 
-    NavHost(navController = navController, startDestination = startDestinationState.value) {
+    NavHost(navController = navController, startDestination = startDestination) {
         composable(route = AppScreens.LoginScreen.route) {
             val loginViewModel: LoginViewModel = hiltViewModel()
             LoginScreen(

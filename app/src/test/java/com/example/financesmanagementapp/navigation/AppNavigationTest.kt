@@ -6,30 +6,18 @@ import org.junit.Test
 class AppNavigationTest {
 
     @Test
-    fun `login disabled skips login screen regardless of isLoggedIn`() {
+    fun `login disabled skips login screen and starts at home`() {
         assertEquals(
             AppScreens.HomeStartScreen.route,
-            resolveStartDestination(loginEnabled = false, isLoggedIn = false)
-        )
-        assertEquals(
-            AppScreens.HomeStartScreen.route,
-            resolveStartDestination(loginEnabled = false, isLoggedIn = true)
+            resolveStartDestination(loginEnabled = false)
         )
     }
 
     @Test
-    fun `login enabled and not logged in shows login screen`() {
+    fun `login enabled starts at login screen`() {
         assertEquals(
             AppScreens.LoginScreen.route,
-            resolveStartDestination(loginEnabled = true, isLoggedIn = false)
-        )
-    }
-
-    @Test
-    fun `login enabled and logged in shows home screen`() {
-        assertEquals(
-            AppScreens.HomeStartScreen.route,
-            resolveStartDestination(loginEnabled = true, isLoggedIn = true)
+            resolveStartDestination(loginEnabled = true)
         )
     }
 }
