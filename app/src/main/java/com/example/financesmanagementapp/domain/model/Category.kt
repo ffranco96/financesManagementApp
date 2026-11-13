@@ -1,6 +1,7 @@
 package com.example.financesmanagementapp.domain.model
 
 import com.example.financesmanagementapp.R
+import java.io.Serializable
 
 /**
  * Parent category of a movement. [name] (e.g. "CATEGORY_HOUSE_AND_HOME") is the stable key used
@@ -144,7 +145,7 @@ data class Category(
     var colorCategory: Int = R.color.categ_color_other,
     var isIncome: Boolean = false,
     var details: String = ""
-) {
+) : Serializable {
     /**
      * Readable label combining the parent category's Spanish [CategoryName.label] and [displayName]
      * (e.g. "Casa y Hogar · Jardín"), since [displayName] alone isn't unique across parent

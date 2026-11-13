@@ -1,5 +1,9 @@
 package com.example.financesmanagementapp.domain.model
 
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.io.ObjectInputStream
+import java.io.ObjectOutputStream
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -112,5 +116,34 @@ class RecordTest {
         val result = date1.compareTo(date2)
 
         assertEquals(0, result)
+    }
+
+    // ── Bundle serialization (Navigation SavedStateHandle) ─────────────
+
+    @Test
+    fun `given record with category when serialized then round trips without throwing`() {
+        // Navigation keeps this record in the back stack SavedStateHandle, which is written to
+        // the Bundle on onSaveInstanceState. Every field of the graph must be serializable or
+        // the write fails with BadParcelableException (see FINAPP-37).
+        val record = Record(
+            id = 7,
+            amount = -1500.0,
+            description = "Test record",
+            category = Category(
+                categoryName = CategoryName.CATEGORY_VEHICLE,
+                subcategoryName = SubcategoryName.SUBCATEGORY_FUEL,
+                displayName = SubcategoryName.SUBCATEGORY_FUEL.label,
+            ),
+            date = "2026-01-15T10:30:00",
+            currency = "ARS",
+        )
+
+        val bytes = ByteArrayOutputStream().use { output ->
+            ObjectOutputStream(output).use { it.writeObject(record) }
+            output.toByteArray()
+        }
+        val restored = ObjectInputStream(ByteArrayInputStream(bytes)).use { it.readObject() }
+
+        assertEquals(record, restored)
     }
 }
