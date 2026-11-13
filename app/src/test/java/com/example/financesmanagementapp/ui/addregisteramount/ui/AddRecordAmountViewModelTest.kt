@@ -102,10 +102,88 @@ class AddRecordAmountViewModelTest {
             backgroundScope.launch { viewModel.amountText.collect { } }
             advanceUntilIdle()
 
-            viewModel.onAmountTextChange("123")
+            val displayedText = viewModel.onAmountTextChange("123")
             advanceUntilIdle()
 
+            assertEquals("1.23", displayedText)
             assertEquals("1.23", viewModel.amountText.value)
+        }
+
+    @Test
+    fun `given a digit sequence when onAmountTextChange then the last two digits are the cents`() =
+        runTest(mainDispatcherRule.testDispatcher) {
+            val viewModel = createViewModel(AppScreens.AddRecordAmountScreen.NO_RECORD_ID)
+
+            assertEquals("12.50", viewModel.onAmountTextChange("1250"))
+            assertEquals("1250.00", viewModel.onAmountTextChange("125000"))
+        }
+
+    @Test
+    fun `given a decimal point when onAmountTextChange then it is ignored`() =
+        runTest(mainDispatcherRule.testDispatcher) {
+            val viewModel = createViewModel(AppScreens.AddRecordAmountScreen.NO_RECORD_ID)
+            backgroundScope.launch { viewModel.amountText.collect { } }
+            advanceUntilIdle()
+
+            // A dot on an empty field does nothing.
+            assertEquals("0.00", viewModel.onAmountTextChange("."))
+
+            viewModel.onAmountTextChange("889")
+
+            // A dot after typing digits does nothing either.
+            assertEquals("8.89", viewModel.onAmountTextChange("8.89."))
+            advanceUntilIdle()
+            assertEquals("8.89", viewModel.amountText.value)
+        }
+
+    @Test
+    fun `given a decimal comma when onAmountTextChange then it is ignored`() =
+        runTest(mainDispatcherRule.testDispatcher) {
+            val viewModel = createViewModel(AppScreens.AddRecordAmountScreen.NO_RECORD_ID)
+            backgroundScope.launch { viewModel.amountText.collect { } }
+            advanceUntilIdle()
+
+            assertEquals("8.89", viewModel.onAmountTextChange("8,89,"))
+            advanceUntilIdle()
+            assertEquals("8.89", viewModel.amountText.value)
+        }
+
+    @Test
+    fun `given several decimal separators when onAmountTextChange then only the digits are used`() =
+        runTest(mainDispatcherRule.testDispatcher) {
+            val viewModel = createViewModel(AppScreens.AddRecordAmountScreen.NO_RECORD_ID)
+
+            assertEquals("8.89", viewModel.onAmountTextChange(".8.8,9."))
+        }
+
+    @Test
+    fun `given an amount when deleting digits then it moves towards zero`() =
+        runTest(mainDispatcherRule.testDispatcher) {
+            val viewModel = createViewModel(AppScreens.AddRecordAmountScreen.NO_RECORD_ID)
+            viewModel.onAmountTextChange("889")
+
+            assertEquals("0.88", viewModel.onAmountTextChange("8.8"))
+            assertEquals("0.08", viewModel.onAmountTextChange("0.8"))
+            assertEquals("0.00", viewModel.onAmountTextChange("0.0"))
+        }
+
+    @Test
+    fun `given an amount with trailing zero cents when deleting digits then it moves towards zero`() =
+        runTest(mainDispatcherRule.testDispatcher) {
+            val viewModel = createViewModel(AppScreens.AddRecordAmountScreen.NO_RECORD_ID)
+            viewModel.onAmountTextChange("206")
+
+            assertEquals("0.20", viewModel.onAmountTextChange("2.0"))
+            assertEquals("0.02", viewModel.onAmountTextChange("0.2"))
+            assertEquals("0.00", viewModel.onAmountTextChange("0.0"))
+        }
+
+    @Test
+    fun `given an empty amount when onAmountTextChange then it stays at zero`() =
+        runTest(mainDispatcherRule.testDispatcher) {
+            val viewModel = createViewModel(AppScreens.AddRecordAmountScreen.NO_RECORD_ID)
+
+            assertEquals("0.00", viewModel.onAmountTextChange(""))
         }
 
     @Test
