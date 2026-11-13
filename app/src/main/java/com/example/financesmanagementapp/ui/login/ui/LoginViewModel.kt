@@ -1,6 +1,5 @@
 package com.example.financesmanagementapp.ui.login.ui
 
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.financesmanagementapp.ui.home.domain.GetCryptoPriceByTickerUseCase
@@ -34,14 +33,11 @@ class LoginViewModel @Inject constructor(
 
     private fun isValidUser(user: String): Boolean = user.length > 6
     private fun isValidPassword(password: String): Boolean = password.length > 6
-    suspend fun onLoginButtonClicked(context: Context) {
+    suspend fun onLoginButtonClicked() {
         // Actions to be done when the user presses to perform login
         _isLoading.value = true
         delay(2000) // It's a coroutine
         _isLoading.value = false
-
-        val prefs = context.getSharedPreferences("financesMgmtAppPrefs", Context.MODE_PRIVATE)
-        prefs.edit().putBoolean("isLoggedIn", true).apply()
     }
 
 }

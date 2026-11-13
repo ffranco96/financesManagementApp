@@ -23,7 +23,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -65,7 +64,6 @@ fun Login(modifier: Modifier, viewModel: LoginViewModel, navController: NavContr
     val loginEnabled by viewModel.loginEnabled.collectAsState(initial = false)
     val isLoading by viewModel.isLoading.collectAsState(initial = false)
     val coroutineScope = rememberCoroutineScope() // Creates a coroutine scope to launch async tasks // without blocking the main thread
-    val context = LocalContext.current
 
     if(isLoading){
         Box(Modifier.fillMaxSize()){
@@ -88,7 +86,7 @@ fun Login(modifier: Modifier, viewModel: LoginViewModel, navController: NavContr
             Spacer(modifier = Modifier.padding(16.dp))
             LoginButton(loginEnabled) {
                 coroutineScope.launch {
-                    viewModel.onLoginButtonClicked(context)
+                    viewModel.onLoginButtonClicked()
                     navController.navigate(route = AppScreens.HomeStartScreen.route)
                 }
             }
