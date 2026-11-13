@@ -70,15 +70,23 @@ class AddRecordAmountViewModel @Inject constructor(
         }
     }
 
-    fun onAmountTextChange(newValue: String){
+    /**
+     * Applies the user input to the amount. The input is treated as a plain sequence of digits
+     * where the last two are always the cents, so decimal separators (`.` and `,`) and any other
+     * non-digit character are ignored and never reach the field.
+     *
+     * Deleting one character removes the last digit, moving the amount towards `0.00`
+     * (e.g. `8.89` -> `0.88` -> `0.08` -> `0.00`).
+     *
+     * @return the formatted amount text the field must display after applying the change.
+     */
+    fun onAmountTextChange(newValue: String): String {
         val digits = newValue.filter { it.isDigit() }
-        if(digits.isEmpty()){
-            _amountInCents.value = 0L
-            return
+        when {
+            digits.isEmpty() -> _amountInCents.value = 0L
+            digits.length <= MAX_AMOUNT_TEXT_LENGTH -> _amountInCents.value = digits.toLong()
         }
-        if(digits.length <= MAX_AMOUNT_TEXT_LENGTH){
-            _amountInCents.value = digits.toLong()
-        }
+        return formatCentsToAmountText(_amountInCents.value)
     }
 
     private fun formatCentsToAmountText(cents: Long): String {

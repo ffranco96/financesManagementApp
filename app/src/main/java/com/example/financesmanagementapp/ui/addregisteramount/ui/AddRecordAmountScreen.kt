@@ -28,9 +28,11 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.neverEqualPolicy
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -65,7 +67,6 @@ fun AddRecordAmountScreen(
     val expandedCurrencyMenu by viewModel.expandedCurrencyMenu.collectAsState()
     val selectedCurrency by viewModel.selectedCurrency.collectAsState()
     val editingRecord by viewModel.editingRecord.collectAsState()
-
     val currencyList by viewModel.currencyList.collectAsState()
 
     Scaffold(
@@ -125,7 +126,7 @@ fun AddRecordAmountScreen(
 @Composable
 fun BodyContent(
     valueAmountText: String,
-    onAmountTextChange: (String) -> Unit,
+    onAmountTextChange: (String) -> String,
     expanded: Boolean,
     onDropdownClick: () -> Unit,
     onDismissRequest: () -> Unit,
@@ -134,14 +135,29 @@ fun BodyContent(
     currencyList: List<String>,
     innerPadding: PaddingValues
 ) {
-    // Synchronized with the view model valueAmountText
-    var textFieldValue by remember(valueAmountText) {
+    // The amount field is fully controlled by the ViewModel: every change is cleaned there and
+    // the clean text is written back here. `neverEqualPolicy` forces a recomposition even when
+    // the clean text is the same as before, so rejected characters (decimal separators) never
+    // stay visible in the field.
+    var textFieldValue by remember {
         mutableStateOf(
             TextFieldValue(
                 text = valueAmountText,
                 selection = TextRange(valueAmountText.length)
-            )
+            ),
+            neverEqualPolicy()
         )
+    }
+
+    // Keep the field in sync when the amount changes from outside of it (for example, when an
+    // existing record finishes loading while editing).
+    LaunchedEffect(valueAmountText) {
+        if (valueAmountText != textFieldValue.text) {
+            textFieldValue = TextFieldValue(
+                text = valueAmountText,
+                selection = TextRange(valueAmountText.length)
+            )
+        }
     }
 
     Column(
@@ -157,9 +173,11 @@ fun BodyContent(
         TextField(
             value = textFieldValue,
             onValueChange = { newValue ->
-                val forcedCursorToEnd = newValue.copy(selection = TextRange(newValue.text.length))
-                textFieldValue = forcedCursorToEnd
-                onAmountTextChange(forcedCursorToEnd.text)
+                val cleanText = onAmountTextChange(newValue.text)
+                textFieldValue = TextFieldValue(
+                    text = cleanText,
+                    selection = TextRange(cleanText.length)
+                )
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             singleLine = true,
