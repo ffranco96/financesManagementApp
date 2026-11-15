@@ -1,6 +1,7 @@
 package com.example.financesmanagementapp.data.local
 
 import android.content.Context
+import android.net.Uri
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.After
@@ -30,46 +31,46 @@ class RecordsCsvFileWriterTest {
 
     // ── Helpers ──────────────────────────────────────────────────────────
 
-    private fun uniqueFileName() = "test_${System.nanoTime()}.csv"
-
-    private fun registerFile(fileName: String): File {
-        val file = File(context.filesDir, fileName)
+    /** Creates a fresh destination document URI backed by a real file. */
+    private fun newDestination(): Uri {
+        val file = File(context.cacheDir, "test_${System.nanoTime()}.csv")
         createdFiles.add(file)
-        return file
+        return Uri.fromFile(file)
     }
+
+    private fun backingFile(uri: Uri): File = File(requireNotNull(uri.path))
 
     // ── Tests ────────────────────────────────────────────────────────────
 
     @Test
-    fun givenValidCsvContent_whenWriteCsv_thenFileIsCreatedWithCorrectContent() {
-        val fileName = uniqueFileName()
-        val file = registerFile(fileName)
+    fun givenValidCsvContent_whenWriteCsv_thenDocumentIsCreatedWithCorrectContent() {
+        val destination = newDestination()
         val csvContent = "amount; description; categoryName; date; currency\n" +
                 "100.0; Registro de prueba; Comida y alimentos; 2026-01-15T10:30:00; ARS"
 
-        val result = writer.writeCsv(csvContent, fileName)
+        val result = writer.writeCsv(destination, csvContent)
 
         assertTrue(result)
-        assertTrue(file.exists())
-        assertEquals(csvContent, file.readText())
+        assertTrue(backingFile(destination).exists())
+        assertEquals(csvContent, backingFile(destination).readText())
     }
 
-    @Test(expected = FileAlreadyExistsException::class)
-    fun givenExistingFile_whenWriteCsv_thenThrowsFileAlreadyExistsException() {
-        val fileName = uniqueFileName()
-        registerFile(fileName)
-        val file = File(context.filesDir, fileName)
-        file.writeText(" contenido previo ")
+    @Test
+    fun givenExistingDocument_whenWriteCsv_thenContentIsReplaced() {
+        val destination = newDestination()
+        backingFile(destination).writeText("contenido previo mucho mas largo que el nuevo")
 
-        writer.writeCsv("nuevo contenido", fileName)
+        val result = writer.writeCsv(destination, "nuevo")
+
+        assertTrue(result)
+        assertEquals("nuevo", backingFile(destination).readText())
     }
 
     @Test
     fun givenWriteSuccess_whenWriteCsv_thenReturnsTrue() {
-        val fileName = uniqueFileName()
-        registerFile(fileName)
+        val destination = newDestination()
 
-        val result = writer.writeCsv("amount; description; categoryName; date; currency", fileName)
+        val result = writer.writeCsv(destination, "amount; description; categoryName; date; currency")
 
         assertTrue(result)
     }

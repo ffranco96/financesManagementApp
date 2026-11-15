@@ -1,19 +1,25 @@
 package com.example.financesmanagementapp.data.local
 
+import android.net.Uri
+
 /**
- * Abstraction for writing CSV content to a file.
+ * Abstraction for writing CSV content to a document chosen by the user.
  *
  * This interface decouples the CSV generation logic from the Android-specific
  * file I/O, enabling unit testing of use cases that depend on it.
  */
 interface CsvFileWriter {
     /**
-     * Writes the given [content] to a file named [fileName] in CSV format.
+     * Writes the given [content] to the document identified by [uri].
      *
+     * The destination comes from the Storage Access Framework
+     * (`ActivityResultContracts.CreateDocument`), so the user picks both the
+     * location and the name of the exported file.
+     *
+     * @param uri The destination document URI returned by the system picker.
      * @param content The full CSV string to write (header + records).
-     * @param fileName The name of the file to create (e.g. "records_20260409_120000.csv").
-     * @return `true` if the write succeeded, `false` otherwise.
-     * @throws FileAlreadyExistsException if a file with the same name already exists.
+     * @return `true` if the write succeeded, `false` if the destination could
+     * not be opened.
      */
-    fun writeCsv(content: String, fileName: String): Boolean
+    fun writeCsv(uri: Uri, content: String): Boolean
 }
