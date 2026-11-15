@@ -101,6 +101,14 @@ fun HomeStartScreen(
         }
     }
 
+    // Opens the system file picker so the user decides where the export lands
+    // (e.g. Downloads) instead of writing into the app's private storage.
+    val csvExportLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument(CSV_MIME_TYPE)
+    ) { uri: Uri? ->
+        uri?.let { viewModel.exportCsv(it) }
+    }
+
     val recordsList by viewModel.recordsList.collectAsState(initial = emptyList())
     val isImporting by viewModel.isImporting.collectAsState()
 
@@ -113,6 +121,10 @@ fun HomeStartScreen(
             when (event) {
                 is HomeUiEvent.ShowToast -> {
                     Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+                }
+
+                is HomeUiEvent.LaunchCsvExport -> {
+                    csvExportLauncher.launch(event.suggestedFileName)
                 }
             }
         }
@@ -157,8 +169,7 @@ fun HomeStartScreen(
                         },
                         onClick = {
                             scope.launch {
-                                Log.d("franco", "recordList: $recordsList")
-                                viewModel.exportCsv()
+                                viewModel.requestCsvExport()
                                 scope.launch { drawerState.close() }
                             }
                         }
@@ -572,3 +583,9 @@ fun RecordAmount(currency: String, amount: Double) {
         color = colorResource(if(amount >= 0) R.color.positive_green else R.color.negative_red)
     )
 }
+
+/**
+ * MIME type requested by the export document picker. The suggested file name
+ * always ends in `.csv`, and this filter keeps the picker showing CSV documents.
+ */
+private const val CSV_MIME_TYPE = "text/csv"

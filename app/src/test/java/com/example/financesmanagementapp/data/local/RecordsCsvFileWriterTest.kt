@@ -5,34 +5,30 @@ import android.content.Context
 import android.net.Uri
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.mockkStatic
 import io.mockk.unmockkAll
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import java.io.File
+import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.OutputStream
-import java.nio.file.Files
 
 class RecordsCsvFileWriterTest {
 
     private lateinit var mockContext: Context
     private lateinit var mockContentResolver: ContentResolver
-    private lateinit var testDir: File
+    private lateinit var destination: Uri
     private lateinit var writer: RecordsCsvFileWriter
 
     @Before
     fun setUp() {
-        testDir = Files.createTempDirectory("csvTest").toFile()
-        mockContext = mockk()
+        destination = mockk()
         mockContentResolver = mockk()
-        every { mockContext.filesDir } returns testDir
+        mockContext = mockk()
         every { mockContext.contentResolver } returns mockContentResolver
-
-        mockkStatic(Uri::class)
-        every { Uri.fromFile(any()) } returns mockk()
 
         writer = RecordsCsvFileWriter(mockContext)
     }
@@ -43,21 +39,31 @@ class RecordsCsvFileWriterTest {
     }
 
     @Test
-    fun `given openOutputStream returns null when writeCsv then returns false`() {
-        every { mockContentResolver.openOutputStream(any()) } returns null
+    fun `given writable document when writeCsv then writes content and returns true`() {
+        val outputStream = ByteArrayOutputStream()
+        every { mockContentResolver.openOutputStream(destination, "wt") } returns outputStream
 
-        val result = writer.writeCsv("content", "test.csv")
+        val result = writer.writeCsv(destination, "amount; description\n10.0; test")
+
+        assertTrue(result)
+        assertEquals("amount; description\n10.0; test", outputStream.toString("UTF-8"))
+    }
+
+    @Test
+    fun `given document cannot be opened when writeCsv then returns false`() {
+        every { mockContentResolver.openOutputStream(destination, "wt") } returns null
+
+        val result = writer.writeCsv(destination, "content")
 
         assertFalse(result)
-        assertFalse(File(testDir, "test.csv").exists())
     }
 
     @Test(expected = IOException::class)
-    fun `given write throws IOException when writeCsv then throws IOException`() {
+    fun `given write throws IOException when writeCsv then propagates`() {
         val mockOutputStream = mockk<OutputStream>(relaxed = true)
         every { mockOutputStream.write(any<ByteArray>(), any<Int>(), any<Int>()) } throws IOException("Simulated IO error")
-        every { mockContentResolver.openOutputStream(any()) } returns mockOutputStream
+        every { mockContentResolver.openOutputStream(destination, "wt") } returns mockOutputStream
 
-        writer.writeCsv("content", "test.csv")
+        writer.writeCsv(destination, "content")
     }
 }

@@ -159,18 +159,38 @@ open class HomeViewModel @Inject constructor(
     }
 
     /**
-     * Function to export a list of records to a CSV file using ExportCsvUseCase.
-     * Checks if there are records to export; if not, emits a UI event to show a Toast.
+     * Requests a CSV export.
+     *
+     * When there are records to export it emits [HomeUiEvent.LaunchCsvExport]
+     * so the UI opens the system file picker; otherwise it emits a toast
+     * telling the user there is nothing to export.
      */
-    fun exportCsv() {
+    fun requestCsvExport() {
         viewModelScope.launch {
-            val currentRecords = recordsList.value
-            if (currentRecords.isEmpty()) {
-                _exportedCsvEvent.emit(HomeUiEvent.ShowToast("No hay registros para exportar"))
+            if (recordsList.value.isEmpty()) {
+                _exportedCsvEvent.emit(HomeUiEvent.ShowToast(NO_RECORDS_TO_EXPORT))
                 return@launch
             }
 
-            val exportResult = exportCsvUseCase(currentRecords)
+            _exportedCsvEvent.emit(HomeUiEvent.LaunchCsvExport(exportCsvUseCase.suggestedFileName()))
+        }
+    }
+
+    /**
+     * Exports the current records to [destination], the document the user
+     * chose in the system file picker.
+     *
+     * @param destination Target document URI returned by `CreateDocument`.
+     */
+    fun exportCsv(destination: Uri) {
+        viewModelScope.launch {
+            val currentRecords = recordsList.value
+            if (currentRecords.isEmpty()) {
+                _exportedCsvEvent.emit(HomeUiEvent.ShowToast(NO_RECORDS_TO_EXPORT))
+                return@launch
+            }
+
+            val exportResult = exportCsvUseCase(currentRecords, destination)
             if (exportResult) {
                 _exportedCsvEvent.emit(HomeUiEvent.ShowToast("CSV exportado exitosamente"))
             } else {
@@ -181,5 +201,6 @@ open class HomeViewModel @Inject constructor(
 
     companion object{
         const val TAG = "HomeViewModel"
+        private const val NO_RECORDS_TO_EXPORT = "No hay registros para exportar"
     }
 }

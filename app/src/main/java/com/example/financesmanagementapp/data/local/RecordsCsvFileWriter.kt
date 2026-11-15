@@ -1,19 +1,19 @@
 package com.example.financesmanagementapp.data.local
 
 import android.content.Context
-import androidx.core.net.toUri
+import android.net.Uri
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.BufferedWriter
-import java.io.File
 import java.io.OutputStreamWriter
 import javax.inject.Inject
 
 /**
- * Implementation of [CsvFileWriter] that writes CSV content
- * to a file in the application's internal storage via [Context].
+ * Implementation of [CsvFileWriter] that writes CSV content to a document
+ * selected by the user through the Storage Access Framework.
  *
- * Uses [Context.filesDir] as the target directory and
- * [Context.contentResolver] to open the output stream.
+ * The destination [Uri] comes from `ActivityResultContracts.CreateDocument`,
+ * so the file ends up in a user-visible location (e.g. Downloads) and survives
+ * an app uninstall. No storage permissions are required.
  *
  * @param context Application context injected by Hilt.
  */
@@ -22,28 +22,33 @@ class RecordsCsvFileWriter @Inject constructor(
 ) : CsvFileWriter {
 
     /**
-     * Writes [content] to a file named [fileName] in the app's internal storage.
+     * Writes [content] to the document identified by [uri].
      *
-     * The file is created under [Context.filesDir]. If a file with the same
-     * name already exists, a [FileAlreadyExistsException] is thrown.
+     * The stream is opened in truncate mode so exporting over an existing
+     * document replaces its content instead of appending to it.
      *
+     * @param uri The destination document URI returned by the system picker.
      * @param content The full CSV string to write.
-     * @param fileName The name of the file to create.
-     * @return `true` if the write succeeded.
-     * @throws FileAlreadyExistsException if the file already exists.
+     * @return `true` if the write succeeded, `false` if the destination could
+     * not be opened.
      */
-    override fun writeCsv(content: String, fileName: String): Boolean {
-        val directory = context.filesDir
-        val file = File(directory, fileName)
-        if (file.exists()) {
-            throw FileAlreadyExistsException(file)
-        }
+    override fun writeCsv(uri: Uri, content: String): Boolean {
+        val outputStream = context.contentResolver.openOutputStream(uri, WRITE_TRUNCATE_MODE)
+            ?: return false
 
-        context.contentResolver.openOutputStream(file.toUri())?.use { outputStream ->
-            BufferedWriter(OutputStreamWriter(outputStream)).use { writer ->
+        outputStream.use { stream ->
+            BufferedWriter(OutputStreamWriter(stream, Charsets.UTF_8)).use { writer ->
                 writer.write(content)
             }
-        } ?: return false
+        }
         return true
+    }
+
+    private companion object {
+        /**
+         * `wt` truncates the document before writing, preventing leftover
+         * bytes from a previous export.
+         */
+        const val WRITE_TRUNCATE_MODE = "wt"
     }
 }
